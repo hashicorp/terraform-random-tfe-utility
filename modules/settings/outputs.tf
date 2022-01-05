@@ -22,7 +22,7 @@ output "tls_bootstrap_cert_pathname" {
 }
 
 output "tls_bootstrap_key_pathname" {
-    value = var.tls_bootstrap_cert_pathname
+    value = var.tls_bootstrap_key_pathname
     description = "This variable value is outputted so that it can be consumed by the tfe_init module."
 }
 

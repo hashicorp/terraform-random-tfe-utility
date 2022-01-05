@@ -18,8 +18,14 @@ variable "postgres" {
 
 # Redis
 # -----
-variable "redis" {
-  type = map(any)
+variable "redis_settings" {
+  type = object({
+    host                  = string
+    pass                  = string
+    enable_non_ssl_port   = bool
+    enable_authentication = bool
+    use_tls               = bool
+  })
 }
 
 # Azure
