@@ -56,7 +56,7 @@ variable "certificate_secret" {
   EOD
 }
 
-variable "user_data_iact_subnet_list" {
+variable "iact_subnet_list" {
   default     = []
   type        = list(string)
   description = <<-EOD

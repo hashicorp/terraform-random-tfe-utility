@@ -29,7 +29,7 @@ locals {
     }
 
     iact_subnet_list = {
-      value = join(",", var.user_data_iact_subnet_list)
+      value = join(",", var.iact_subnet_list)
     }
 
     install_id = {
