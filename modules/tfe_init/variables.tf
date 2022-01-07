@@ -72,4 +72,4 @@ variable "replicated_configuration" {}
 variable "tfe_configuration" {}
 variable "tls_bootstrap_cert_pathname" {}
 variable "tls_bootstrap_key_pathname" {}
-variable "tfe_license_pathname" {}
+variable "tfe_license_file_location" {}

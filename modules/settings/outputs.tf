@@ -26,7 +26,7 @@ output "tls_bootstrap_key_pathname" {
     description = "This variable value is outputted so that it can be consumed by the tfe_init module."
 }
 
-output "tfe_license_pathname" {
-    value = var.tfe_license_pathname
+output "tfe_license_file_location" {
+    value = var.tfe_license_file_location
     description = "This variable value is outputted so that it can be consumed by the tfe_init module."
 }

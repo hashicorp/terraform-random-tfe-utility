@@ -146,6 +146,20 @@ variable "user_data_trusted_proxies" {
   type        = list(string)
 }
 
-variable "tfe_license_pathname" {}
-variable "tls_bootstrap_cert_pathname" {}
-variable "tls_bootstrap_key_pathname" {}
+variable "tfe_license_file_location" {
+  default     = "/etc/terraform-enterprise.rli"
+  type        = string
+  description = "The path on the TFE instance to put the TFE license."
+}
+
+variable "tls_bootstrap_cert_pathname" {
+  default     = "/var/lib/terraform-enterprise/certificate.pem"
+  type        = string
+  description = "The path on the TFE instance to put the certificate."
+}
+
+variable "tls_bootstrap_key_pathname" {
+  default     = "/var/lib/terraform-enterprise/key.pem"
+  type        = string
+  description = "The path on the TFE instance to put the key."
+}

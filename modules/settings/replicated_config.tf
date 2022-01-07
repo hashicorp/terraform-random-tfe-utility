@@ -9,7 +9,7 @@ locals {
     DaemonAuthenticationType     = "password"
     DaemonAuthenticationPassword = random_string.password.result
     ImportSettingsFrom           = "/etc/ptfe-settings.json"
-    LicenseFileLocation          = var.tfe_license_pathname
+    LicenseFileLocation          = var.tfe_license_file_location
     TlsBootstrapHostname         = var.fqdn
     TlsBootstrapCert             = var.tls_bootstrap_cert_pathname
     TlsBootstrapKey              = var.tls_bootstrap_key_pathname

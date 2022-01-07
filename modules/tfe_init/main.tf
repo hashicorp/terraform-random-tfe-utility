@@ -15,7 +15,7 @@ locals {
       ca_certificate_secret = var.ca_certificate_secret
       certificate_secret    = var.certificate_secret
       key_secret            = var.key_secret
-      tfe_license_pathname  = var.tfe_license_pathname
+      tfe_license_file_location  = var.tfe_license_file_location
       tfe_license_secret    = var.tfe_license_secret
 
       # Proxy information
