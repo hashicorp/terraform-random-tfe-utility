@@ -12,8 +12,41 @@ variable "active_active" {
 
 # Database
 # --------
-variable "postgres" {
-  type = map(any)
+# If you have chosen external for production_type, the following settings apply:
+
+variable "pg_user" {
+  default     = null
+  type        = string
+  description = "PostgreSQL user to connect as."
+}
+
+variable "pg_password" {
+  default     = null
+  type        = string
+  description = "The password for the PostgreSQL user."
+}
+
+variable "pg_netloc" {
+  default     = null
+  type        = string
+  description = "The hostname and port of the target PostgreSQL server, in the format hostname:port."
+}
+
+variable "pg_dbname" {
+  default     = null
+  type        = string
+  description = "The database name"
+}
+
+variable "pg_extra_params" {
+  default     = null
+  type        = string
+  description = <<-EOF
+  Parameter keywords of the form param1=value1&param2=value2 to support additional options that
+  may be necessary for your specific PostgreSQL server. Allowed values are documented on the
+  PostgreSQL site. An additional restriction on the sslmode parameter is that only the require,
+  verify-full, verify-ca, and disable values are allowed.
+  EOF
 }
 
 # Redis
