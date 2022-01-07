@@ -18,8 +18,34 @@ variable "postgres" {
 
 # Redis
 # -----
-variable "redis_settings" {
-  type = map(any)
+variable "redis_host" {
+  default     = null
+  type        = string
+  description = "The Hostname of the Redis Instance"
+}
+
+variable "redis_pass" {
+  default     = null
+  type        = string
+  description = "The Primary Access Key for the Redis Instance. Must be set to the password of an external Redis instance if the instance requires password authentication."
+}
+
+variable "redis_enable_non_ssl_port" {
+  default     = true
+  type        = bool
+  description = "If true, the external Redis instance will use port 6379, otherwise 6380"
+}
+
+variable "redis_use_password_auth" {
+  default     = false
+  type        = bool
+  description = "Redis service requires a password."
+}
+
+variable "redis_use_tls" {
+  default     = false
+  type        = bool
+  description = "Redis service requires TLS"
 }
 
 # Azure
