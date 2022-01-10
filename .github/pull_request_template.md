@@ -12,6 +12,7 @@ Did you add a setting?
 - [ ] No 
 
 If yes, please check each box after you have have added an issue in the TFE modules to add this setting:
+
 - [ ] [AWS](https://github.com/hashicorp/terraform-aws-terraform-enterprise)
 - [ ] [Azure](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise)
 - [ ] [GCP](https://github.com/hashicorp/terraform-google-terraform-enterprise)
