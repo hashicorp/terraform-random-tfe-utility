@@ -114,7 +114,7 @@ retrieve_tfe_license() {
 	# Obtain access token for Azure Key Vault
 	access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
 	license=$(curl --noproxy '*' ${tfe_license_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
-    echo $license | base64 -d > ${tfe_license_pathname}
+    echo $license | base64 -d > ${tfe_license_file_location}
 }
 
 install_tfe() {

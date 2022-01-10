@@ -12,14 +12,73 @@ variable "active_active" {
 
 # Database
 # --------
-variable "postgres" {
-  type = map(any)
+# If you have chosen external for production_type, the following settings apply:
+
+variable "pg_user" {
+  default     = null
+  type        = string
+  description = "PostgreSQL user to connect as."
+}
+
+variable "pg_password" {
+  default     = null
+  type        = string
+  description = "The password for the PostgreSQL user."
+}
+
+variable "pg_netloc" {
+  default     = null
+  type        = string
+  description = "The hostname and port of the target PostgreSQL server, in the format hostname:port."
+}
+
+variable "pg_dbname" {
+  default     = null
+  type        = string
+  description = "The database name"
+}
+
+variable "pg_extra_params" {
+  default     = null
+  type        = string
+  description = <<-EOF
+  Parameter keywords of the form param1=value1&param2=value2 to support additional options that
+  may be necessary for your specific PostgreSQL server. Allowed values are documented on the
+  PostgreSQL site. An additional restriction on the sslmode parameter is that only the require,
+  verify-full, verify-ca, and disable values are allowed.
+  EOF
 }
 
 # Redis
 # -----
-variable "redis_settings" {
-  type = map(any)
+variable "redis_host" {
+  default     = null
+  type        = string
+  description = "The Hostname of the Redis Instance"
+}
+
+variable "redis_pass" {
+  default     = null
+  type        = string
+  description = "The Primary Access Key for the Redis Instance. Must be set to the password of an external Redis instance if the instance requires password authentication."
+}
+
+variable "redis_enable_non_ssl_port" {
+  default     = true
+  type        = bool
+  description = "If true, the external Redis instance will use port 6379, otherwise 6380"
+}
+
+variable "redis_use_password_auth" {
+  default     = false
+  type        = bool
+  description = "Redis service requires a password."
+}
+
+variable "redis_use_tls" {
+  default     = false
+  type        = bool
+  description = "Redis service requires TLS"
 }
 
 # Azure
@@ -87,6 +146,20 @@ variable "user_data_trusted_proxies" {
   type        = list(string)
 }
 
-variable "tfe_license_pathname" {}
-variable "tls_bootstrap_cert_pathname" {}
-variable "tls_bootstrap_key_pathname" {}
+variable "tfe_license_file_location" {
+  default     = "/etc/terraform-enterprise.rli"
+  type        = string
+  description = "The path on the TFE instance to put the TFE license."
+}
+
+variable "tls_bootstrap_cert_pathname" {
+  default     = "/var/lib/terraform-enterprise/certificate.pem"
+  type        = string
+  description = "The path on the TFE instance to put the certificate."
+}
+
+variable "tls_bootstrap_key_pathname" {
+  default     = "/var/lib/terraform-enterprise/key.pem"
+  type        = string
+  description = "The path on the TFE instance to put the key."
+}

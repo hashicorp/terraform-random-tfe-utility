@@ -17,6 +17,24 @@ variable "tfe_license_secret" {
   description = "The Key Vault secret under which the Base64 encoded Terraform Enterprise license is stored."
 }
 
+variable "tfe_license_file_location" {
+  default     = "/etc/terraform-enterprise.rli"
+  type        = string
+  description = "The path on the TFE instance to put the TFE license."
+}
+
+variable "tls_bootstrap_cert_pathname" {
+  default     = "/var/lib/terraform-enterprise/certificate.pem"
+  type        = string
+  description = "The path on the TFE instance to put the certificate."
+}
+
+variable "tls_bootstrap_key_pathname" {
+  default     = "/var/lib/terraform-enterprise/key.pem"
+  type        = string
+  description = "The path on the TFE instance to put the key."
+}
+
 variable "ca_certificate_secret" {
   type = object({
     id = string
@@ -66,10 +84,15 @@ variable "no_proxy" {
   description = "Addresses which should not be accessed through the proxy server located at proxy_ip. This list will be combined with internal GCP addresses."
 }
 
+# Settings
+# --------
+variable "replicated_configuration" {
+  type        = map(any)
+  description = "The settings that will be used to configure Replicated."
+}
 
+variable "tfe_configuration" {
+  type        = map(any)
+  description = "The settings that will be used to configure Terraform Enterprise."
+}
 
-variable "replicated_configuration" {}
-variable "tfe_configuration" {}
-variable "tls_bootstrap_cert_pathname" {}
-variable "tls_bootstrap_key_pathname" {}
-variable "tfe_license_pathname" {}
