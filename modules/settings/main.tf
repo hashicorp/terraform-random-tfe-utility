@@ -1,6 +1,10 @@
 locals {
-  tfe_configuration        = jsonencode(merge(local.base_configs, local.base_external_configs, local.external_azure_configs, local.redis_configuration))
-  replicated_configuration = jsonencode(merge(local.replicated_base_config, local.release_sequence))
+  replicated_merged_configuration = merge(local.replicated_base_config, local.release_sequence)
+  replicated_configuration        = { for k, v in local.replicated_merged_configuration : k => v if v != tostring(null) }
+
+  tfe_merged_configuration      = merge(local.base_configs, local.base_external_configs, local.external_azure_configs, local.redis_configuration)
+  tfe_configuration_remove_null = { for k, v in flatten([local.tfe_merged_configuration]).0 : k => v if v.value != tostring(null) }
+  tfe_configuration             = { for k, v in local.tfe_configuration_remove_null : k => v if v.value != "" }
 }
 
 resource "random_id" "archivist_token" {

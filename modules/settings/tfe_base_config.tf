@@ -5,11 +5,11 @@ locals {
     }
 
     installation_type = {
-      value = var.user_data_installation_type
+      value = var.installation_type
     }
 
     production_type = {
-      value = var.user_data_installation_type == "poc" ? null : "external"
+      value = var.installation_type == "poc" ? null : "external"
     }
 
     archivist_token = {
@@ -57,7 +57,7 @@ locals {
     }
 
     trusted_proxies = {
-      value = join(",", var.user_data_trusted_proxies)
+      value = join(",", var.trusted_proxies)
     }
 
     user_token = {

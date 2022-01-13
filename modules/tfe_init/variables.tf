@@ -86,13 +86,14 @@ variable "no_proxy" {
 
 # Settings
 # --------
-variable "replicated_configuration" {
-  type        = map(any)
-  description = "The settings that will be used to configure Replicated."
+variable "configuration" {
+  default = {
+    replicated_configuration = {}
+    tfe_configuration        = {}
+  }
+  type = object({
+    replicated_configuration = map(any)
+    tfe_configuration        = map(any)
+  })
+  description = "The settings that will be used to configure Replicated and Terraform Enterprise."
 }
-
-variable "tfe_configuration" {
-  type        = map(any)
-  description = "The settings that will be used to configure Terraform Enterprise."
-}
-

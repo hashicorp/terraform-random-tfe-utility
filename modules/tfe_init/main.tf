@@ -6,8 +6,8 @@ locals {
       # Configuration data
       active_active               = var.active_active
       fqdn                        = var.fqdn
-      replicated                  = base64encode(var.replicated_configuration)
-      settings                    = base64encode(var.tfe_configuration)
+      replicated                  = base64encode(jsonencode(var.configuration.replicated_configuration))
+      settings                    = base64encode(jsonencode(var.configuration.tfe_configuration))
       tls_bootstrap_cert_pathname = var.tls_bootstrap_cert_pathname
       tls_bootstrap_key_pathname  = var.tls_bootstrap_key_pathname
 
