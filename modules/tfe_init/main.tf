@@ -21,7 +21,7 @@ locals {
       # Proxy information
       proxy_ip   = var.proxy_ip
       proxy_port = var.proxy_port
-      no_proxy   = var.no_proxy
+      no_proxy   = join(",", var.no_proxy)
     }
   )
 }
