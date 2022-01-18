@@ -105,7 +105,8 @@ ca_config() {
 resize_lv() {
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Resize RHEL logical volume" | tee -a /var/log/ptfe.log
 
-	lvresize -r -L +20G /dev/mapper/rootvg-varlv
+	lvresize -r -L +20G /dev/mapper/rootvg-rootlv
+	lvresize -r -L +40G /dev/mapper/rootvg-varlv
 }
 
 retrieve_tfe_license() {
@@ -126,7 +127,6 @@ install_tfe() {
 
 	sudo /tmp/install.sh \
 		bypass-firewalld-warning \
-		ignore-preflights \
 		%{ if proxy_ip != null ~}
 		http-proxy="${proxy_ip}:${proxy_port}" \
 		additional-no-proxy="${no_proxy}" \
