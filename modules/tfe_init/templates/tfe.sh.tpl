@@ -106,7 +106,7 @@ resize_lv() {
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Resize RHEL logical volume" | tee -a /var/log/ptfe.log
 
 	lvresize -r -L +20G /dev/mapper/rootvg-rootlv
-	lvresize -r -L +20G /dev/mapper/rootvg-varlv
+	lvresize -r -L +18G /dev/mapper/rootvg-varlv
 }
 
 retrieve_tfe_license() {
