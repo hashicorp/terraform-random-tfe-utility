@@ -98,5 +98,10 @@ variable "no_proxy" {
 //   description = "The settings that will be used to configure Replicated and Terraform Enterprise."
 // }
 
-variable "replicated_configuration" {}
-variable "tfe_configuration" {}
+variable "replicated_configuration" {
+  description = "The settings that will be used to configure Replicated."
+}
+
+variable "tfe_configuration" {
+  description = "The settings that will be used to configure Terraform Enterprise."
+}
