@@ -171,3 +171,9 @@ variable "tls_bootstrap_key_pathname" {
   type        = string
   description = "The path on the TFE instance to put the key."
 }
+
+variable "bypass_preflight_checks" {
+  default = false
+  type = bool
+  description = "Allow the TFE application to start without preflight checks." 
+}

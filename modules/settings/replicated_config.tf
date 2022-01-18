@@ -5,7 +5,7 @@ resource "random_string" "password" {
 
 locals {
   replicated_base_config = {
-    BypassPreflightChecks        = true
+    BypassPreflightChecks        = var.bypass_preflight_checks
     DaemonAuthenticationType     = "password"
     DaemonAuthenticationPassword = random_string.password.result
     ImportSettingsFrom           = "/etc/ptfe-settings.json"
