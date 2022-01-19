@@ -106,9 +106,11 @@ resize_lv() {
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Resize RHEL logical volume" | tee -a /var/log/ptfe.log
 
 	# Because Microsoft is publishing only LVM-partitioned images, it is necessary to partition it to the specs that TFE requires.
-	# First, extend the partition to fill available space.
+	# First, extend the partition to fill available space
 	growpart /dev/disk/azure/root 4
-	# Then resize the logical volumes to meet TFE specs.
+	# Resize the physical volume
+	pvresize /dev/disk/azure/root-part4
+	# Then resize the logical volumes to meet TFE specs
 	lvresize -r -L 10G /dev/mapper/rootvg-rootlv
 	lvresize -r -L 40G /dev/mapper/rootvg-varlv
 }
