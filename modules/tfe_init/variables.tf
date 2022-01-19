@@ -14,7 +14,7 @@ variable "tfe_license_secret" {
   type = object({
     id = string
   })
-  description = "The Key Vault secret under which the Base64 encoded Terraform Enterprise license is stored."
+  description = "The secrets manager secret name under which the Base64 encoded Terraform Enterprise license is stored."
 }
 
 variable "tfe_license_file_location" {
@@ -40,8 +40,8 @@ variable "ca_certificate_secret" {
     id = string
   })
   description = <<-EOD
-  A Key Vault secret which contains the Base64 encoded version of a PEM encoded public certificate of a certificate
-  authority (CA) to be trusted by the Virtual Machine Scale Set.
+  A secret which contains the Base64 encoded version of a PEM encoded public certificate of a certificate
+  authority (CA) to be trusted by the TFE instance(s).
   EOD
 }
 
@@ -50,8 +50,8 @@ variable "certificate_secret" {
     id = string
   })
   description = <<-EOD
-  A Key Vault secret which contains the Base64 encoded version of a PEM encoded public certificate for the Virtual
-  Machine Scale Set.
+  A secret which contains the Base64 encoded version of a PEM encoded public certificate for the TFE
+  instance(s).
   EOD
 }
 
@@ -60,8 +60,8 @@ variable "key_secret" {
     id = string
   })
   description = <<-EOD
-  A Key Vault secret which contains the Base64 encoded version of a PEM encoded private key for the Virtual Machine
-  Scale Set.
+  A secret which contains the Base64 encoded version of a PEM encoded private key for the TFE
+  instance(s)
   EOD
 }
 
@@ -86,18 +86,6 @@ variable "no_proxy" {
 
 # Settings
 # --------
-// variable "configuration" {
-//   default = {
-//     replicated_configuration = {}
-//     tfe_configuration        = {}
-//   }
-//   type = object({
-//     replicated_configuration = map(any)
-//     tfe_configuration        = map(any)
-//   })
-//   description = "The settings that will be used to configure Replicated and Terraform Enterprise."
-// }
-
 variable "replicated_configuration" {
   description = "The settings that will be used to configure Replicated."
 }
