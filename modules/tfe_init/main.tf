@@ -4,8 +4,7 @@ locals {
     "${path.module}/templates/tfe.sh.tpl",
     {
       # Configuration data
-      active_active               = var.active_active
-      fqdn                        = var.fqdn
+      active_active               = var.tfe_configuration.enable_active_active.value == "1" ? true : false
       replicated                  = base64encode(jsonencode(var.replicated_configuration))
       settings                    = base64encode(jsonencode(var.tfe_configuration))
       tls_bootstrap_cert_pathname = var.tls_bootstrap_cert_pathname
@@ -21,7 +20,7 @@ locals {
       # Proxy information
       proxy_ip   = var.proxy_ip
       proxy_port = var.proxy_port
-      no_proxy   = join(",", var.no_proxy)
+      no_proxy   = var.tfe_configuration.extra_no_proxy.value
     }
   )
 }

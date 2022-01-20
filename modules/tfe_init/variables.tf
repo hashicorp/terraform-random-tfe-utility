@@ -1,15 +1,5 @@
 # General
 # -------
-variable "fqdn" {
-  type        = string
-  description = "The fully qualified domain name for the TFE environment"
-}
-
-variable "active_active" {
-  type        = bool
-  description = "True if TFE running in active-active configuration"
-}
-
 variable "tfe_license_secret" {
   type = object({
     id = string
@@ -76,12 +66,6 @@ variable "proxy_port" {
   default     = "3128"
   type        = string
   description = "Port that the proxy server will use"
-}
-
-variable "no_proxy" {
-  default     = []
-  type        = list(string)
-  description = "Addresses which should not be accessed through the proxy server located at proxy_ip. This list will be combined with internal GCP addresses."
 }
 
 # Settings

@@ -4,8 +4,7 @@ This module is used to create the script that will install Terraform Enterprise 
 
 ## Required variables
 
-* `fqdn` - string value of the fully qualified domain name for the TFE environment
-* `active_active` - boolean for whether or not it is an active-active installation
+* `enable_active_active` - boolean for whether or not it is an active-active installation
 * `tfe_license_secret` - string value for the TFE license secret name
 * `replicated_configuration` - output object from the [`settings` module](../settings) of the Replicated configuration
 * `tfe_configuration` - output object from the [`settings` module](../settings) of the TFE configuration
@@ -19,8 +18,7 @@ module "tfe_init" {
   source = "git::https://github.com/hashicorp/terraform-random-tfe-utility//modules/tfe_init?ref=main"
 
   # Replicated Configuration data
-  fqdn          = module.load_balancer.fqdn
-  active_active = local.active_active
+  enable_active_active = local.active_active
 
   tfe_configuration           = module.settings.tfe_configuration
   replicated_configuration    = module.settings.replicated_configuration
@@ -37,15 +35,6 @@ module "tfe_init" {
   # Proxy information
   proxy_ip   = var.proxy_ip
   proxy_port = var.proxy_port
-  no_proxy = [
-    "127.0.0.1",
-    "169.254.169.254",
-    ".azure.com",
-    ".windows.net",
-    ".microsoft.com",
-    module.load_balancer.fqdn,
-    var.network_cidr
-  ]
 }
 ```
 

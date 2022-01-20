@@ -1,12 +1,12 @@
 # General
 # -------
-variable "fqdn" {
+variable "hostname" {
   default     = null
   type        = string
   description = "The fully qualified domain name for the TFE environment"
 }
 
-variable "active_active" {
+variable "enable_active_active" {
   default     = false
   type        = bool
   description = "True if TFE running in active-active configuration"
@@ -145,13 +145,33 @@ variable "installation_type" {
   }
 }
 
+variable "production_type" {
+  type        = string
+  description = "If you have chosen 'production' for the installation_type, production_type is required: external or disk"
+
+  validation {
+    condition = (
+      var.production_type == "external" ||
+      var.production_type == "disk"
+    )
+
+    error_message = "The production type must be 'external' or 'disk'."
+  }
+}
+
 variable "trusted_proxies" {
-  default     = []
+  default     = null
   description = <<-EOD
   A list of IP address ranges which will be considered safe to ignore when evaluating the IP addresses of requests like
   those made to the IACT endpoint.
   EOD
   type        = list(string)
+}
+
+variable "extra_no_proxy" {
+  default     = null
+  type        = list(string)
+  description = "When configured to use a proxy, a list of hosts to exclude from proxying. Please note that this list does not support whitespace characters."
 }
 
 variable "tfe_license_file_location" {
@@ -173,7 +193,7 @@ variable "tls_bootstrap_key_pathname" {
 }
 
 variable "bypass_preflight_checks" {
-  default     = false
+  default     = null
   type        = bool
-  description = "Allow the TFE application to start without preflight checks."
+  description = "Allow the TFE application to start without preflight checks. Replicated defaults this to false."
 }

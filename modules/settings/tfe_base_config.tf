@@ -1,7 +1,7 @@
 locals {
   base_configs = {
     hostname = {
-      value = var.fqdn
+      value = var.hostname
     }
 
     installation_type = {
@@ -9,7 +9,7 @@ locals {
     }
 
     production_type = {
-      value = var.installation_type == "poc" ? null : "external"
+      value = var.production_type
     }
 
     archivist_token = {
@@ -25,7 +25,7 @@ locals {
     }
 
     extra_no_proxy = {
-      value = ""
+      value = join(",", var.extra_no_proxy)
     }
 
     iact_subnet_list = {
@@ -57,7 +57,7 @@ locals {
     }
 
     trusted_proxies = {
-      value = join(",", var.trusted_proxies)
+      value = var.trusted_proxies == null ? null : join(",", var.trusted_proxies)
     }
 
     user_token = {

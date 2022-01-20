@@ -1,7 +1,7 @@
 locals {
   pg_configs = {
     enable_active_active = {
-      value = var.active_active ? "1" : "0"
+      value = var.enable_active_active ? "1" : "0"
     }
 
     pg_dbname = {

@@ -1,6 +1,5 @@
 locals {
-  replicated_merged_configuration = merge(local.replicated_base_config, local.release_sequence)
-  replicated_configuration        = { for k, v in local.replicated_merged_configuration : k => v if v != tostring(null) }
+  replicated_configuration = { for k, v in local.replicated_base_config : k => v if v != tostring(null) }
 
   tfe_merged_configuration      = merge(local.base_configs, local.base_external_configs, local.external_azure_configs, local.redis_configuration)
   tfe_configuration_remove_null = { for k, v in flatten([local.tfe_merged_configuration]).0 : k => v if v.value != tostring(null) }

@@ -13,7 +13,7 @@ locals {
     }
 
     placement = {
-      value = var.installation_type == "poc" ? null : "placement_azure"
+      value = var.production_type == "external" ? "placement_azure" : null
     }
   }
 }

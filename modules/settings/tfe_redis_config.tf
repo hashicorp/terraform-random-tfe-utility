@@ -21,5 +21,5 @@ locals {
     }
   }
 
-  redis_configuration = var.active_active ? local.redis_configs : {}
+  redis_configuration = var.enable_active_active ? local.redis_configs : {}
 }
