@@ -1,7 +1,7 @@
 output "mitmproxy" {
   value = {
-    http_port                       = local.mitmproxy_http_port
-    user_data_script_base64_encoded = local.mitmproxy_user_data_script_base64_encoded
+    http_port        = local.mitmproxy_http_port
+    user_data_script = local.mitmproxy_user_data_script
   }
 
   description = "The HTTP port and user data shell script for an mitmproxy installation."
@@ -9,8 +9,8 @@ output "mitmproxy" {
 
 output "squid" {
   value = {
-    http_port                       = local.squid_http_port
-    user_data_script_base64_encoded = local.squid_user_data_script_base64_encoded
+    http_port        = local.squid_http_port
+    user_data_script = local.squid_user_data_script
   }
 
   description = "The HTTP port and user data shell script for a Squid installation."
