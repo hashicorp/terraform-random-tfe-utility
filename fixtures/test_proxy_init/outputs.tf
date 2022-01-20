@@ -9,7 +9,7 @@ output "mitmproxy" {
 
 output "squid" {
   value = {
-    http_port = local.squid_http_port
+    http_port                       = local.squid_http_port
     user_data_script_base64_encoded = local.squid_user_data_script_base64_encoded
   }
 
