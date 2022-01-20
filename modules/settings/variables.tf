@@ -173,7 +173,7 @@ variable "tls_bootstrap_key_pathname" {
 }
 
 variable "bypass_preflight_checks" {
-  default = false
-  type = bool
-  description = "Allow the TFE application to start without preflight checks." 
+  default     = false
+  type        = bool
+  description = "Allow the TFE application to start without preflight checks."
 }
