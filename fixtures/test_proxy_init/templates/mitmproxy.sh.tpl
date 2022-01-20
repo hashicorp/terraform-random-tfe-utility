@@ -12,6 +12,7 @@ echo "[$(date +"%FT%T")] Installing jq" | tee --append /var/log/ptfe.log
 curl --location --output /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
 chmod +x /usr/local/bin/jq
 
+%{ if ca_certificate_secret != "" && ca_private_key_secret != "" ~}
 echo "[$(date +"%FT%T")] Deploying certificates for mitmproxy" | tee --append /var/log/ptfe.log
 certificate="$confdir/mitmproxy-ca.pem"
 access_token=$(curl http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token \
@@ -22,6 +23,7 @@ curl "https://secretmanager.googleapis.com/v1/${ca_certificate_secret}/versions/
 curl "https://secretmanager.googleapis.com/v1/${ca_private_key_secret}/versions/latest" \
     --header "Authorization: Bearer $access_token" \
     | jq -r .payload.data | base64 --decode | tee --append $certificate
+%{ endif ~}
 
 echo "[$(date +"%FT%T")] Configuring mitmproxy" | tee --append /var/log/ptfe.log
 confdir="/etc/mitmproxy"
