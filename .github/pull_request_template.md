@@ -8,11 +8,9 @@ Relates OR Closes #0000
 
 ## TFE Modules
 
-Did you add a new setting?
+### Did you add a new setting?
 
-- [ ] Yes
-- [ ] No 
-
+If no, you may delete these tasks.
 If yes, please check each box after you have have added an issue in the TFE modules to add this setting:
 
 - [ ] [AWS](https://github.com/hashicorp/terraform-aws-terraform-enterprise)
