@@ -4,9 +4,11 @@ Please include a one or two sentence description of what you're changing and why
 
 Relates OR Closes #0000
 
+## How has this been tested?
+
 ## TFE Modules
 
-Did you add a setting?
+Did you add a new setting?
 
 - [ ] Yes
 - [ ] No 
