@@ -54,5 +54,7 @@ module "settings" {
 
 ## Resources
 
-This module does not create any Terraform resources but rather uses `local` variables to form objects that
-will be output with the intention of becoming input variables for the [`tfe_init`](../tfe_init) module.
+- [random_id](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id)
+
+In addition to `random_id` resources, this module uses `local` variables to form objects that will
+be output with the intention of becoming input variables for the [`tfe_init`](../tfe_init) module.
