@@ -111,7 +111,7 @@ variable "release_sequence" {
 }
 
 variable "iact_subnet_list" {
-  default     = []
+  default     = null
   type        = list(string)
   description = <<-EOD
   A list of IP address ranges which will be authorized to access the IACT. The ranges must be expressed
