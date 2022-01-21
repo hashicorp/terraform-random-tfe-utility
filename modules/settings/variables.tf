@@ -106,7 +106,7 @@ variable "azure_account_name" {
 # ---
 variable "release_sequence" {
   default     = null
-  type        = string
+  type        = number
   description = "Terraform Enterprise version release sequence"
 }
 
