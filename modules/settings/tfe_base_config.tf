@@ -25,11 +25,11 @@ locals {
     }
 
     extra_no_proxy = {
-      value = join(",", var.extra_no_proxy)
+      value = var.extra_no_proxy == null ? var.extra_no_proxy : join(",", var.extra_no_proxy)
     }
 
     iact_subnet_list = {
-      value = join(",", var.iact_subnet_list)
+      value = var.iact_subnet_list == null ? var.iact_subnet_list : join(",", var.iact_subnet_list)
     }
 
     install_id = {
