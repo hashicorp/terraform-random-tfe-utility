@@ -11,9 +11,9 @@ locals {
     ImportSettingsFrom           = "/etc/ptfe-settings.json"
     LicenseFileLocation          = var.tfe_license_file_location
     TlsBootstrapHostname         = var.hostname
-    TlsBootstrapCert             = var.certificate_secret == null ? null : var.tls_bootstrap_cert_pathname
-    TlsBootstrapKey              = var.certificate_secret == null ? null : var.tls_bootstrap_key_pathname
-    TlsBootstrapType             = var.certificate_secret == null ? "self-signed" : "server-path"
+    TlsBootstrapCert             = var.tls_bootstrap_cert_pathname
+    TlsBootstrapKey              = var.tls_bootstrap_key_pathname
+    TlsBootstrapType             = var.tls_bootstrap_cert_pathname == null ? "self-signed" : "server-path"
     ReleaseSequence              = var.release_sequence
   }
 }

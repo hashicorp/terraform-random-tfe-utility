@@ -30,7 +30,6 @@ module "settings" {
   tfe_license_file_location   = var.tfe_license_file_location
   tls_bootstrap_cert_pathname = var.tls_bootstrap_cert_pathname
   tls_bootstrap_key_pathname  = var.tls_bootstrap_key_pathname
-  certificate_secret          = var.vm_certificate_secret
   bypass_preflight_checks     = var.bypass_preflight_checks
 
   # Database

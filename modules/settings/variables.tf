@@ -110,18 +110,6 @@ variable "release_sequence" {
   description = "Terraform Enterprise version release sequence"
 }
 
-variable "certificate_secret" {
-  default = null
-  type = object({
-    id = string
-  })
-
-  description = <<-EOD
-  A Key Vault secret which contains the Base64 encoded version of a PEM encoded public certificate for the Virtual
-  Machine Scale Set.
-  EOD
-}
-
 variable "iact_subnet_list" {
   default     = []
   type        = list(string)
