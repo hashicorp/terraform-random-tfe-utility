@@ -152,7 +152,8 @@ variable "production_type" {
   validation {
     condition = (
       var.production_type == "external" ||
-      var.production_type == "disk"
+      var.production_type == "disk" ||
+      var.production_type == null
     )
 
     error_message = "The production type must be 'external' or 'disk'."
