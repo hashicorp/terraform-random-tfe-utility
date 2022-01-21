@@ -1,11 +1,13 @@
 # General
 # -------
-variable "fqdn" {
+variable "hostname" {
+  default     = null
   type        = string
   description = "The fully qualified domain name for the TFE environment"
 }
 
-variable "active_active" {
+variable "enable_active_active" {
+  default     = false
   type        = bool
   description = "True if TFE running in active-active configuration"
 }
@@ -13,7 +15,6 @@ variable "active_active" {
 # Database
 # --------
 # If you have chosen external for production_type, the following settings apply:
-
 variable "pg_user" {
   default     = null
   type        = string
@@ -64,36 +65,39 @@ variable "redis_pass" {
 }
 
 variable "redis_enable_non_ssl_port" {
-  default     = true
+  default     = null
   type        = bool
   description = "If true, the external Redis instance will use port 6379, otherwise 6380"
 }
 
 variable "redis_use_password_auth" {
-  default     = false
+  default     = null
   type        = bool
   description = "Redis service requires a password."
 }
 
 variable "redis_use_tls" {
-  default     = false
+  default     = null
   type        = bool
   description = "Redis service requires TLS"
 }
 
 # Azure
 # -----
-variable "user_data_azure_container_name" {
+variable "azure_container_name" {
+  default     = null
   type        = string
   description = "Azure storage container name"
 }
 
-variable "user_data_azure_account_key" {
+variable "azure_account_key" {
+  default     = null
   type        = string
   description = "Azure storage account key"
 }
 
-variable "user_data_azure_account_name" {
+variable "azure_account_name" {
+  default     = null
   type        = string
   description = "Azure storage account name"
 }
@@ -101,22 +105,13 @@ variable "user_data_azure_account_name" {
 # TFE
 # ---
 variable "release_sequence" {
-  type        = string
+  default     = null
+  type        = number
   description = "Terraform Enterprise version release sequence"
 }
 
-variable "certificate_secret" {
-  type = object({
-    id = string
-  })
-  description = <<-EOD
-  A Key Vault secret which contains the Base64 encoded version of a PEM encoded public certificate for the Virtual
-  Machine Scale Set.
-  EOD
-}
-
 variable "iact_subnet_list" {
-  default     = []
+  default     = null
   type        = list(string)
   description = <<-EOD
   A list of IP address ranges which will be authorized to access the IACT. The ranges must be expressed
@@ -124,21 +119,37 @@ variable "iact_subnet_list" {
   EOD
 }
 
-variable "user_data_installation_type" {
+variable "installation_type" {
   type        = string
   description = "Installation type for Terraform Enterprise"
 
   validation {
     condition = (
-      var.user_data_installation_type == "poc" ||
-      var.user_data_installation_type == "production"
+      var.installation_type == "poc" ||
+      var.installation_type == "production"
     )
 
     error_message = "The installation type must be 'production' (recommended) or 'poc' (only used for demo-mode)."
   }
 }
 
-variable "user_data_trusted_proxies" {
+variable "production_type" {
+  type        = string
+  description = "If you have chosen 'production' for the installation_type, production_type is required: external or disk"
+
+  validation {
+    condition = (
+      var.production_type == "external" ||
+      var.production_type == "disk" ||
+      var.production_type == null
+    )
+
+    error_message = "The production type must be 'external' or 'disk'."
+  }
+}
+
+variable "trusted_proxies" {
+  default     = null
   description = <<-EOD
   A list of IP address ranges which will be considered safe to ignore when evaluating the IP addresses of requests like
   those made to the IACT endpoint.
@@ -146,20 +157,32 @@ variable "user_data_trusted_proxies" {
   type        = list(string)
 }
 
+variable "extra_no_proxy" {
+  default     = null
+  type        = list(string)
+  description = "When configured to use a proxy, a list of hosts to exclude from proxying. Please note that this list does not support whitespace characters."
+}
+
 variable "tfe_license_file_location" {
-  default     = "/etc/terraform-enterprise.rli"
+  default     = null
   type        = string
   description = "The path on the TFE instance to put the TFE license."
 }
 
 variable "tls_bootstrap_cert_pathname" {
-  default     = "/var/lib/terraform-enterprise/certificate.pem"
+  default     = null
   type        = string
   description = "The path on the TFE instance to put the certificate."
 }
 
 variable "tls_bootstrap_key_pathname" {
-  default     = "/var/lib/terraform-enterprise/key.pem"
+  default     = null
   type        = string
   description = "The path on the TFE instance to put the key."
+}
+
+variable "bypass_preflight_checks" {
+  default     = null
+  type        = bool
+  description = "Allow the TFE application to start without preflight checks. Replicated defaults this to false."
 }

@@ -9,17 +9,17 @@ locals {
     }
 
     redis_port = {
-      value = var.redis_enable_non_ssl_port == "true" ? "6379" : "6380"
+      value = var.redis_enable_non_ssl_port == true ? "6379" : "6380"
     }
 
     redis_use_password_auth = {
-      value = var.redis_use_password_auth == "true" ? "1" : "0"
+      value = var.redis_use_password_auth == true ? "1" : "0"
     }
 
     redis_use_tls = {
-      value = var.redis_use_tls == "true" ? "1" : "0"
+      value = var.redis_use_tls == true ? "1" : "0"
     }
   }
 
-  redis_configuration = var.active_active ? local.redis_configs : {}
+  redis_configuration = var.enable_active_active ? local.redis_configs : {}
 }

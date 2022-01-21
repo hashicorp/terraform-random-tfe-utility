@@ -105,7 +105,14 @@ ca_config() {
 resize_lv() {
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Resize RHEL logical volume" | tee -a /var/log/ptfe.log
 
-	lvresize -r -L +20G /dev/mapper/rootvg-varlv
+	# Because Microsoft is publishing only LVM-partitioned images, it is necessary to partition it to the specs that TFE requires.
+	# First, extend the partition to fill available space
+	growpart /dev/disk/azure/root 4
+	# Resize the physical volume
+	pvresize /dev/disk/azure/root-part4
+	# Then resize the logical volumes to meet TFE specs
+	lvresize -r -L 10G /dev/mapper/rootvg-rootlv
+	lvresize -r -L 40G /dev/mapper/rootvg-varlv
 }
 
 retrieve_tfe_license() {
@@ -126,7 +133,6 @@ install_tfe() {
 
 	sudo /tmp/install.sh \
 		bypass-firewalld-warning \
-		ignore-preflights \
 		%{ if proxy_ip != null ~}
 		http-proxy="${proxy_ip}:${proxy_port}" \
 		additional-no-proxy="${no_proxy}" \

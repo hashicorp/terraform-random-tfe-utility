@@ -1,15 +1,15 @@
 locals {
   base_configs = {
     hostname = {
-      value = var.fqdn
+      value = var.hostname
     }
 
     installation_type = {
-      value = var.user_data_installation_type
+      value = var.installation_type
     }
 
     production_type = {
-      value = var.user_data_installation_type == "poc" ? null : "external"
+      value = var.production_type
     }
 
     archivist_token = {
@@ -25,11 +25,11 @@ locals {
     }
 
     extra_no_proxy = {
-      value = ""
+      value = var.extra_no_proxy == null ? null : join(",", var.extra_no_proxy)
     }
 
     iact_subnet_list = {
-      value = join(",", var.iact_subnet_list)
+      value = var.iact_subnet_list == null ? null : join(",", var.iact_subnet_list)
     }
 
     install_id = {
@@ -57,7 +57,7 @@ locals {
     }
 
     trusted_proxies = {
-      value = join(",", var.user_data_trusted_proxies)
+      value = var.trusted_proxies == null ? null : join(",", var.trusted_proxies)
     }
 
     user_token = {
