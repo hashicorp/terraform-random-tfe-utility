@@ -4,7 +4,6 @@ This module is used to create the script that will install Terraform Enterprise 
 
 ## Required variables
 
-* `enable_active_active` - boolean for whether or not it is an active-active installation
 * `tfe_license_secret` - string value for the TFE license secret name
 * `replicated_configuration` - output object from the [`settings` module](../settings) of the Replicated configuration
 * `tfe_configuration` - output object from the [`settings` module](../settings) of the TFE configuration
