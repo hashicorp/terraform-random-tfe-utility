@@ -5,8 +5,9 @@ set -e -u -o pipefail
 echo "[$(date +"%FT%T")] Starting mitmproxy startup script" | tee --append /var/log/ptfe.log
 
 echo "[$(date +"%FT%T")] Installing mitmproxy" | tee --append /var/log/ptfe.log
+pushd /tmp
 curl --location --remote-name https://snapshots.mitmproxy.org/6.0.2/mitmproxy-6.0.2-linux.tar.gz
-tar --extract --file /tmp/mitmproxy*.tar.gz -C /usr/local/bin/
+tar --extract --file ./mitmproxy*.tar.gz -C /usr/local/bin/
 
 echo "[$(date +"%FT%T")] Installing jq" | tee --append /var/log/ptfe.log
 curl --location --output /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
