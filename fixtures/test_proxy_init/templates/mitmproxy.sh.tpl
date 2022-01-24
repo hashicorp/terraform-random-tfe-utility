@@ -8,6 +8,8 @@ echo "[$(date +"%FT%T")] Installing mitmproxy" | tee --append /var/log/ptfe.log
 pushd /tmp
 curl --location --remote-name https://snapshots.mitmproxy.org/6.0.2/mitmproxy-6.0.2-linux.tar.gz
 tar --extract --file ./mitmproxy*.tar.gz -C /usr/local/bin/
+confdir="/etc/mitmproxy"
+mkdir --parents $confdir
 
 echo "[$(date +"%FT%T")] Installing jq" | tee --append /var/log/ptfe.log
 curl --location --output /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
@@ -27,8 +29,6 @@ curl "https://secretmanager.googleapis.com/v1/${ca_private_key_secret}/versions/
 %{ endif ~}
 
 echo "[$(date +"%FT%T")] Configuring mitmproxy" | tee --append /var/log/ptfe.log
-confdir="/etc/mitmproxy"
-mkdir -p $confdir
 service="/etc/systemd/system/mitmproxy.service"
 touch $service
 chown root:root $service
