@@ -41,7 +41,6 @@ module "settings" {
   # Redis
   redis_host                = local.redis.host
   redis_pass                = local.redis.pass
-  redis_enable_non_ssl_port = local.redis.enable_non_ssl_port
   redis_use_tls             = local.redis.use_tls
   redis_use_password_auth   = local.redis.use_password_auth
 
