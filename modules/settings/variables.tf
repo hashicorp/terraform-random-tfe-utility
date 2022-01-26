@@ -186,3 +186,9 @@ variable "bypass_preflight_checks" {
   type        = bool
   description = "Allow the TFE application to start without preflight checks. Replicated defaults this to false."
 }
+
+variable "disk_path" {
+  default     = null
+  type        = string
+  description = "Absolute path to a directory on the instance to store Terraform Enteprise data. Valid for mounted disk installations."
+}

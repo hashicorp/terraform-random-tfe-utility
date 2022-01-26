@@ -20,6 +20,10 @@ locals {
       value = random_id.cookie_hash.hex
     }
 
+    disk_path = {
+      value = var.disk_path
+    }
+
     enc_password = {
       value = random_id.enc_password.hex
     }
