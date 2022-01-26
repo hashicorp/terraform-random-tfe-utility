@@ -9,7 +9,7 @@ locals {
     }
 
     redis_port = {
-      value = var.redis_enable_non_ssl_port == true ? "6379" : "6380"
+      value = var.redis_use_tls == true ? "6380" : "6379"
     }
 
     redis_use_password_auth = {

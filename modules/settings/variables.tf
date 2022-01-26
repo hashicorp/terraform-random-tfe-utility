@@ -64,12 +64,6 @@ variable "redis_pass" {
   description = "The Primary Access Key for the Redis Instance. Must be set to the password of an external Redis instance if the instance requires password authentication."
 }
 
-variable "redis_enable_non_ssl_port" {
-  default     = null
-  type        = bool
-  description = "If true, the external Redis instance will use port 6379, otherwise 6380"
-}
-
 variable "redis_use_password_auth" {
   default     = null
   type        = bool
@@ -79,7 +73,7 @@ variable "redis_use_password_auth" {
 variable "redis_use_tls" {
   default     = null
   type        = bool
-  description = "Redis service requires TLS"
+  description = "Redis service requires TLS. If true, the external Redis instance will use port 6380, otherwise 6379."
 }
 
 # Azure
