@@ -22,10 +22,10 @@ access_token=$(curl \
   --header "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token \
   | jq -r .access_token)
-curl "https://secretmanager.googleapis.com/v1/${ca_certificate_secret}/versions/latest" \
+curl "https://secretmanager.googleapis.com/v1/${ca_certificate_secret}" \
     --header "Authorization: Bearer $access_token" \
     | jq -r .payload.data | base64 --decode | tee $certificate
-curl "https://secretmanager.googleapis.com/v1/${ca_private_key_secret}/versions/latest" \
+curl "https://secretmanager.googleapis.com/v1/${ca_private_key_secret}" \
     --header "Authorization: Bearer $access_token" \
     | jq -r .payload.data | base64 --decode | tee --append $certificate
 %{ endif ~}
