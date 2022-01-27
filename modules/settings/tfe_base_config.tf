@@ -12,8 +12,21 @@ locals {
       value = var.production_type
     }
 
+    # Alphabetical starting here
     archivist_token = {
       value = random_id.archivist_token.hex
+    }
+
+    capacity_concurrency = {
+      value = tostring(var.capacity_concurrency)
+    }
+
+    capacity_memory = {
+      value = tostring(var.capacity_memory)
+    }
+
+    capacity_cpus = {
+      value = tostring(var.capacity_cpus)
     }
 
     cookie_hash = {
@@ -25,11 +38,15 @@ locals {
     }
 
     enc_password = {
-      value = random_id.enc_password.hex
+      value = var.extern_vault_enable ? null : random_id.enc_password.hex
     }
 
     extra_no_proxy = {
       value = var.extra_no_proxy == null ? null : join(",", var.extra_no_proxy)
+    }
+
+    force_tls = {
+      value = var.force_tls ? "1" : !var.force_tls ? "0" : null
     }
 
     iact_subnet_list = {
@@ -44,6 +61,12 @@ locals {
       value = random_id.internal_api_token.hex
     }
 
+    placement = {
+      value = (var.production_type == "external" && var.s3_bucket != null) ? "placement_s3" : (
+        var.production_type == "external" && var.azure_account_name != null) ? "placement_azure" : (
+        var.production_type == "external" && var.gcs_bucket != null) ? "placement_gcs" : null
+    }
+    
     registry_session_encryption_key = {
       value = random_id.registry_session_encryption_key.hex
     }
@@ -55,9 +78,12 @@ locals {
     root_secret = {
       value = random_id.root_secret.hex
     }
-
+    
+    tls_ciphers = {
+      value = var.tls_ciphers
+    }
     tls_vers = {
-      value = "tls_1_2_tls_1_3"
+      value = var.tls_vers
     }
 
     trusted_proxies = {
@@ -66,6 +92,10 @@ locals {
 
     user_token = {
       value = random_id.user_token.hex
+    }
+
+    vault_store_snapshot = {
+      value = var.vault_store_snapshot == false ? "0" : null
     }
   }
 }

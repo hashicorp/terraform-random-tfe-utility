@@ -9,11 +9,11 @@ locals {
     }
 
     azure_container = {
-      value = var.azure_container_name
+      value = var.azure_container
     }
 
-    placement = {
-      value = var.production_type == "external" ? "placement_azure" : null
+    azure_endpoint = {
+      value = var.azure_endpoint
     }
   }
 }
