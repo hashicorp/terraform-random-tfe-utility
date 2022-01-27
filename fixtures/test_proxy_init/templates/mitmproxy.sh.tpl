@@ -33,7 +33,7 @@ cat <<EOF >$service
 Description=mitmproxy
 ConditionPathExists=$confdir
 [Service]
-ExecStart=/usr/local/bin/mitmdump --port ${http_port} --set confdir=$confdir
+ExecStart=/usr/local/bin/mitmdump --listen-port ${http_port} --set confdir=$confdir
 Restart=always
 [Install]
 WantedBy=multi-user.target
