@@ -18,7 +18,9 @@ chmod +x /usr/local/bin/jq
 %{ if ca_certificate_secret != "" && ca_private_key_secret != "" ~}
 echo "[$(date +"%FT%T")] Deploying certificates for mitmproxy" | tee --append /var/log/ptfe.log
 certificate="$confdir/mitmproxy-ca.pem"
-access_token=$(curl http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token \
+access_token=$(curl \
+  --header "Metadata-Flavor: Google" \
+  http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token \
   | jq -r .access_token)
 curl "https://secretmanager.googleapis.com/v1/${ca_certificate_secret}/versions/latest" \
     --header "Authorization: Bearer $access_token" \
