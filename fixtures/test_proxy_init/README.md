@@ -6,7 +6,7 @@ are used in tests.
 The following proxy services are supported:
 
 - mitmproxy
-- squid
+- Squid
 
 As the module only generates the contents of scripts, all proxy
 services are unconditionally represented in the module outputs.
@@ -16,7 +16,7 @@ cloud platform combination for the generated initialization scripts.
 
 ## Example Usage
 
-Invoking the module for squid:
+Invoking the module for Squid:
 
 ```tf
 module "test_proxy_init" {
