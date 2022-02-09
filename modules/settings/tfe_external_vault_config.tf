@@ -33,5 +33,5 @@ locals {
     }
   }
 
-  external_vault_configs = var.extern_vault_enable ? local.extern_vault_configs : {}
+  external_vault_configs = var.extern_vault_enable == true ? local.extern_vault_configs : {}
 }
