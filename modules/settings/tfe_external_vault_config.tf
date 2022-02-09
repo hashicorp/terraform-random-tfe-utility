@@ -1,9 +1,9 @@
 locals {
   extern_vault_configs = {
     extern_vault_enable = {
-      value = var.extern_vault_enable ? "1" : "0"
+      value = var.extern_vault_enable ? "1" : !var.extern_vault_enable ? "0" : null
     }
-        
+
     extern_vault_addr = {
       value = var.extern_vault_addr
     }
@@ -21,7 +21,7 @@ locals {
     }
 
     extern_vault_token_renew = {
-      value = tostring(var.extern_vault_token_renew)
+      value = var.extern_vault_token_renew == null ? null : tostring(var.extern_vault_token_renew)
     }
 
     extern_vault_namespace = {
@@ -29,7 +29,7 @@ locals {
     }
 
     extern_vault_propagate = {
-      value = var.extern_vault_propagate ? "1" : "0"
+      value = var.extern_vault_propagate == true ? "1" : var.extern_vault_propagate == false ? "0" : null
     }
   }
 

@@ -1,6 +1,24 @@
+# --------------------------------------------------------------------------------------------
+# NOTE: In the descriptions, there are many variables that state that they default to certain
+# values, but the variable default is set to null. This is because this module will only add
+# values to the final configuration that are set, and if they are left unset and null, then
+# the TFE installation will use defaults set by the Replicated configuration for the TFE
+# installation. You can find this documented here: 
+# https://www.terraform.io/enterprise/install/automated/automating-the-installer
+# --------------------------------------------------------------------------------------------
+
 # ------------------------------------------------------
 # TFE
 # ------------------------------------------------------
+variable "backup_token" {
+  default     = null
+  type        = string
+  description = <<-EOD
+  (Optional) This API token is used to access the backup/restore API within the product.
+  If unset, it will default to the default_backup_token.
+  EOD
+}
+
 variable "capacity_concurrency" {
   default     = null
   type        = number
@@ -25,38 +43,13 @@ variable "capacity_memory" {
   EOD
 }
 
-variable "vault_path" {
-  default = null
-  type = string
-  description = <<-EOD
-  (Optional) Path on the host system to store the vault files. If extern_vault_enable is set, this
-  has no effect.
-  EOD
-}
-
-variable "vault_store_snapshot" {
-  default = null
-  type = bool
-  description = "(Optional) Indicate if the vault files should be stored in snapshots. Defaults to true."
-}
-
-variable "release_sequence" {
+variable "custom_image_tag" {
   default     = null
-  type        = number
+  type        = string
   description = <<-EOD
-  Terraform Enterprise version release sequence. Pins the application to a release available in the
-  license's channel, but is overridden by pins made in the vendor console. This setting is optional
-  and has to be omitted when LicenseBootstrapAirgapPackagePath is set.
-  EOD
-}
-
-variable "iact_subnet_list" {
-  default     = null
-  type        = list(string)
-  description = <<-EOD
-  A list of IP address ranges which will be authorized to access the IACT. The ranges must be
-  expressed in CIDR notation, for example "["10.0.0.0/24"]". If not set, no subnets can retrieve
-  the IACT.
+  (Required if tbw_image is 'custom_image'.) The name and tag for your alternative Terraform
+  build worker image in the format <name>:<tag>. Default is 'hashicorp/build-worker:now'.
+  If this variable is used, the 'tbw_image' variable must be 'custom_image'.
   EOD
 }
 
@@ -69,7 +62,6 @@ variable "installation_type" {
       var.installation_type == "poc" ||
       var.installation_type == "production"
     )
-
     error_message = "The installation type must be 'production' (recommended) or 'poc' (only used for demo-mode)."
   }
 }
@@ -88,23 +80,115 @@ variable "production_type" {
       var.production_type == "disk" ||
       var.production_type == null
     )
-
     error_message = "The production type must be 'external' or 'disk'."
   }
+}
+
+variable "release_sequence" {
+  default     = null
+  type        = number
+  description = <<-EOD
+  Terraform Enterprise version release sequence. Pins the application to a release available in the
+  license's channel, but is overridden by pins made in the vendor console. This setting is optional
+  and has to be omitted when tfe_license_bootstrap_airgap_package_path is set.
+  EOD
+}
+
+variable "tbw_image" {
+  default     = null
+  type        = string
+  description = <<-EOD
+  Set this to 'custom_image' if you want to use an alternative Terraform build worker image,
+  and use the 'custom_image_tag' variable to define its name and tag.
+  Default is 'default_image'. 
+  EOD
+
+  validation {
+    condition = (
+      var.tbw_image == "default_image" ||
+      var.tbw_image == "custom_image" ||
+      var.tbw_image == null
+    )
+    error_message = "The tbw_image must be 'default_image', 'custom_image', or null. If left unset, TFE will default to 'default_image'."
+  }
+}
+
+variable "vault_path" {
+  default     = null
+  type        = string
+  description = <<-EOD
+  (Optional) Path on the host system to store the vault files. If extern_vault_enable is set, this
+  has no effect.
+  EOD
+}
+
+variable "vault_store_snapshot" {
+  default     = null
+  type        = bool
+  description = "(Optional) Indicate if the vault files should be stored in snapshots; defaults to true."
+}
+
+
+# ------------------------------------------------------
+# Log Forwarding and Metrics
+# ------------------------------------------------------
+variable "log_forwarding_enabled" {
+  default     = null
+  type        = bool
+  description = <<-EOD
+  (Optional) Whether or not to enable log forwarding for Terraform Enterprise.
+  Defaults to false.
+  EOD
+}
+
+variable "log_forwarding_config" {
+  default     = null
+  type        = string
+  description = <<-EOD
+  (Required when log_forwarding_enabled is true.) Valid log forwarding configuration specifying
+  external destination(s) to forward logs. Defaults to:
+
+  # Example Fluent Bit configuration that matches all logs and does not
+  # forward them anywhere.
+  [OUTPUT]
+      Name null
+      Match *
+  EOD
+}
+
+variable "metrics_endpoint_enabled" {
+  default     = null
+  type        = bool
+  description = <<-EOD
+  (Optional) Metrics are used to understand the behavior of Terraform Enterprise and to
+  troubleshoot and tune performance. Enable an endpoint to expose container metrics.
+  Defaults to false.
+  EOD
+}
+
+variable "metrics_endpoint_port_http" {
+  default     = null
+  type        = number
+  description = <<-EOD
+  (Optional when metrics_endpoint_enabled is true.) Defines the TCP port on which HTTP metrics
+  requests will be handled.
+  Defaults to 9090.
+  EOD
+}
+
+variable "metrics_endpoint_port_https" {
+  default     = null
+  type        = string
+  description = <<-EOD
+  (Optional when metrics_endpoint_enabled is true.) Defines the TCP port on which HTTPS metrics
+  requests will be handled.
+  Defaults to 9091.
+  EOD
 }
 
 # ------------------------------------------------------
 # Proxy
 # ------------------------------------------------------
-variable "trusted_proxies" {
-  default     = null
-  type        = list(string)
-  description = <<-EOD
-  A list of IP address ranges which will be considered safe to ignore when evaluating the IP
-  addresses of requests like those made to the IACT endpoint.
-  EOD
-}
-
 variable "extra_no_proxy" {
   default     = null
   type        = list(string)
@@ -121,8 +205,8 @@ variable "tls_vers" {
   default     = null
   type        = string
   description = <<-EOD
-  (Optional) Set to tls_1_2 to enable only TLS 1.2, or to tls_1_3 to enable only TLS 1.3. When
-  unset, TFE defaults to both TLS 1.2 and 1.3 (tls_1_2_tls_1_3).
+  (Optional) Set to tls_1_2 to enable only TLS 1.2, or to tls_1_3 to enable only TLS 1.3.
+  Defaults to both TLS 1.2 and 1.3 (tls_1_2_tls_1_3).
   EOD
 
   validation {
@@ -132,8 +216,7 @@ variable "tls_vers" {
       var.tls_vers == "tls_1_3" ||
       var.tls_vers == null
     )
-
-    error_message = "The tls_vers should be set to 'tls_1_2' to enable only TLS 1.2, to 'tls_1_3' to enable only TLS 1.3. When unset, TFE defaults to both TLS 1.2 and 1.3 'tls_1_2_tls_1_3'."
+    error_message = "The tls_vers should be set to 'tls_1_2' to enable only TLS 1.2, to 'tls_1_3' to enable only TLS 1.3. When unset, TFE defaults this to both TLS 1.2 and 1.3 'tls_1_2_tls_1_3'."
   }
 }
 
@@ -160,18 +243,60 @@ variable "force_tls" {
 # ------------------------------------------------------
 # Replicated
 # ------------------------------------------------------
-variable "hostname" {
+variable "bypass_preflight_checks" {
   default     = null
-  type        = string
-  description = "(Required) The hostname you will use to access your installation."
+  type        = bool
+  description = "Allow the TFE application to start without preflight checks; defaults to false."
 }
 
 variable "enable_active_active" {
   default     = false
   type        = bool
   description = <<-EOD
-  True if TFE running in active-active configuration, which requires an external Redis server;
-  defaults to false.
+  True if TFE running in active-active configuration, which requires an external Redis server.
+  Defaults to false.
+  EOD
+}
+
+variable "hostname" {
+  default     = null
+  type        = string
+  description = "(Required) The hostname you will use to access your installation."
+}
+
+variable "log_level" {
+  default     = null
+  type        = string
+  description = "(Optional) If present, this will set the log level of the Replicated daemon."
+
+  validation {
+    condition = (
+      var.log_level == "debug" ||
+      var.log_level == "info" ||
+      var.log_level == "error" ||
+      var.log_level == null
+    )
+    error_message = "The log_level value must be one of: 'debug', 'info', 'error', or null."
+  }
+}
+
+variable "tfe_license_bootstrap_airgap_package_path" {
+  default     = null
+  type        = string
+  description = <<-EOD
+  (Optional) This is the location of the airgap bundle on the host. When set, the automated
+  install will proceed as an airgapped installation. Note that tfe_license_file_location must also
+  be set to the location of the matching airgap license.
+  EOD
+}
+
+variable "tfe_license_bootstrap_channel_id" {
+  default     = null
+  type        = string
+  description = <<-EOD
+  (Optional) This variable allows specifying the installation channel for multi-channel licenses.
+  When omitted and a multi-channel license is used, the release on the default channel will be
+  installed.
   EOD
 }
 
@@ -191,12 +316,6 @@ variable "tls_bootstrap_key_pathname" {
   default     = null
   type        = string
   description = "The path on the TFE instance to put the key."
-}
-
-variable "bypass_preflight_checks" {
-  default     = null
-  type        = bool
-  description = "Allow the TFE application to start without preflight checks; defaults to false."
 }
 
 # ------------------------------------------------------
@@ -429,20 +548,20 @@ variable "gcs_project" {
 # External Vault
 # ------------------------------------------------------
 variable "extern_vault_enable" {
-  default = null
-  type    = bool
+  default     = null
+  type        = bool
   description = "(Optional) An external Vault cluster is being used."
 }
 
 variable "extern_vault_addr" {
-  default = null
-  type = string
+  default     = null
+  type        = string
   description = "(Required when extern_vault_enable is true) URL of external Vault cluster."
 }
 
 variable "extern_vault_role_id" {
-  default = null
-  type = string
+  default     = null
+  type        = string
   description = <<-EOD
   (Required when extern_vault_enable is true) AppRole RoleId to use to authenticate with the Vault
   cluster.
@@ -450,8 +569,8 @@ variable "extern_vault_role_id" {
 }
 
 variable "extern_vault_secret_id" {
-  default = null
-  type = string
+  default     = null
+  type        = string
   description = <<-EOD
   (Required when extern_vault_enable is true) AppRole SecretId to use to authenticate with the Vault
   cluster.
@@ -459,8 +578,8 @@ variable "extern_vault_secret_id" {
 }
 
 variable "extern_vault_path" {
-  default = null
-  type = string
+  default     = null
+  type        = string
   description = <<-EOD
   (Optional when extern_vault_enable is true) Path on the Vault server for the AppRole auth.
   Defaults to auth/approle.
@@ -468,8 +587,8 @@ variable "extern_vault_path" {
 }
 
 variable "extern_vault_token_renew" {
-  default = null
-  type = number
+  default     = null
+  type        = number
   description = <<-EOD
   (Optional when extern_vault_enable is true) How often (in seconds) to renew the Vault token.
   Defaults to 3600.
@@ -477,8 +596,8 @@ variable "extern_vault_token_renew" {
 }
 
 variable "extern_vault_propagate" {
-  default = null
-  type = bool
+  default     = null
+  type        = bool
   description = <<-EOD
   (Optional when extern_vault_enable is true) Propagate Vault credentials to Terraform workers.
   Defaults to false.
@@ -486,10 +605,75 @@ variable "extern_vault_propagate" {
 }
 
 variable "extern_vault_namespace" {
-  default = null
-  type = string
+  default     = null
+  type        = string
   description = <<-EOD
   (Optional when extern_vault_enable is true) The Vault namespace under which to operate.
   Defaults to ''.
+  EOD
+}
+
+# ------------------------------------------------------
+# Advanced Configuration
+# ------------------------------------------------------
+# These are advanced configuration options that should not be changed without the direction
+# of HashiCorp support personnel.
+
+variable "iact_subnet_list" {
+  default     = null
+  type        = list(string)
+  description = <<-EOD
+  A list of IP address ranges which will be authorized to access the IACT. The ranges must be
+  expressed in CIDR notation, for example "["10.0.0.0/24"]". If not set, no subnets can retrieve
+  the IACT.
+  EOD
+}
+
+variable "iact_subnet_time_limit" {
+  default     = null
+  type        = string
+  description = <<-EOD
+  (Optional if iact_subnet_list is not null.) To prevent an unconfigured instance from being
+  discovered and hijacked by a rogue operator, IPs from the above subnet list are only allowed
+  to access the retrieval API for a certain initial period of time. This setting defines that
+  time period in minutes. Setting this to "unlimited" will disable the time limit, although it
+  is NOT recommended for production deployments.
+  Defaults to "60".
+  EOD
+}
+
+variable "hairpin_addressing" {
+  default     = null
+  type        = bool
+  description = <<-EOD
+  In some cloud environments, HTTP clients running on instances behind a loadbalancer cannot send
+  requests to the public hostname of that load balancer. Use this setting to configure TFE services
+  to redirect requests for the installation's FQDN to the instance'sinternal IP address.
+  Defaults to false.
+  EOD
+}
+
+variable "restrict_worker_metadata_access" {
+  default     = null
+  type        = bool
+  description = <<-EOD
+  Prevents the environment where Terraform operations are executed from accessing the cloud instance
+  metadata service. This should not be set when Terraform operations rely on using instance metadata
+  (i.e., the instance IAM profile) as part of the Terraform provider configuration.
+  NOTE: A bug in Docker version 19.03.3 prevents this setting from working correctly. Operators should
+  avoid using this Docker version when enabling this setting.
+  Defaults to false.
+  EOD
+}
+
+variable "trusted_proxies" {
+  default     = null
+  type        = list(string)
+  description = <<-EOD
+  A list of CIDR masks, expressed as a comma-delimited string, which will be considered safe to
+  ignore when evaluating the IP addresses of requests like those made to the IACT endpoint.
+  This is relevant for situations like a client requesting the IACT through a load balancer which
+  appends one or more X-Forwarded-For HTTP headers. For example: 10.0.1.0/24,172.16.4.0/24
+  By default the list is empty.
   EOD
 }
