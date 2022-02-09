@@ -6,6 +6,7 @@ locals {
     local.base_external_configs,
     local.external_aws_configs,
     local.external_azure_configs,
+    local.external_google_configs,
     local.redis_configuration,
     local.external_vault_configs
   )
