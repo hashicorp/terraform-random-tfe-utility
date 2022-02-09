@@ -128,7 +128,6 @@ variable "vault_store_snapshot" {
   description = "(Optional) Indicate if the vault files should be stored in snapshots; defaults to true."
 }
 
-
 # ------------------------------------------------------
 # Log Forwarding and Metrics
 # ------------------------------------------------------
