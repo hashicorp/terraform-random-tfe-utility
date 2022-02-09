@@ -1,7 +1,7 @@
 locals {
   extern_vault_configs = {
     extern_vault_enable = {
-      value = var.extern_vault_enable ? "1" : !var.extern_vault_enable ? "0" : null
+      value = var.extern_vault_enable == true ? "1" : var.extern_vault_enable == false ? "0" : null
     }
 
     extern_vault_addr = {
