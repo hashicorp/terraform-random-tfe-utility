@@ -118,6 +118,7 @@ locals {
     tls_ciphers = {
       value = var.tls_ciphers
     }
+
     tls_vers = {
       value = var.tls_vers
     }
