@@ -16,7 +16,7 @@ locals {
     TlsBootstrapHostname              = var.hostname
     TlsBootstrapCert                  = var.tls_bootstrap_cert_pathname
     TlsBootstrapKey                   = var.tls_bootstrap_key_pathname
-    TlsBootstrapType                  = var.tls_bootstrap_cert_pathname == null ? "self-signed" : "server-path"
+    TlsBootstrapType                  = var.tls_bootstrap_cert_pathname != null ? "server-path" : "self-signed"
     ReleaseSequence                   = var.release_sequence
   }
 }

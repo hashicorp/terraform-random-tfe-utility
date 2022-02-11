@@ -36,5 +36,5 @@ locals {
     }
   }
 
-  base_external_configs = local.pg_optional_configs == null ? local.pg_configs : (merge(local.pg_configs, local.pg_optional_configs))
+  base_external_configs = local.pg_optional_configs != null ? (merge(local.pg_configs, local.pg_optional_configs)) : local.pg_configs
 }

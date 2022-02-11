@@ -50,7 +50,7 @@ locals {
     }
 
     extra_no_proxy = {
-      value = var.extra_no_proxy == null ? null : join(",", var.extra_no_proxy)
+      value = var.extra_no_proxy != null ? join(",", var.extra_no_proxy) : null
     }
 
     hairpin_addressing = {
@@ -62,7 +62,7 @@ locals {
     }
 
     iact_subnet_list = {
-      value = var.iact_subnet_list == null ? null : join(",", var.iact_subnet_list)
+      value = var.iact_subnet_list != null ? join(",", var.iact_subnet_list) : null
     }
 
     iact_subnet_time_limit = {
@@ -124,7 +124,7 @@ locals {
     }
 
     trusted_proxies = {
-      value = var.trusted_proxies == null ? null : join(",", var.trusted_proxies)
+      value = var.trusted_proxies != null ? join(",", var.trusted_proxies) : null
     }
 
     user_token = {
