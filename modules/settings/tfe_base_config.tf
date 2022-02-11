@@ -26,7 +26,7 @@ locals {
     }
 
     capacity_memory = {
-      value = var.capacity_memory == null ? null : tostring(var.capacity_memory)
+      value = var.capacity_memory != null ? tostring(var.capacity_memory) : null
     }
 
     capacity_cpus = {
