@@ -46,7 +46,7 @@ locals {
     }
 
     enc_password = {
-      value = var.extern_vault_enable == true ? null : random_id.enc_password.hex
+      value = var.extern_vault_enable != null ? var.extern_vault_enable ? null : random_id.enc_password.hex : null
     }
 
     extra_no_proxy = {
@@ -54,11 +54,11 @@ locals {
     }
 
     hairpin_addressing = {
-      value = var.hairpin_addressing == true ? "1" : var.hairpin_addressing == false ? "0" : null
+      value = var.hairpin_addressing != null ? var.hairpin_addressing ? "1" : "0" : null
     }
 
     force_tls = {
-      value = var.force_tls == true ? "1" : var.force_tls == false ? "0" : null
+      value = var.force_tls != null ? var.force_tls ? "1" : "0" : null
     }
 
     iact_subnet_list = {
@@ -78,7 +78,7 @@ locals {
     }
 
     metrics_endpoint_enabled = {
-      value = var.metrics_endpoint_enabled == true ? "1" : var.metrics_endpoint_enabled == false ? "0" : null
+      value = var.metrics_endpoint_enabled != null ? var.metrics_endpoint_enabled ? "1" : "0" : null
     }
 
     metrics_endpoint_port_http = {
@@ -104,7 +104,7 @@ locals {
     }
 
     restrict_worker_metadata_access = {
-      value = var.restrict_worker_metadata_access == true ? "1" : var.restrict_worker_metadata_access == false ? "0" : null
+      value = var.restrict_worker_metadata_access != null ? var.restrict_worker_metadata_access ? "1" : "0" : null
     }
 
     root_secret = {

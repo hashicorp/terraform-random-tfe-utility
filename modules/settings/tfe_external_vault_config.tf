@@ -1,7 +1,7 @@
 locals {
   extern_vault_configs = {
     extern_vault_enable = {
-      value = var.extern_vault_enable == true ? "1" : var.extern_vault_enable == false ? "0" : null
+      value = var.extern_vault_enable != null ? var.extern_vault_enable ? "1" : "0" : null
     }
 
     extern_vault_addr = {
@@ -29,9 +29,9 @@ locals {
     }
 
     extern_vault_propagate = {
-      value = var.extern_vault_propagate == true ? "1" : var.extern_vault_propagate == false ? "0" : null
+      value = var.extern_vault_propagate != null ? var.extern_vault_propagate ? "1" : "0" : null
     }
   }
 
-  external_vault_configs = var.extern_vault_enable == true ? local.extern_vault_configs : {}
+  external_vault_configs = var.extern_vault_enable != null ? var.extern_vault_enable ? local.extern_vault_configs : {} : {}
 }

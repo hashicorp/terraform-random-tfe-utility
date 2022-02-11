@@ -1,7 +1,7 @@
 locals {
   pg_configs = {
     enable_active_active = {
-      value = var.enable_active_active == true ? "1" : var.enable_active_active == false ? "0" : null
+      value = var.enable_active_active != null ? var.enable_active_active ? "1" : "0" : null
     }
 
     pg_dbname = {
@@ -25,7 +25,7 @@ locals {
     }
 
     log_forwarding_enabled = {
-      value = var.log_forwarding_enabled == true ? "1" : var.log_forwarding_enabled == false ? "0" : null
+      value = var.log_forwarding_enabled != null ? var.log_forwarding_enabled ? "1" : "0" : null
     }
 
   }
