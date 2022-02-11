@@ -82,7 +82,7 @@ locals {
     }
 
     metrics_endpoint_port_http = {
-      value = var.metrics_endpoint_port_http == null ? null : tostring(var.metrics_endpoint_port_http)
+      value = var.metrics_endpoint_port_http != null ? tostring(var.metrics_endpoint_port_http) : null
     }
 
     metrics_endpoint_port_https = {
