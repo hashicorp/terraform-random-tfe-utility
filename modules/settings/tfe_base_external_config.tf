@@ -1,7 +1,7 @@
 locals {
   pg_configs = {
     enable_active_active = {
-      value = var.enable_active_active ? "1" : "0"
+      value = var.enable_active_active != null ? var.enable_active_active ? "1" : "0" : null
     }
 
     pg_dbname = {
@@ -19,6 +19,15 @@ locals {
     pg_user = {
       value = var.pg_user
     }
+
+    log_forwarding_config = {
+      value = var.log_forwarding_config
+    }
+
+    log_forwarding_enabled = {
+      value = var.log_forwarding_enabled != null ? var.log_forwarding_enabled ? "1" : "0" : null
+    }
+
   }
 
   pg_optional_configs = {
@@ -27,5 +36,5 @@ locals {
     }
   }
 
-  base_external_configs = local.pg_optional_configs == null ? local.pg_configs : (merge(local.pg_configs, local.pg_optional_configs))
+  base_external_configs = local.pg_optional_configs != null ? (merge(local.pg_configs, local.pg_optional_configs)) : local.pg_configs
 }

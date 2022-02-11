@@ -4,20 +4,20 @@ locals {
       value = var.redis_host
     }
 
+    redis_port = {
+      value = var.redis_use_tls != null ? var.redis_use_tls ? "6380" : "6379" : null
+    }
+
+    redis_use_password_auth = {
+      value = var.redis_use_password_auth != null ? var.redis_use_password_auth ? "1" : "0" : null
+    }
+
     redis_pass = {
       value = var.redis_pass
     }
 
-    redis_port = {
-      value = var.redis_use_tls == true ? "6380" : "6379"
-    }
-
-    redis_use_password_auth = {
-      value = var.redis_use_password_auth == true ? "1" : "0"
-    }
-
     redis_use_tls = {
-      value = var.redis_use_tls == true ? "1" : "0"
+      value = var.redis_use_tls != null ? var.redis_use_tls ? "1" : "0" : null
     }
   }
 
