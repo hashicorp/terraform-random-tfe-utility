@@ -86,7 +86,7 @@ locals {
     }
 
     metrics_endpoint_port_https = {
-      value = var.metrics_endpoint_port_https == null ? null : tostring(var.metrics_endpoint_port_https)
+      value = var.metrics_endpoint_port_https != null ? tostring(var.metrics_endpoint_port_https) : null
     }
 
     placement = {
