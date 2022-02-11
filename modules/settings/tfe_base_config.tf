@@ -30,7 +30,7 @@ locals {
     }
 
     capacity_cpus = {
-      value = var.capacity_cpus == null ? null : tostring(var.capacity_cpus)
+      value = var.capacity_cpus != null ? tostring(var.capacity_cpus) : null
     }
 
     cookie_hash = {
