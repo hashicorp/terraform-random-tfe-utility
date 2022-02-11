@@ -21,7 +21,7 @@ locals {
     }
 
     extern_vault_token_renew = {
-      value = var.extern_vault_token_renew == null ? null : tostring(var.extern_vault_token_renew)
+      value = var.extern_vault_token_renew != null ? tostring(var.extern_vault_token_renew) : null
     }
 
     extern_vault_namespace = {
