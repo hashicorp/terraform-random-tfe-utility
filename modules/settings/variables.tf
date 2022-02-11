@@ -122,12 +122,6 @@ variable "vault_path" {
   EOD
 }
 
-variable "vault_store_snapshot" {
-  default     = null
-  type        = bool
-  description = "(Optional) Indicate if the vault files should be stored in snapshots; defaults to true."
-}
-
 # ------------------------------------------------------
 # Log Forwarding and Metrics
 # ------------------------------------------------------

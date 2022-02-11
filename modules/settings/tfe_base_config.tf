@@ -130,9 +130,5 @@ locals {
     user_token = {
       value = random_id.user_token.hex
     }
-
-    vault_store_snapshot = {
-      value = var.vault_store_snapshot == true ? "1" : var.vault_store_snapshot == false ? "0" : null
-    }
   }
 }
