@@ -22,7 +22,7 @@ locals {
     }
 
     capacity_concurrency = {
-      value = var.capacity_concurrency == null ? null : tostring(var.capacity_concurrency)
+      value = var.capacity_concurrency != null ? tostring(var.capacity_concurrency) : null
     }
 
     capacity_memory = {
