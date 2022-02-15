@@ -44,10 +44,12 @@ EOF
 
 certificate_config() {
 	%{ if certificate_secret != null ~}
-	echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapCert" | tee -a /var/log/ptfe.log
-	# Obtain access token for Azure Key Vault
-	access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
-	certificate_data_b64=$(curl --noproxy '*' ${certificate_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
+    echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapCert" | tee -a /var/log/ptfe.log
+	    %{ if cloud == "azurerm" && bootstrap_airgap_installation ~}
+        # Obtain access token for Azure Key Vault
+        access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
+        certificate_data_b64=$(curl --noproxy '*' ${certificate_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
+	    %{ endif ~}
 
 	mkdir -p $(dirname ${tls_bootstrap_cert_pathname})
 	echo $certificate_data_b64 | base64 --decode > ${tls_bootstrap_cert_pathname}
@@ -58,9 +60,11 @@ certificate_config() {
 	%{ endif ~}
 	%{ if key_secret != null ~}
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapKey" | tee -a /var/log/ptfe.log
-	# Obtain access token for Azure Key Vault
-	access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
-	key_data_b64=$(curl --noproxy '*' ${key_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
+        %{ if cloud == "azurerm" && bootstrap_airgap_installation ~}
+        # Obtain access token for Azure Key Vault
+        access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
+        key_data_b64=$(curl --noproxy '*' ${key_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
+    	%{ endif ~}
 
 	mkdir -p $(dirname ${tls_bootstrap_key_pathname})
 	echo $key_data_b64 | base64 --decode > ${tls_bootstrap_key_pathname}
@@ -73,9 +77,11 @@ certificate_config() {
 ca_config() {
 	%{ if ca_certificate_secret != null ~}
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure CA cert" | tee -a /var/log/ptfe.log
-	# Obtain access token for Azure Key Vault
-	access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
-	ca_certificate_data_b64=$(curl --noproxy '*' ${ca_certificate_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
+	    %{ if cloud == "azurerm" && bootstrap_airgap_installation ~}
+        # Obtain access token for Azure Key Vault
+        access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
+        ca_certificate_data_b64=$(curl --noproxy '*' ${ca_certificate_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
+	    %{ endif ~}
 
 	ca_certificate_directory="/dev/null"
 	if [[ $DISTRO_NAME == *"Red Hat"* ]]
@@ -124,15 +130,59 @@ retrieve_tfe_license() {
     echo $license | base64 -d > ${tfe_license_file_location}
 }
 
+bootstrap_airgap() {
+	log_pathname="/var/log/ptfe.log"
+    echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootstrapping an Airgapped Installation" | tee -a $log_pathname
+
+	if [[ $DISTRO_NAME == *"Red Hat"* ]]
+	then
+	yum install --assumeyes yum-utils
+	yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+	yum install --assumeyes docker-ce docker-ce-cli containerd.io
+	else
+	apt-get --assume-yes update
+	apt-get --assume-yes install \
+		ca-certificates \
+		curl \
+		gnupg \
+		lsb-release
+	curl --fail --silent --show-error --location https://download.docker.com/linux/ubuntu/gpg \
+		| gpg --dearmor --output /usr/share/keyrings/docker-archive-keyring.gpg
+	echo \
+		"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+		https://download.docker.com/linux/ubuntu $(lsb_release --codename --short) stable" \
+		| sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	apt-get --assume-yes update
+	apt-get --assume-yes install docker-ce docker-ce-cli containerd.io
+	apt-get --assume-yes autoremove
+	fi
+    
+    replicated_directory="/tmp/replicated"
+	replicated_filename="replicated.tar.gz"
+	replicated_url="https://s3.amazonaws.com/replicated-airgap-work/$replicated_filename"
+	replicated_pathname="$replicated_directory/$replicated_filename"
+	echo "[Terraform Enterprise] Downloading Replicated from '$replicated_url' to '$replicated_pathname'" | tee -a $log_pathname
+	curl --create-dirs --output "$replicated_pathname" "$replicated_url"
+	echo "[Terraform Enterprise] Extracting Replicated in '$replicated_directory'" | tee -a $log_pathname
+	tar --directory "$replicated_directory" --extract --file "$replicated_pathname"
+
+	echo "[Terraform Enterprise] Copying airgap package '${airgap_url}' to '${airgap_pathname}'" | tee -a $log_pathname
+	curl --create-dirs --output "${airgap_pathname}" "${airgap_url}"
+}
+
 install_tfe() {
-	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install TFE" | tee -a /var/log/ptfe.log
+    log_pathname="/var/log/ptfe.log"
+	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install TFE" | tee -a $log_pathname
 
-	instance_ip=$(sudo curl --noproxy '*' -H Metadata:true "http://169.254.169.254/metadata/instance?api-version=2020-09-01" | jq -r .network.interface[0].ipv4.ipAddress[0].privateIpAddress)
-	curl -o /tmp/install.sh https://get.replicated.com/docker/terraformenterprise/active-active
-	chmod +x /tmp/install.sh
+	instance_ip=$(hostname -i)
+    replicated_directory="/tmp/replicated"
+    install_pathname="$replicated_directory/install.sh"
+    curl -o $install_pathname https://get.replicated.com/docker/terraformenterprise/active-active
+	chmod +x $install_pathname
+    cd $replicated_directory
 
-	sudo /tmp/install.sh \
-		bypass-firewalld-warning \
+	$install_pathname \
+        bypass-firewalld-warning \
 		%{ if proxy_ip != null ~}
 		http-proxy="${proxy_ip}:${proxy_port}" \
 		additional-no-proxy="${no_proxy}" \
@@ -144,16 +194,19 @@ install_tfe() {
 		%{ endif ~}
 		private-address=$instance_ip \
 		public-address=$instance_ip \
-		| tee -a /var/log/ptfe.log
+		%{ if airgap_url != null ~}
+        airgap \
+        %{ endif ~}
+        | tee -a $log_pathname
 
 	if [[ $DISTRO_NAME == *"Red Hat"* ]]
 	then
-		echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a /var/log/ptfe.log
+		echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
 		setenforce 0
-		echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a /var/log/ptfe.log
+		echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a $log_pathname
 		firewall-cmd --permanent --zone=trusted --change-interface=docker0
 		firewall-cmd --reload
-		echo "[$(date +"%FT%T")] [Terraform Enterprise] Enable SELinux" | tee -a /var/log/ptfe.log
+		echo "[$(date +"%FT%T")] [Terraform Enterprise] Enable SELinux" | tee -a $log_pathname
 		setenforce 1
 	fi
 }
@@ -161,9 +214,14 @@ install_tfe() {
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Determine distribution" | tee -a /var/log/ptfe.log
 DISTRO_NAME=$(grep "^NAME=" /etc/os-release | cut -d"\"" -f2)
 
+%{ if bootstrap_airgap_installation ~}
 install_jq
+%{ endif ~}
+
 create_tfe_config
 proxy_config
+
+%{ if bootstrap_airgap_installation ~}
 certificate_config
 ca_config
 retrieve_tfe_license
@@ -172,5 +230,8 @@ if [[ $DISTRO_NAME == *"Red Hat"* ]]
 then
 	resize_lv
 fi
+
+bootstrap_airgap
+%{ endif ~}
 
 install_tfe
