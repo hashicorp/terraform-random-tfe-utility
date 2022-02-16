@@ -6,6 +6,9 @@ locals {
   tfe_user_data = templatefile(
     "${path.module}/templates/tfe.sh.tpl",
     {
+      # Functions
+      get_base64_secrets = data.template_file.get_base64_secrets.rendered
+
       # Configuration data
       cloud                         = var.cloud
       active_active                 = var.tfe_configuration.enable_active_active.value == "1" ? true : false
@@ -33,4 +36,12 @@ locals {
       no_proxy   = var.tfe_configuration.extra_no_proxy.value
     }
   )
+}
+
+data "template_file" "get_base64_secrets" {
+  template = file("${path.module}/templates/get_base64_secrets.func")
+
+  vars = {
+    cloud = var.cloud
+  }
 }
