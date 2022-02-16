@@ -232,7 +232,7 @@ then
 fi
 %{ endif ~}
 
-%{ if bootstrap_airgap_installation ~}
+%{ if bootstrap_airgap_installation && airgap_url != null ~}
 bootstrap_airgap
 %{ endif ~}
 

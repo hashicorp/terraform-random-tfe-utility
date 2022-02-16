@@ -13,7 +13,7 @@ locals {
       settings                      = base64encode(jsonencode(var.tfe_configuration))
       tls_bootstrap_cert_pathname   = var.replicated_configuration.TlsBootstrapCert
       tls_bootstrap_key_pathname    = var.replicated_configuration.TlsBootstrapKey
-      airgap_url                    = var.airgap_url != null ? var.airgap_url : null
+      airgap_url                    = var.airgap_url
       airgap_pathname               = var.airgap_url != null ? var.replicated_configuration.LicenseBootstrapAirgapPackagePath : null
       bootstrap_airgap_installation = var.airgap_url != null ? var.bootstrap_airgap_installation != null ? var.bootstrap_airgap_installation ? true : !var.bootstrap_airgap_installation : false : false
 
