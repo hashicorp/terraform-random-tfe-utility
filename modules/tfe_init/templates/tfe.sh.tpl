@@ -44,12 +44,12 @@ EOF
 
 certificate_config() {
 	%{ if certificate_secret != null ~}
-    echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapCert" | tee -a /var/log/ptfe.log
-	    %{ if cloud == "azurerm" && bootstrap_airgap_installation ~}
-        # Obtain access token for Azure Key Vault
-        access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
-        certificate_data_b64=$(curl --noproxy '*' ${certificate_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
-	    %{ endif ~}
+	echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapCert" | tee -a /var/log/ptfe.log
+		%{ if cloud == "azurerm" && bootstrap_airgap_installation ~}
+		# Obtain access token for Azure Key Vault
+		access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
+		certificate_data_b64=$(curl --noproxy '*' ${certificate_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
+		%{ endif ~}
 
 	mkdir -p $(dirname ${tls_bootstrap_cert_pathname})
 	echo $certificate_data_b64 | base64 --decode > ${tls_bootstrap_cert_pathname}
@@ -60,11 +60,11 @@ certificate_config() {
 	%{ endif ~}
 	%{ if key_secret != null ~}
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapKey" | tee -a /var/log/ptfe.log
-        %{ if cloud == "azurerm" && bootstrap_airgap_installation ~}
-        # Obtain access token for Azure Key Vault
-        access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
-        key_data_b64=$(curl --noproxy '*' ${key_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
-    	%{ endif ~}
+		%{ if cloud == "azurerm" && bootstrap_airgap_installation ~}
+		# Obtain access token for Azure Key Vault
+		access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
+		key_data_b64=$(curl --noproxy '*' ${key_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
+		%{ endif ~}
 
 	mkdir -p $(dirname ${tls_bootstrap_key_pathname})
 	echo $key_data_b64 | base64 --decode > ${tls_bootstrap_key_pathname}
@@ -77,11 +77,11 @@ certificate_config() {
 ca_config() {
 	%{ if ca_certificate_secret != null ~}
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure CA cert" | tee -a /var/log/ptfe.log
-	    %{ if cloud == "azurerm" && bootstrap_airgap_installation ~}
-        # Obtain access token for Azure Key Vault
-        access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
-        ca_certificate_data_b64=$(curl --noproxy '*' ${ca_certificate_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
-	    %{ endif ~}
+		%{ if cloud == "azurerm" && bootstrap_airgap_installation ~}
+		# Obtain access token for Azure Key Vault
+		access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
+		ca_certificate_data_b64=$(curl --noproxy '*' ${ca_certificate_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
+		%{ endif ~}
 
 	ca_certificate_directory="/dev/null"
 	if [[ $DISTRO_NAME == *"Red Hat"* ]]
@@ -127,12 +127,12 @@ retrieve_tfe_license() {
 	# Obtain access token for Azure Key Vault
 	access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
 	license=$(curl --noproxy '*' ${tfe_license_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
-    echo $license | base64 -d > ${tfe_license_file_location}
+	echo $license | base64 -d > ${tfe_license_file_location}
 }
 
 bootstrap_airgap() {
 	log_pathname="/var/log/ptfe.log"
-    echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootstrapping an Airgapped Installation" | tee -a $log_pathname
+	echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootstrapping an Airgapped Installation" | tee -a $log_pathname
 
 	if [[ $DISTRO_NAME == *"Red Hat"* ]]
 	then
@@ -156,8 +156,8 @@ bootstrap_airgap() {
 	apt-get --assume-yes install docker-ce docker-ce-cli containerd.io
 	apt-get --assume-yes autoremove
 	fi
-    
-    replicated_directory="/tmp/replicated"
+
+	replicated_directory="/tmp/replicated"
 	replicated_filename="replicated.tar.gz"
 	replicated_url="https://s3.amazonaws.com/replicated-airgap-work/$replicated_filename"
 	replicated_pathname="$replicated_directory/$replicated_filename"
@@ -171,7 +171,7 @@ bootstrap_airgap() {
 }
 
 install_tfe() {
-    log_pathname="/var/log/ptfe.log"
+	log_pathname="/var/log/ptfe.log"
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install TFE" | tee -a $log_pathname
 
 	instance_ip=$(hostname -i)
@@ -182,7 +182,7 @@ install_tfe() {
     cd $replicated_directory
 
 	$install_pathname \
-        bypass-firewalld-warning \
+		bypass-firewalld-warning \
 		%{ if proxy_ip != null ~}
 		http-proxy="${proxy_ip}:${proxy_port}" \
 		additional-no-proxy="${no_proxy}" \
@@ -195,9 +195,9 @@ install_tfe() {
 		private-address=$instance_ip \
 		public-address=$instance_ip \
 		%{ if airgap_url != null ~}
-        airgap \
-        %{ endif ~}
-        | tee -a $log_pathname
+		airgap \
+		%{ endif ~}
+		| tee -a $log_pathname
 
 	if [[ $DISTRO_NAME == *"Red Hat"* ]]
 	then
