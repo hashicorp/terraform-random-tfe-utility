@@ -45,7 +45,7 @@ EOF
 certificate_config() {
 	%{ if certificate_secret != null ~}
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapCert" | tee -a /var/log/ptfe.log
-		%{ if cloud == "azurerm" && bootstrap_airgap_installation ~}
+		%{ if cloud == "azurerm" && bootstrap_airgap_installation || airgap_url == null ~}
 		# Obtain access token for Azure Key Vault
 		access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
 		certificate_data_b64=$(curl --noproxy '*' ${certificate_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
@@ -60,7 +60,7 @@ certificate_config() {
 	%{ endif ~}
 	%{ if key_secret != null ~}
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapKey" | tee -a /var/log/ptfe.log
-		%{ if cloud == "azurerm" && bootstrap_airgap_installation ~}
+		%{ if cloud == "azurerm" && bootstrap_airgap_installation || airgap_url == null ~}
 		# Obtain access token for Azure Key Vault
 		access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
 		key_data_b64=$(curl --noproxy '*' ${key_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
@@ -77,7 +77,7 @@ certificate_config() {
 ca_config() {
 	%{ if ca_certificate_secret != null ~}
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure CA cert" | tee -a /var/log/ptfe.log
-		%{ if cloud == "azurerm" && bootstrap_airgap_installation ~}
+		%{ if cloud == "azurerm" && bootstrap_airgap_installation || airgap_url == null ~}
 		# Obtain access token for Azure Key Vault
 		access_token=$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://vault.azure.net' -H Metadata:true | jq -r .access_token)
 		ca_certificate_data_b64=$(curl --noproxy '*' ${ca_certificate_secret.id}?api-version=2016-10-01 -H "x-ms-version: 2017-11-09" -H "Authorization: Bearer $access_token" | jq -r .value)
@@ -214,14 +214,14 @@ install_tfe() {
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Determine distribution" | tee -a /var/log/ptfe.log
 DISTRO_NAME=$(grep "^NAME=" /etc/os-release | cut -d"\"" -f2)
 
-%{ if bootstrap_airgap_installation ~}
+%{ if bootstrap_airgap_installation || airgap_url == null ~}
 install_jq
 %{ endif ~}
 
 create_tfe_config
 proxy_config
 
-%{ if bootstrap_airgap_installation ~}
+%{ if bootstrap_airgap_installation || airgap_url == null ~}
 certificate_config
 ca_config
 retrieve_tfe_license
@@ -230,7 +230,9 @@ if [[ $DISTRO_NAME == *"Red Hat"* ]]
 then
 	resize_lv
 fi
+%{ endif ~}
 
+%{ if bootstrap_airgap_installation ~}
 bootstrap_airgap
 %{ endif ~}
 
