@@ -3,19 +3,19 @@
 set -e -u -o pipefail
 
 ${get_base64_secrets}
-log_pathname="$log_pathname"
+log_pathname="/var/log/ptfe.log"
 tfe_settings_file="ptfe-settings.json"
 tfe_settings_path="/etc/$tfe_settings_file"
 
-################################################################################
+# -----------------------------------------------------------------------------
 # Determine distibution
-################################################################################
+# -----------------------------------------------------------------------------
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Determine distribution" | tee -a $log_pathname
 DISTRO_NAME=$(grep "^NAME=" /etc/os-release | cut -d"\"" -f2)
 
-################################################################################
+# -----------------------------------------------------------------------------
 # Install jq (if not an airgapped environment)
-################################################################################
+# -----------------------------------------------------------------------------
 %{ if bootstrap_airgap_installation || airgap_url == null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
 
@@ -24,16 +24,16 @@ sudo chmod +x /bin/jq
 %{ endif ~}
 
 
-################################################################################
+# -----------------------------------------------------------------------------
 # Create TFE & Replicated Settings Files
-################################################################################
+# -----------------------------------------------------------------------------
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Create configuration files" | tee -a $log_pathname
 sudo echo "${settings}" | sudo base64 -d > $tfe_settings_path
 echo "${replicated}" | base64 -d > /etc/replicated.conf
 
-################################################################################
+# -----------------------------------------------------------------------------
 # Configure the proxy (if applicable)
-################################################################################
+# -----------------------------------------------------------------------------
 %{ if proxy_ip != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure proxy" | tee -a $log_pathname
 
@@ -58,15 +58,15 @@ export no_proxy="${no_proxy}"
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping proxy configuration" | tee -a $log_pathname
 %{ endif ~}
 
-################################################################################
+# -----------------------------------------------------------------------------
 # Configure TLS (if not an airgapped environment)
-################################################################################
+# -----------------------------------------------------------------------------
 %{ if (bootstrap_airgap_installation || airgap_url == null) && certificate_secret != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapCert" | tee -a $log_pathname
 certificate_data_b64=$(get_base64_secrets ${certificate_secret.id})
 %{ endif ~}
 
-%{ if certificate_data_b64 != null ~}
+%{ if certificate_data_b64 != null || certificate_secret != null ~}
 mkdir -p $(dirname ${tls_bootstrap_cert_pathname})
 echo $certificate_data_b64 | base64 --decode > ${tls_bootstrap_cert_pathname}
 %{ else ~}
@@ -78,7 +78,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapKey" | tee
 key_data_b64=$(get_base64_secrets ${key_secret.id})
 %{ endif ~}
 
-%{ if key_data_b64 != null ~}
+%{ if key_data_b64 != null || key_secret != null ~}
 mkdir -p $(dirname ${tls_bootstrap_key_pathname})
 echo $key_data_b64 | base64 --decode > ${tls_bootstrap_key_pathname}
 chmod 0600 ${tls_bootstrap_key_pathname}
@@ -86,15 +86,15 @@ chmod 0600 ${tls_bootstrap_key_pathname}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configuration" | tee -a $log_pathname
 %{ endif ~}
 
-################################################################################
+#------------------------------------------------------------------------------
 # Configure CA Certificate (if not an airgapped environment)
-################################################################################
+#------------------------------------------------------------------------------
 %{ if (bootstrap_airgap_installation || airgap_url == null) && ca_certificate_secret != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure CA cert" | tee -a $log_pathname
 ca_certificate_data_b64=$(get_base64_secrets ${ca_certificate_secret.id})
 %{ endif ~}
 
-%{ if ca_certificate_data_b64 != null ~}
+%{ if ca_certificate_data_b64 != null || ca_certificate_secret != null ~}
 ca_certificate_directory="/dev/null"
 
 if [[ $DISTRO_NAME == *"Red Hat"* ]]
@@ -120,9 +120,9 @@ cp ./$tfe_settings_file.updated $tfe_settings_path
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configuration" | tee -a $log_pathname
 %{ endif ~}
 
-################################################################################
+# -----------------------------------------------------------------------------
 # Resize RHEL logical volume (if Azure environment)
-################################################################################
+# -----------------------------------------------------------------------------
 %{ if cloud == "azurerm" ~}
 if [[ $DISTRO_NAME == *"Red Hat"* ]]
 then
@@ -139,18 +139,18 @@ lvresize -r -L 40G /dev/mapper/rootvg-varlv
 fi
 %{ endif ~}
 
-################################################################################
+# -----------------------------------------------------------------------------
 # Retrieve TFE license (if not an airgapped environment)
-################################################################################
+# -----------------------------------------------------------------------------
 %{ if (bootstrap_airgap_installation || airgap_url == null) && tfe_license_secret != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Retrieve TFE license" | tee -a $log_pathname
 license=$(get_base64_secrets ${tfe_license_secret.id})
 echo $license | base64 -d > ${tfe_license_file_location}
 %{ endif ~}
 
-################################################################################
+# -----------------------------------------------------------------------------
 # Bootstrap airgapped environment with prerequisites (for dev/test environments)
-################################################################################
+# -----------------------------------------------------------------------------
 %{ if bootstrap_airgap_installation && airgap_url != null ~}
 echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootstrapping an Airgapped Installation" | tee -a $log_pathname
 
@@ -191,9 +191,9 @@ echo "[Terraform Enterprise] Copying airgap package '${airgap_url}' to '${airgap
 curl --create-dirs --output "${airgap_pathname}" "${airgap_url}"
 %{ endif ~}
 
-################################################################################
+# -----------------------------------------------------------------------------
 # Install Terraform Enterprise
-################################################################################
+# -----------------------------------------------------------------------------
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Install TFE" | tee -a $log_pathname
 instance_ip=$(hostname -i)
 replicated_directory="/tmp/replicated"
@@ -220,9 +220,9 @@ $install_pathname \
 	%{ endif ~}
 	| tee -a $log_pathname
 
-################################################################################
+# -----------------------------------------------------------------------------
 # Add docker0 to firewalld (for Red Hat instances only)
-################################################################################
+# -----------------------------------------------------------------------------
 if [[ $DISTRO_NAME == *"Red Hat"* ]]
 then
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
