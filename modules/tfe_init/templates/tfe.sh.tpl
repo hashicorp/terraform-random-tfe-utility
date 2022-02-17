@@ -198,10 +198,13 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Install TFE" | tee -a $log_pathn
 instance_ip=$(hostname -i)
 replicated_directory="/tmp/replicated"
 install_pathname="$replicated_directory/install.sh"
-curl -o $install_pathname https://get.replicated.com/docker/terraformenterprise/active-active
+
+%{ if bootstrap_airgap_installation || airgap_url == null ~}
+curl --create-dirs --output $install_pathname https://get.replicated.com/docker/terraformenterprise/active-active
+%{ endif ~}
+
 chmod +x $install_pathname
 cd $replicated_directory
-
 $install_pathname \
 	bypass-firewalld-warning \
 	%{ if proxy_ip != null ~}
