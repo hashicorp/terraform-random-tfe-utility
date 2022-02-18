@@ -30,11 +30,6 @@ variable "airgap_url" {
   type        = string
 }
 
-variable "bootstrap_airgap_installation" {
-  type        = bool
-  description = "(Optional) A boolean to determine if the prerequisites for an airgapped installation should be installed."
-}
-
 variable "ca_certificate_secret" {
   type = object({
     id = string
@@ -42,16 +37,6 @@ variable "ca_certificate_secret" {
   description = <<-EOD
   A secret which contains the Base64 encoded version of a PEM encoded public certificate of a certificate
   authority (CA) to be trusted by the TFE instance(s).
-  EOD
-}
-
-variable "ca_certificate_data_b64" {
-  type        = string
-  default     = null
-  description = <<-EOD
-  (Optional ) This variable can be used if you are installing TFE in an airgapped installation. This value
-  should be the Base64 encoded version of a PEM encoded public certificate of a certificate authority (CA)
-  to be trusted by the TFE instance(s).
   EOD
 }
 
@@ -65,15 +50,6 @@ variable "certificate_secret" {
   EOD
 }
 
-variable "certificate_data_b64" {
-  type        = string
-  default     = null
-  description = <<-EOD
-  (Optional) This variable can be used if you are installing TFE in an airgapped installation. This
-  value should be the Base64 encoded version of a PEM encoded public certificate for the TFE instance(s).
-  EOD
-}
-
 variable "key_secret" {
   type = object({
     id = string
@@ -81,15 +57,6 @@ variable "key_secret" {
   description = <<-EOD
   A secret which contains the Base64 encoded version of a PEM encoded private key for the TFE
   instance(s).
-  EOD
-}
-
-variable "key_data_b64" {
-  type        = string
-  default     = null
-  description = <<-EOD
-  (Optional) This variable can be used if you are installing TFE in an airgapped installation. This
-  value should be the Base64 encoded version of a PEM encoded private key for the TFE instance(s).
   EOD
 }
 

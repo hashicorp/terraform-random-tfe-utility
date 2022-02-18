@@ -273,12 +273,6 @@ variable "log_level" {
   }
 }
 
-variable "is_airgap" {
-  default     = null
-  type        = bool
-  description = "(Optional) A boolean to determine if this is an air-gapped installation of TFE."
-}
-
 variable "tfe_license_bootstrap_airgap_package_path" {
   default     = null
   type        = string

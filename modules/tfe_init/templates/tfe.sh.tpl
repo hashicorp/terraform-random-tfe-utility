@@ -16,7 +16,7 @@ DISTRO_NAME=$(grep "^NAME=" /etc/os-release | cut -d"\"" -f2)
 # -----------------------------------------------------------------------------
 # Install jq (if not an airgapped environment)
 # -----------------------------------------------------------------------------
-%{ if bootstrap_airgap_installation || airgap_url == null ~}
+%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
 
 sudo curl --noproxy '*' -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
@@ -61,27 +61,22 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping proxy configuration" | 
 # -----------------------------------------------------------------------------
 # Configure TLS (if not an airgapped environment)
 # -----------------------------------------------------------------------------
-%{ if (bootstrap_airgap_installation || airgap_url == null) && certificate_secret != null ~}
+%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) && certificate_secret != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapCert" | tee -a $log_pathname
 certificate_data_b64=$(get_base64_secrets ${certificate_secret.id})
-%{ endif ~}
-
-%{ if certificate_data_b64 != null || certificate_secret != null ~}
 mkdir -p $(dirname ${tls_bootstrap_cert_pathname})
 echo $certificate_data_b64 | base64 --decode > ${tls_bootstrap_cert_pathname}
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapCert configuration" | tee -a $log_pathname
 %{ endif ~}
 
-%{ if (bootstrap_airgap_installation || airgap_url == null) && key_secret != null ~}
+%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) && key_secret != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapKey" | tee -a $log_pathname
 key_data_b64=$(get_base64_secrets ${key_secret.id})
-%{ endif ~}
-
-%{ if key_data_b64 != null || key_secret != null ~}
 mkdir -p $(dirname ${tls_bootstrap_key_pathname})
 echo $key_data_b64 | base64 --decode > ${tls_bootstrap_key_pathname}
 chmod 0600 ${tls_bootstrap_key_pathname}
+
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configuration" | tee -a $log_pathname
 %{ endif ~}
@@ -89,12 +84,6 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configu
 #------------------------------------------------------------------------------
 # Configure CA Certificate (if not an airgapped environment)
 #------------------------------------------------------------------------------
-%{ if (bootstrap_airgap_installation || airgap_url == null) && ca_certificate_secret != null ~}
-echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure CA cert" | tee -a $log_pathname
-ca_certificate_data_b64=$(get_base64_secrets ${ca_certificate_secret.id})
-%{ endif ~}
-
-%{ if ca_certificate_data_b64 != null || ca_certificate_secret != null ~}
 ca_certificate_directory="/dev/null"
 
 if [[ $DISTRO_NAME == *"Red Hat"* ]]
@@ -103,22 +92,30 @@ then
 else
 	ca_certificate_directory=/usr/local/share/ca-certificates/extra
 fi
+ca_cert_filepath="$ca_certificate_directory/tfe-ca-certificate.crt"
+
+%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) && ca_certificate_secret != null ~}
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure CA cert" | tee -a $log_pathname
+ca_certificate_data_b64=$(get_base64_secrets ${ca_certificate_secret.id})
 
 mkdir -p $ca_certificate_directory
-echo $ca_certificate_data_b64 | base64 --decode > $ca_certificate_directory/tfe-ca-certificate.crt
-
-if [[ $DISTRO_NAME == *"Red Hat"* ]]
-then
-	update-ca-trust
-else
-	update-ca-certificates
-fi
-
-jq ". + { ca_certs: { value: \"$(echo $certificate_data_b64 | base64 --decode)\" } }" -- $tfe_settings_path > $tfe_settings_file.updated
-cp ./$tfe_settings_file.updated $tfe_settings_path
+echo $ca_certificate_data_b64 | base64 --decode > $ca_cert_filepath
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configuration" | tee -a $log_pathname
 %{ endif ~}
+
+if [ -f "$ca_cert_filepath" ]
+then
+	if [[ $DISTRO_NAME == *"Red Hat"* ]]
+	then
+		update-ca-trust
+	else
+		update-ca-certificates
+	fi
+	
+	jq ". + { ca_certs: { value: \"$(/bin/cat $ca_cert_filepath)\" } }" -- $tfe_settings_path > $tfe_settings_file.updated
+	cp ./$tfe_settings_file.updated $tfe_settings_path
+fi
 
 # -----------------------------------------------------------------------------
 # Resize RHEL logical volume (if Azure environment)
@@ -142,7 +139,7 @@ fi
 # -----------------------------------------------------------------------------
 # Retrieve TFE license (if not an airgapped environment)
 # -----------------------------------------------------------------------------
-%{ if (bootstrap_airgap_installation || airgap_url == null) && tfe_license_secret != null ~}
+%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) && tfe_license_secret != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Retrieve TFE license" | tee -a $log_pathname
 license=$(get_base64_secrets ${tfe_license_secret.id})
 echo $license | base64 -d > ${tfe_license_file_location}
@@ -151,7 +148,7 @@ echo $license | base64 -d > ${tfe_license_file_location}
 # -----------------------------------------------------------------------------
 # Bootstrap airgapped environment with prerequisites (for dev/test environments)
 # -----------------------------------------------------------------------------
-%{ if bootstrap_airgap_installation && airgap_url != null ~}
+%{ if airgap_url != null && airgap_pathname != null ~}
 echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootstrapping an Airgapped Installation" | tee -a $log_pathname
 
 if [[ $DISTRO_NAME == *"Red Hat"* ]]
@@ -199,7 +196,7 @@ instance_ip=$(hostname -i)
 replicated_directory="/tmp/replicated"
 install_pathname="$replicated_directory/install.sh"
 
-%{ if bootstrap_airgap_installation || airgap_url == null ~}
+%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) ~}
 curl --create-dirs --output $install_pathname https://get.replicated.com/docker/terraformenterprise/active-active
 %{ endif ~}
 
@@ -218,7 +215,7 @@ $install_pathname \
 	%{ endif ~}
 	private-address=$instance_ip \
 	public-address=$instance_ip \
-	%{ if airgap_url != null ~}
+	%{ if airgap_pathname != null ~}
 	airgap \
 	%{ endif ~}
 	| tee -a $log_pathname
