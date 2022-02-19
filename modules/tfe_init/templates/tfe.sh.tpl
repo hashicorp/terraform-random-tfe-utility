@@ -61,7 +61,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping proxy configuration" | 
 # -----------------------------------------------------------------------------
 # Configure TLS (if not an airgapped environment)
 # -----------------------------------------------------------------------------
-%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) && certificate_secret != null ~}
+%{ if certificate_secret != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapCert" | tee -a $log_pathname
 certificate_data_b64=$(get_base64_secrets ${certificate_secret.id})
 mkdir -p $(dirname ${tls_bootstrap_cert_pathname})
@@ -70,7 +70,7 @@ echo $certificate_data_b64 | base64 --decode > ${tls_bootstrap_cert_pathname}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapCert configuration" | tee -a $log_pathname
 %{ endif ~}
 
-%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) && key_secret != null ~}
+%{ if key_secret != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapKey" | tee -a $log_pathname
 key_data_b64=$(get_base64_secrets ${key_secret.id})
 mkdir -p $(dirname ${tls_bootstrap_key_pathname})
@@ -94,7 +94,7 @@ else
 fi
 ca_cert_filepath="$ca_certificate_directory/tfe-ca-certificate.crt"
 
-%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) && ca_certificate_secret != null ~}
+%{ if ca_certificate_secret != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure CA cert" | tee -a $log_pathname
 ca_certificate_data_b64=$(get_base64_secrets ${ca_certificate_secret.id})
 
@@ -139,7 +139,7 @@ fi
 # -----------------------------------------------------------------------------
 # Retrieve TFE license (if not an airgapped environment)
 # -----------------------------------------------------------------------------
-%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) && tfe_license_secret != null ~}
+%{ if tfe_license_secret != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Retrieve TFE license" | tee -a $log_pathname
 license=$(get_base64_secrets ${tfe_license_secret.id})
 echo $license | base64 -d > ${tfe_license_file_location}
@@ -174,7 +174,7 @@ apt-get --assume-yes install docker-ce docker-ce-cli containerd.io
 apt-get --assume-yes autoremove
 fi
 
-replicated_directory="/tmp/replicated"
+replicated_directory="/etc/replicated"
 replicated_filename="replicated.tar.gz"
 replicated_url="https://s3.amazonaws.com/replicated-airgap-work/$replicated_filename"
 replicated_pathname="$replicated_directory/$replicated_filename"
@@ -196,7 +196,7 @@ instance_ip=$(hostname -i)
 replicated_directory="/tmp/replicated"
 install_pathname="$replicated_directory/install.sh"
 
-%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) ~}
+%{ if airgap_pathname == null ~}
 curl --create-dirs --output $install_pathname https://get.replicated.com/docker/terraformenterprise/active-active
 %{ endif ~}
 
