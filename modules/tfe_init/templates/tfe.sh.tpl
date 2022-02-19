@@ -146,9 +146,12 @@ echo $license | base64 -d > ${tfe_license_file_location}
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
-# Bootstrap airgapped environment with prerequisites (for dev/test environments)
+# Download Replicated
 # -----------------------------------------------------------------------------
+replicated_directory="/etc/replicated"
+
 %{ if airgap_url != null && airgap_pathname != null ~}
+# Bootstrap airgapped environment with prerequisites (for dev/test environments)
 echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootstrapping an Airgapped Installation" | tee -a $log_pathname
 
 if [[ $DISTRO_NAME == *"Red Hat"* ]]
@@ -174,7 +177,6 @@ apt-get --assume-yes install docker-ce docker-ce-cli containerd.io
 apt-get --assume-yes autoremove
 fi
 
-replicated_directory="/etc/replicated"
 replicated_filename="replicated.tar.gz"
 replicated_url="https://s3.amazonaws.com/replicated-airgap-work/$replicated_filename"
 replicated_pathname="$replicated_directory/$replicated_filename"
@@ -193,7 +195,6 @@ curl --create-dirs --output "${airgap_pathname}" "${airgap_url}"
 # -----------------------------------------------------------------------------
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Install TFE" | tee -a $log_pathname
 instance_ip=$(hostname -i)
-replicated_directory="/tmp/replicated"
 install_pathname="$replicated_directory/install.sh"
 
 %{ if airgap_pathname == null ~}
