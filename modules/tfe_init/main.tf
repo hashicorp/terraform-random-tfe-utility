@@ -15,7 +15,7 @@ locals {
       tls_bootstrap_cert_pathname   = var.replicated_configuration.TlsBootstrapCert
       tls_bootstrap_key_pathname    = var.replicated_configuration.TlsBootstrapKey
       airgap_url                    = var.airgap_url
-      airgap_pathname               = var.replicated_configuration.LicenseBootstrapAirgapPackagePath
+      airgap_pathname               = try(var.replicated_configuration.LicenseBootstrapAirgapPackagePath, null)
 
       # Secrets
       ca_certificate_secret     = var.ca_certificate_secret
