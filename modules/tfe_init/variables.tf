@@ -26,7 +26,12 @@ variable "tfe_license_secret" {
 }
 
 variable "airgap_url" {
-  description = "The URL of a Replicated airgap package for Terraform Enterprise."
+  description = <<-EOD
+  The URL of a Replicated airgap package for Terraform Enterprise.
+  NOTE: If this value is given, then this script will install the airgap installation prerequisites. The airgap
+  bundle should already be on the virtual machine image, and you would not use this variable if this were a truly
+  airgapped environment.
+  EOD 
   type        = string
 }
 
