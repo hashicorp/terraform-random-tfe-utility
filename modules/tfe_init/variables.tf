@@ -20,8 +20,9 @@ variable "tfe_license_secret" {
   })
   description = <<-EOD
   The secrets manager secret name under which the Base64 encoded Terraform Enterprise license is stored.
-  NOTE: If bootstrap_airgap_installation is false, then it is expected that the TFE license will be put
-  on the path defined by tfe_license_file_location prior to running this module.
+  NOTE: If this is an airgapped installation, then it is expected that the TFE license will be put
+  on the path defined by tfe_license_file_location prior to running this module (i.e. on the virtual machine
+  image).
   EOD
 }
 
