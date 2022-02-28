@@ -17,6 +17,6 @@ locals {
     TlsBootstrapCert                  = var.tls_bootstrap_cert_pathname
     TlsBootstrapKey                   = var.tls_bootstrap_key_pathname
     TlsBootstrapType                  = var.tls_bootstrap_cert_pathname != null ? "server-path" : "self-signed"
-    ReleaseSequence                   = var.release_sequence
+    ReleaseSequence                   = var.tfe_license_bootstrap_airgap_package_path != null ? null : var.release_sequence
   }
 }
