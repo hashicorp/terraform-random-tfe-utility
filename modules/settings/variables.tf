@@ -54,19 +54,22 @@ variable "custom_image_tag" {
 }
 
 variable "production_type" {
-  default     = "disk"
+  default     = null
   type        = string
   description = <<-EOD
-	Where Terraform Enterprise application data will be stored. One of `external`
-	or `disk`. Choose `external` when storing application data in an external
-	object storage service and database. Choose `disk` when storing application
-	data in a directory on the Terraform Enterprise instance itself.
+	Where Terraform Enterprise application data will be stored. Valid values are
+	`external`, `disk`, or `null`. Choose `external` when storing application
+	data in an external object storage service and database. Choose `disk` when
+	storing application data in a directory on the Terraform Enterprise instance
+	itself. Let it `null` when you want Terraform Enterprise to use its own
+	default.
   EOD
 
   validation {
     condition = (
       var.production_type == "external" ||
-      var.production_type == "disk"
+      var.production_type == "disk" ||
+      var.production_type == null
     )
     error_message = "The production_type must be 'external' or 'disk'."
   }
