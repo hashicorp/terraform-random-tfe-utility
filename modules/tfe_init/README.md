@@ -4,7 +4,7 @@ This module is used to create the script that will install Terraform Enterprise 
 
 ## Required variables
 
-* `tfe_license_secret` - string value for the TFE license secret name
+* `tfe_license_secret_id` - string value for the TFE license secret ID
 * `replicated_configuration` - output object from the [`settings` module](../settings) of the Replicated configuration
 * `tfe_configuration` - output object from the [`settings` module](../settings) of the TFE configuration
 
@@ -23,10 +23,10 @@ module "tfe_init" {
   replicated_configuration    = module.settings.replicated_configuration
 
   # Secrets
-  ca_certificate_secret = var.ca_certificate_secret
-  certificate_secret    = var.vm_certificate_secret
-  key_secret            = var.vm_key_secret
-  tfe_license_secret    = var.tfe_license_secret
+  ca_certificate_secret_id = var.ca_certificate_secret_id
+  certificate_secret_id    = var.vm_certificate_secret_id
+  key_secret_id            = var.vm_key_secret_id
+  tfe_license_secret_id    = var.tfe_license_secret_id
 
   # Proxy information
   proxy_ip   = var.proxy_ip

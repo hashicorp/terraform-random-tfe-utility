@@ -14,12 +14,10 @@ variable "cloud" {
   }
 }
 
-variable "tfe_license_secret" {
-  type = object({
-    id = string
-  })
+variable "tfe_license_secret_id" {
+  type = string
   description = <<-EOD
-  The secrets manager secret name under which the Base64 encoded Terraform Enterprise license is stored.
+  The secrets manager secret ID under which the Base64 encoded Terraform Enterprise license is stored.
   NOTE: If this is an airgapped installation, then it is expected that the TFE license will be put
   on the path defined by tfe_license_file_location prior to running this module (i.e. on the virtual machine
   image).
@@ -36,32 +34,26 @@ variable "airgap_url" {
   type        = string
 }
 
-variable "ca_certificate_secret" {
-  type = object({
-    id = string
-  })
+variable "ca_certificate_secret_id" {
+  type = string
   description = <<-EOD
-  A secret which contains the Base64 encoded version of a PEM encoded public certificate of a certificate
+  A secret ID which contains the Base64 encoded version of a PEM encoded public certificate of a certificate
   authority (CA) to be trusted by the TFE instance(s).
   EOD
 }
 
-variable "certificate_secret" {
-  type = object({
-    id = string
-  })
+variable "certificate_secret_id" {
+  type = string
   description = <<-EOD
-  A secret which contains the Base64 encoded version of a PEM encoded public certificate for the TFE
+  A secret ID which contains the Base64 encoded version of a PEM encoded public certificate for the TFE
   instance(s).
   EOD
 }
 
-variable "key_secret" {
-  type = object({
-    id = string
-  })
+variable "key_secret_id" {
+  type = string
   description = <<-EOD
-  A secret which contains the Base64 encoded version of a PEM encoded private key for the TFE
+  A secret ID which contains the Base64 encoded version of a PEM encoded private key for the TFE
   instance(s).
   EOD
 }
