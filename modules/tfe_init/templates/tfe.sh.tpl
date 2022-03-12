@@ -61,18 +61,18 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping proxy configuration" | 
 # -----------------------------------------------------------------------------
 # Configure TLS (if not an airgapped environment)
 # -----------------------------------------------------------------------------
-%{ if certificate_secret != null ~}
+%{ if certificate_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapCert" | tee -a $log_pathname
-certificate_data_b64=$(get_base64_secrets ${certificate_secret.id})
+certificate_data_b64=$(get_base64_secrets ${certificate_secret_id})
 mkdir -p $(dirname ${tls_bootstrap_cert_pathname})
 echo $certificate_data_b64 | base64 --decode > ${tls_bootstrap_cert_pathname}
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapCert configuration" | tee -a $log_pathname
 %{ endif ~}
 
-%{ if key_secret != null ~}
+%{ if key_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapKey" | tee -a $log_pathname
-key_data_b64=$(get_base64_secrets ${key_secret.id})
+key_data_b64=$(get_base64_secrets ${key_secret_id})
 mkdir -p $(dirname ${tls_bootstrap_key_pathname})
 echo $key_data_b64 | base64 --decode > ${tls_bootstrap_key_pathname}
 chmod 0600 ${tls_bootstrap_key_pathname}
@@ -94,9 +94,9 @@ else
 fi
 ca_cert_filepath="$ca_certificate_directory/tfe-ca-certificate.crt"
 
-%{ if ca_certificate_secret != null ~}
+%{ if ca_certificate_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure CA cert" | tee -a $log_pathname
-ca_certificate_data_b64=$(get_base64_secrets ${ca_certificate_secret.id})
+ca_certificate_data_b64=$(get_base64_secrets ${ca_certificate_secret_id})
 
 mkdir -p $ca_certificate_directory
 echo $ca_certificate_data_b64 | base64 --decode > $ca_cert_filepath
@@ -139,9 +139,9 @@ fi
 # -----------------------------------------------------------------------------
 # Retrieve TFE license (if not an airgapped environment)
 # -----------------------------------------------------------------------------
-%{ if tfe_license_secret != null ~}
+%{ if tfe_license_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Retrieve TFE license" | tee -a $log_pathname
-license=$(get_base64_secrets ${tfe_license_secret.id})
+license=$(get_base64_secrets ${tfe_license_secret_id})
 echo $license | base64 -d > ${tfe_license_file_location}
 %{ endif ~}
 

@@ -18,11 +18,11 @@ locals {
       airgap_pathname               = try(var.replicated_configuration.LicenseBootstrapAirgapPackagePath, null)
 
       # Secrets
-      ca_certificate_secret     = var.ca_certificate_secret
-      certificate_secret        = var.certificate_secret
-      key_secret                = var.key_secret
+      ca_certificate_secret_id  = var.ca_certificate_secret_id
+      certificate_secret_id     = var.certificate_secret_id
+      key_secret_id             = var.key_secret_id
       tfe_license_file_location = var.replicated_configuration.LicenseFileLocation
-      tfe_license_secret        = var.tfe_license_secret
+      tfe_license_secret_id     = var.tfe_license_secret_id
 
       # Proxy information
       proxy_ip   = var.proxy_ip
