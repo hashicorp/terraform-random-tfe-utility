@@ -3,6 +3,7 @@
 set -e -u -o pipefail
 
 ${get_base64_secrets}
+${install_packages}
 log_pathname="/var/log/ptfe.log"
 tfe_settings_file="ptfe-settings.json"
 tfe_settings_path="/etc/$tfe_settings_file"
@@ -14,13 +15,15 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Determine distribution" | tee -a
 DISTRO_NAME=$(grep "^NAME=" /etc/os-release | cut -d"\"" -f2)
 
 # -----------------------------------------------------------------------------
-# Install jq (if not an airgapped environment)
+# Install jq and cloud specific packages (if not an airgapped environment)
 # -----------------------------------------------------------------------------
 %{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
 
 sudo curl --noproxy '*' -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
 sudo chmod +x /bin/jq
+
+install_packages
 %{ endif ~}
 
 
@@ -156,9 +159,16 @@ echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootst
 
 if [[ $DISTRO_NAME == *"Red Hat"* ]]
 then
+# TODO: MAKE SURE WE DON'T NEED TO ADD unzip (AWS had it in its script)
 yum install --assumeyes yum-utils
 yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
 yum install --assumeyes docker-ce docker-ce-cli containerd.io
+	%{ if cloud == "aws" ~}
+	yum install --assumeyes https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+	systemctl enable amazon-ssm-agent
+	systemctl start amazon-ssm-agent
+	%{ endif ~}
+
 else
 apt-get --assume-yes update
 apt-get --assume-yes install \

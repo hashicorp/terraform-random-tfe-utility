@@ -2,7 +2,7 @@ locals {
   external_aws_configs = {
 
     aws_instance_profile = {
-      value = var.aws_instance_profile
+      value = var.aws_access_key_id == null ? "1" : "0"
     }
 
     aws_access_key_id = {
