@@ -191,6 +191,8 @@ tar --directory "$replicated_directory" --extract --file "$replicated_pathname"
 
 echo "[Terraform Enterprise] Copying airgap package '${airgap_url}' to '${airgap_pathname}'" | tee -a $log_pathname
 curl --create-dirs --output "${airgap_pathname}" "${airgap_url}"
+%{ else ~}
+echo "[Terraform Enterprise] Skipping Airgapped Replicated download" | tee -a $log_pathname
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
