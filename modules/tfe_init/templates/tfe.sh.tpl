@@ -23,7 +23,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathna
 sudo curl --noproxy '*' -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
 sudo chmod +x /bin/jq
 
-install_packages
+install_packages $log_pathname
 %{ endif ~}
 
 
@@ -159,16 +159,9 @@ echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootst
 
 if [[ $DISTRO_NAME == *"Red Hat"* ]]
 then
-# TODO: MAKE SURE WE DON'T NEED TO ADD unzip (AWS had it in its script)
 yum install --assumeyes yum-utils
 yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
 yum install --assumeyes docker-ce docker-ce-cli containerd.io
-	%{ if cloud == "aws" ~}
-	yum install --assumeyes https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-	systemctl enable amazon-ssm-agent
-	systemctl start amazon-ssm-agent
-	%{ endif ~}
-
 else
 apt-get --assume-yes update
 apt-get --assume-yes install \
