@@ -46,7 +46,7 @@ data "template_file" "install_packages" {
   template = file("${path.module}/templates/install_packages.func")
 
   vars = {
-    cloud = var.cloud
+    cloud        = var.cloud
     distribution = var.distribution
   }
 }
