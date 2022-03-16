@@ -15,10 +15,10 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Determine distribution" | tee -a
 distribution_name=$(grep "^NAME=" /etc/os-release | cut -d"\"" -f2)
 
 case "$distribution_name" in
-	"Red Hat"*)
+	*"Red Hat"*)
 		distribution="rhel"
 		;;
-	"Ubuntu"*)
+	*"Ubuntu"*)
 		distribution="ubuntu"
 		;;
 	*)
