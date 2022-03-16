@@ -2,18 +2,17 @@
 function install_packages {
 	local log_pathname=$1
 	# OS: Agnostic
-	# Description: Install the AWS CLI 
+	# Description: Install AWS packages
 
-	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip and SSMAgent" | tee -a $log_pathname
 	%{ if distribution == "rhel" ~}
-	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install AWS CLI, unzip, and SSMAgent" | tee -a $log_pathname
+	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip and SSMAgent with yum" | tee -a $log_pathname
 	yum install -y \
 		unzip \
 		https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 	systemctl enable amazon-ssm-agent
 	systemctl start amazon-ssm-agent
 	%{ else ~}
-	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip" | tee -a $log_pathname
+	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip with apt-get" | tee -a $log_pathname
 	apt-get update -y
 	apt-get install -y unzip
 	%{ endif ~}
