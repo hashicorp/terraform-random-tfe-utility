@@ -1,24 +1,12 @@
 #!/usr/bin/env bash
 
-set -e -u -o pipefail
+set -euo pipefail
 
 ${get_base64_secrets}
 ${install_packages}
 log_pathname="/var/log/ptfe.log"
 tfe_settings_file="ptfe-settings.json"
 tfe_settings_path="/etc/$tfe_settings_file"
-
-# -----------------------------------------------------------------------------
-# Install jq and cloud specific packages (if not an airgapped environment)
-# -----------------------------------------------------------------------------
-%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) ~}
-echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
-
-sudo curl --noproxy '*' -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
-sudo chmod +x /bin/jq
-
-install_packages $log_pathname
-%{ endif ~}
 
 # -----------------------------------------------------------------------------
 # Create TFE & Replicated Settings Files
@@ -52,6 +40,18 @@ export https_proxy="${proxy_ip}:${proxy_port}"
 export no_proxy="${no_proxy}"
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping proxy configuration" | tee -a $log_pathname
+%{ endif ~}
+
+# -----------------------------------------------------------------------------
+# Install jq and cloud specific packages (if not an airgapped environment)
+# -----------------------------------------------------------------------------
+%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) ~}
+install_packages $log_pathname
+
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
+sudo curl --noproxy '*' -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
+sudo chmod +x /bin/jq
+
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
@@ -197,6 +197,7 @@ curl --noproxy '*' --create-dirs --output $install_pathname https://get.replicat
 chmod +x $install_pathname
 cd $replicated_directory
 $install_pathname \
+	fast-timeouts \
 	bypass-firewalld-warning \
 	%{ if proxy_ip != null ~}
 	http-proxy="${proxy_ip}:${proxy_port}" \
