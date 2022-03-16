@@ -2,7 +2,7 @@
 # -------
 variable "cloud" {
   type        = string
-  description = "(Required) On which cloud is this Terraoform Enterprise installation being deployed?"
+  description = "(Required) On which cloud is this Terraform Enterprise installation being deployed?"
   validation {
     condition = (
       var.cloud == "aws" ||
@@ -11,6 +11,19 @@ variable "cloud" {
     )
 
     error_message = "Supported values for cloud are 'aws', 'azurerm', or 'google'."
+  }
+}
+
+variable "distribution" {
+  type        = string
+  description = "(Required) What is the OS distribution of the instance on which Terraoform Enterprise will be deployed?"
+  validation {
+    condition = (
+      var.distribution == "rhel" ||
+      var.distribution == "ubuntu"
+    )
+
+    error_message = "Supported values for distribution are 'rhel' or 'ubuntu'."
   }
 }
 

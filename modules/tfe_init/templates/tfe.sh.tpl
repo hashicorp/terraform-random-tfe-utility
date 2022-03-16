@@ -101,7 +101,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configu
 #------------------------------------------------------------------------------
 ca_certificate_directory="/dev/null"
 
-%{ if $distribution == "rhel" ~}
+%{ if distribution == "rhel" ~}
 ca_certificate_directory=/usr/share/pki/ca-trust-source/anchors
 %{ else ~}
 ca_certificate_directory=/usr/local/share/ca-certificates/extra
@@ -118,9 +118,9 @@ echo $ca_certificate_data_b64 | base64 --decode > $ca_cert_filepath
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configuration" | tee -a $log_pathname
 %{ endif ~}
 
-%{ if -f "$ca_cert_filepath" && $distribution == "rhel" ~}
+%{ if -f "$ca_cert_filepath" && distribution == "rhel" ~}
 update-ca-trust
-%{ elsif -f "$ca_cert_filepath" && $distribution == *"ubuntu"* ~}
+%{ elsif -f "$ca_cert_filepath" && distribution == *"ubuntu"* ~}
 update-ca-certificates
 %{ endif ~}
 
@@ -132,7 +132,7 @@ cp ./$tfe_settings_file.updated $tfe_settings_path
 # -----------------------------------------------------------------------------
 # Resize RHEL logical volume (if Azure environment)
 # -----------------------------------------------------------------------------
-%{ if cloud == "azurerm" && $distribution == "rhel" ~}
+%{ if cloud == "azurerm" && distribution == "rhel" ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Resize RHEL logical volume" | tee -a $log_pathname
 # Because Microsoft is publishing only LVM-partitioned images, it is necessary to partition it to the specs that TFE requires.
 # First, extend the partition to fill available space
@@ -162,7 +162,7 @@ replicated_directory="/etc/replicated"
 # Bootstrap airgapped environment with prerequisites (for dev/test environments)
 echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootstrapping an Airgapped Installation" | tee -a $log_pathname
 
-	%{ if $distribution == "rhel" ~}
+	%{ if distribution == "rhel" ~}
 	yum install --assumeyes yum-utils
 	yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
 	yum install --assumeyes docker-ce docker-ce-cli containerd.io
@@ -233,7 +233,7 @@ $install_pathname \
 # -----------------------------------------------------------------------------
 # Add docker0 to firewalld (for Red Hat instances only)
 # -----------------------------------------------------------------------------
-%{ if $distribution == "rhel" ~}
+%{ if distribution == "rhel" ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
 setenforce 0
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a $log_pathname
