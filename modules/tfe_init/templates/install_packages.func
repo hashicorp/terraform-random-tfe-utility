@@ -1,11 +1,12 @@
 %{ if cloud == "aws" ~}
 function install_packages {
 	local log_pathname=$1
+	local distribution=$2
 	# OS: Agnostic
 	# Description: Install the AWS CLI 
 
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip and SSMAgent" | tee -a $log_pathname
-	if [[ $DISTRO_NAME == *"Red Hat"* ]]
+	if [[ $distribution == *"Red Hat"* ]]
 	then
 		echo "[$(date +"%FT%T")] [Terraform Enterprise] Install AWS CLI, unzip, and SSMAgent" | tee -a $log_pathname
 		yum install -y \
