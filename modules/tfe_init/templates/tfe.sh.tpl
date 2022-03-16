@@ -16,6 +16,8 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathna
 
 sudo curl --noproxy '*' -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
 sudo chmod +x /bin/jq
+
+install_packages $log_pathname
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
@@ -51,11 +53,6 @@ export no_proxy="${no_proxy}"
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping proxy configuration" | tee -a $log_pathname
 %{ endif ~}
-
-# -----------------------------------------------------------------------------
-# Install prerequisite packages
-# -----------------------------------------------------------------------------
-install_packages $log_pathname
 
 # -----------------------------------------------------------------------------
 # Configure TLS (if not an airgapped environment)
