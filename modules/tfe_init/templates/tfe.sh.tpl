@@ -160,7 +160,7 @@ echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootst
 		curl \
 		gnupg \
 		lsb-release
-	curl --fail --silent --show-error --location https://download.docker.com/linux/ubuntu/gpg \
+	curl --noproxy --fail --silent --show-error --location https://download.docker.com/linux/ubuntu/gpg \
 		| gpg --dearmor --output /usr/share/keyrings/docker-archive-keyring.gpg
 	echo \
 		"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
@@ -176,12 +176,12 @@ replicated_url="https://s3.amazonaws.com/replicated-airgap-work/$replicated_file
 replicated_pathname="$replicated_directory/$replicated_filename"
 
 echo "[Terraform Enterprise] Downloading Replicated from '$replicated_url' to '$replicated_pathname'" | tee -a $log_pathname
-curl --create-dirs --output "$replicated_pathname" "$replicated_url"
+curl --noproxy --create-dirs --output "$replicated_pathname" "$replicated_url"
 echo "[Terraform Enterprise] Extracting Replicated in '$replicated_directory'" | tee -a $log_pathname
 tar --directory "$replicated_directory" --extract --file "$replicated_pathname"
 
 echo "[Terraform Enterprise] Copying airgap package '${airgap_url}' to '${airgap_pathname}'" | tee -a $log_pathname
-curl --create-dirs --output "${airgap_pathname}" "${airgap_url}"
+curl --noproxy --create-dirs --output "${airgap_pathname}" "${airgap_url}"
 %{ else ~}
 echo "[Terraform Enterprise] Skipping Airgapped Replicated download" | tee -a $log_pathname
 %{ endif ~}
@@ -194,7 +194,7 @@ instance_ip=$(hostname -i)
 install_pathname="$replicated_directory/install.sh"
 
 %{ if airgap_pathname == null ~}
-curl --create-dirs --output $install_pathname https://get.replicated.com/docker/terraformenterprise/active-active
+curl --noproxy --create-dirs --output $install_pathname https://get.replicated.com/docker/terraformenterprise/active-active
 %{ endif ~}
 
 chmod +x $install_pathname
