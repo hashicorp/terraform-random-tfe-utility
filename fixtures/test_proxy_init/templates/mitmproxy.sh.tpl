@@ -15,10 +15,10 @@ mkdir --parents $confdir
 echo "[$(date +"%FT%T")] Deploying certificates for mitmproxy" | tee --append /var/log/ptfe.log
 certificate="$confdir/mitmproxy-ca.pem"
 
-gcloud secrets versions access latest --secret="${ca_certificate_secret}" \
+get_base64_secrets ${ca_certificate_secret} \
   | base64 --decode --ignore-garbage | tee $certificate
 
-gcloud secrets versions access latest --secret="${ca_private_key_secret}" \
+get_base64_secrets ${ca_private_key_secret} \
   | base64 --decode --ignore-garbage | tee --append $certificate
 
 %{ endif ~}

@@ -15,3 +15,11 @@ locals {
     { http_port = local.squid_http_port }
   )
 }
+
+data "template_file" "get_base64_secrets" {
+  template = file("${path.module}/templates/get_base64_secrets.func")
+
+  vars = {
+    cloud = var.cloud
+  }
+}

@@ -15,7 +15,7 @@ variable "cloud" {
 }
 
 variable "tfe_license_secret_id" {
-  type = string
+  type        = string
   description = <<-EOD
   The secrets manager secret ID under which the Base64 encoded Terraform Enterprise license is stored.
   NOTE: If this is an airgapped installation, then it is expected that the TFE license will be put
@@ -35,7 +35,7 @@ variable "airgap_url" {
 }
 
 variable "ca_certificate_secret_id" {
-  type = string
+  type        = string
   description = <<-EOD
   A secret ID which contains the Base64 encoded version of a PEM encoded public certificate of a certificate
   authority (CA) to be trusted by the TFE instance(s).
@@ -43,7 +43,7 @@ variable "ca_certificate_secret_id" {
 }
 
 variable "certificate_secret_id" {
-  type = string
+  type        = string
   description = <<-EOD
   A secret ID which contains the Base64 encoded version of a PEM encoded public certificate for the TFE
   instance(s).
@@ -51,7 +51,7 @@ variable "certificate_secret_id" {
 }
 
 variable "key_secret_id" {
-  type = string
+  type        = string
   description = <<-EOD
   A secret ID which contains the Base64 encoded version of a PEM encoded private key for the TFE
   instance(s).
