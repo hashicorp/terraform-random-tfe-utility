@@ -12,19 +12,8 @@ tfe_settings_path="/etc/$tfe_settings_file"
 # Determine distibution
 # -----------------------------------------------------------------------------
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Determine distribution" | tee -a $log_pathname
-distribution_name=$(grep "^NAME=" /etc/os-release | cut -d"\"" -f2)
+distribution=$(grep "^NAME=" /etc/os-release | cut -d"\"" -f2)
 
-case "$distribution_name" in
-	*"Red Hat"*)
-		distribution="rhel"
-		;;
-	*"Ubuntu"*)
-		distribution="ubuntu"
-		;;
-	*)
-	echo "Unsupported operating system '$distribution_name' detected"
-	exit 1
-esac
 
 # -----------------------------------------------------------------------------
 # Install jq and cloud specific packages (if not an airgapped environment)
@@ -37,7 +26,6 @@ sudo chmod +x /bin/jq
 
 install_packages $log_pathname $distribution
 %{ endif ~}
-
 
 # -----------------------------------------------------------------------------
 # Create TFE & Replicated Settings Files
@@ -101,7 +89,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configu
 #------------------------------------------------------------------------------
 ca_certificate_directory="/dev/null"
 
-if [[ $distribution == "rhel" ]]
+if [[ $distribution == *"Red Hat"* ]]
 then
 	ca_certificate_directory=/usr/share/pki/ca-trust-source/anchors
 else
@@ -123,7 +111,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configur
 
 if [ -f "$ca_cert_filepath" ]
 then
-	if [[ $distribution == "rhel" ]]
+	if [[ $distribution == *"Red Hat"* ]]
 	then
 		update-ca-trust
 	else
@@ -138,7 +126,7 @@ fi
 # Resize RHEL logical volume (if Azure environment)
 # -----------------------------------------------------------------------------
 %{ if cloud == "azurerm" ~}
-if [[ $distribution == "rhel" ]]
+if [[ $distribution == *"Red Hat"* ]]
 then
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Resize RHEL logical volume" | tee -a $log_pathname
 # Because Microsoft is publishing only LVM-partitioned images, it is necessary to partition it to the specs that TFE requires.
@@ -170,7 +158,7 @@ replicated_directory="/etc/replicated"
 # Bootstrap airgapped environment with prerequisites (for dev/test environments)
 echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootstrapping an Airgapped Installation" | tee -a $log_pathname
 
-if [[ $distribution == "rhel" ]]
+if [[ $distribution == *"Red Hat"* ]]
 then
 yum install --assumeyes yum-utils
 yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
@@ -242,7 +230,7 @@ $install_pathname \
 # -----------------------------------------------------------------------------
 # Add docker0 to firewalld (for Red Hat instances only)
 # -----------------------------------------------------------------------------
-if [[ $distribution == "rhel" ]]
+if [[ $distribution == *"Red Hat"* ]]
 then
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
 	setenforce 0
