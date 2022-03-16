@@ -12,8 +12,7 @@ tfe_settings_path="/etc/$tfe_settings_file"
 # Determine distibution
 # -----------------------------------------------------------------------------
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Determine distribution" | tee -a $log_pathname
-distribution=$(grep "^NAME=" /etc/os-release | cut -d"\"" -f2)
-
+DISTRO_NAME=$(grep "^NAME=" /etc/os-release | cut -d"\"" -f2)
 
 # -----------------------------------------------------------------------------
 # Install jq and cloud specific packages (if not an airgapped environment)
@@ -24,8 +23,9 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathna
 sudo curl --noproxy '*' -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
 sudo chmod +x /bin/jq
 
-install_packages $log_pathname $distribution
+install_packages $log_pathname $DISTRO_NAME
 %{ endif ~}
+
 
 # -----------------------------------------------------------------------------
 # Create TFE & Replicated Settings Files
@@ -89,13 +89,12 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configu
 #------------------------------------------------------------------------------
 ca_certificate_directory="/dev/null"
 
-if [[ $distribution == *"Red Hat"* ]]
+if [[ $DISTRO_NAME == *"Red Hat"* ]]
 then
 	ca_certificate_directory=/usr/share/pki/ca-trust-source/anchors
 else
 	ca_certificate_directory=/usr/local/share/ca-certificates/extra
 fi
-
 ca_cert_filepath="$ca_certificate_directory/tfe-ca-certificate.crt"
 
 %{ if ca_certificate_secret_id != null ~}
@@ -104,20 +103,19 @@ ca_certificate_data_b64=$(get_base64_secrets ${ca_certificate_secret_id})
 
 mkdir -p $ca_certificate_directory
 echo $ca_certificate_data_b64 | base64 --decode > $ca_cert_filepath
-
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configuration" | tee -a $log_pathname
 %{ endif ~}
 
 if [ -f "$ca_cert_filepath" ]
 then
-	if [[ $distribution == *"Red Hat"* ]]
+	if [[ $DISTRO_NAME == *"Red Hat"* ]]
 	then
 		update-ca-trust
 	else
 		update-ca-certificates
 	fi
-
+	
 	jq ". + { ca_certs: { value: \"$(/bin/cat $ca_cert_filepath)\" } }" -- $tfe_settings_path > $tfe_settings_file.updated
 	cp ./$tfe_settings_file.updated $tfe_settings_path
 fi
@@ -126,9 +124,10 @@ fi
 # Resize RHEL logical volume (if Azure environment)
 # -----------------------------------------------------------------------------
 %{ if cloud == "azurerm" ~}
-if [[ $distribution == *"Red Hat"* ]]
+if [[ $DISTRO_NAME == *"Red Hat"* ]]
 then
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Resize RHEL logical volume" | tee -a $log_pathname
+
 # Because Microsoft is publishing only LVM-partitioned images, it is necessary to partition it to the specs that TFE requires.
 # First, extend the partition to fill available space
 growpart /dev/disk/azure/root 4
@@ -158,12 +157,12 @@ replicated_directory="/etc/replicated"
 # Bootstrap airgapped environment with prerequisites (for dev/test environments)
 echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootstrapping an Airgapped Installation" | tee -a $log_pathname
 
-if [[ $distribution == *"Red Hat"* ]]
+if [[ $DISTRO_NAME == *"Red Hat"* ]]
 then
 yum install --assumeyes yum-utils
 yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
 yum install --assumeyes docker-ce docker-ce-cli containerd.io
-elif [[ $distribution == "ubuntu" ]]
+else
 apt-get --assume-yes update
 apt-get --assume-yes install \
 	ca-certificates \
@@ -230,7 +229,7 @@ $install_pathname \
 # -----------------------------------------------------------------------------
 # Add docker0 to firewalld (for Red Hat instances only)
 # -----------------------------------------------------------------------------
-if [[ $distribution == *"Red Hat"* ]]
+if [[ $DISTRO_NAME == *"Red Hat"* ]]
 then
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
 	setenforce 0
