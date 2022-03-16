@@ -10,7 +10,6 @@ locals {
 
       # Configuration data
       cloud                       = var.cloud
-      distribution                = var.distribution
       active_active               = var.tfe_configuration.enable_active_active.value == "1" ? true : false
       replicated                  = base64encode(jsonencode(var.replicated_configuration))
       settings                    = base64encode(jsonencode(var.tfe_configuration))
@@ -47,6 +46,5 @@ data "template_file" "install_packages" {
 
   vars = {
     cloud        = var.cloud
-    distribution = var.distribution
   }
 }

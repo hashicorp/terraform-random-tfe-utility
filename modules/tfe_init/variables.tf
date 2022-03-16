@@ -9,15 +9,6 @@ variable "cloud" {
   }
 }
 
-variable "distribution" {
-  type        = string
-  description = "(Required) What is the OS distribution of the instance on which Terraoform Enterprise will be deployed?"
-  validation {
-    condition     = contains(["rhel", "ubuntu"], var.distribution)
-    error_message = "Supported values for distribution are 'rhel' or 'ubuntu'."
-  }
-}
-
 variable "tfe_license_secret_id" {
   type        = string
   description = <<-EOD
