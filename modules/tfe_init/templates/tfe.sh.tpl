@@ -9,6 +9,18 @@ tfe_settings_file="ptfe-settings.json"
 tfe_settings_path="/etc/$tfe_settings_file"
 
 # -----------------------------------------------------------------------------
+# Install jq and cloud specific packages (if not an airgapped environment)
+# -----------------------------------------------------------------------------
+%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) ~}
+install_packages $log_pathname
+
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
+sudo curl --noproxy '*' -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
+sudo chmod +x /bin/jq
+
+%{ endif ~}
+
+# -----------------------------------------------------------------------------
 # Create TFE & Replicated Settings Files
 # -----------------------------------------------------------------------------
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Create configuration files" | tee -a $log_pathname
@@ -40,18 +52,6 @@ export https_proxy="${proxy_ip}:${proxy_port}"
 export no_proxy="${no_proxy}"
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping proxy configuration" | tee -a $log_pathname
-%{ endif ~}
-
-# -----------------------------------------------------------------------------
-# Install jq and cloud specific packages (if not an airgapped environment)
-# -----------------------------------------------------------------------------
-%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) ~}
-install_packages $log_pathname
-
-echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
-sudo curl --noproxy '*' -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
-sudo chmod +x /bin/jq
-
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
