@@ -5,7 +5,8 @@ set -e -u -o pipefail
 ${get_base64_secrets}
 
 echo "[$(date +"%FT%T")] Starting mitmproxy startup script" | tee --append /var/log/ptfe.log
-
+apt-get update -y
+apt-get install -y jq
 echo "[$(date +"%FT%T")] Installing mitmproxy" | tee --append /var/log/ptfe.log
 pushd /tmp
 curl --location --remote-name https://snapshots.mitmproxy.org/6.0.2/mitmproxy-6.0.2-linux.tar.gz
