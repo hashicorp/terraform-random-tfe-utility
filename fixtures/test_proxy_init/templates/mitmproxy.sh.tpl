@@ -2,6 +2,8 @@
 
 set -e -u -o pipefail
 
+${get_base64_secrets}
+
 echo "[$(date +"%FT%T")] Starting mitmproxy startup script" | tee --append /var/log/ptfe.log
 
 echo "[$(date +"%FT%T")] Installing mitmproxy" | tee --append /var/log/ptfe.log
