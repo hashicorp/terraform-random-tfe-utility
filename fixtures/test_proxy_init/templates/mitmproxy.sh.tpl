@@ -18,10 +18,10 @@ echo "[$(date +"%FT%T")] Deploying certificates for mitmproxy" | tee --append /v
 certificate="$confdir/mitmproxy-ca.pem"
 
 get_base64_secrets ${ca_certificate_secret} \
-  | base64 --decode --ignore-garbage | tee $certificate
+  | tee $certificate
 
 get_base64_secrets ${ca_private_key_secret} \
-  | base64 --decode --ignore-garbage | tee --append $certificate
+  | tee --append $certificate
 
 %{ endif ~}
 echo "[$(date +"%FT%T")] Configuring mitmproxy" | tee --append /var/log/ptfe.log
