@@ -32,24 +32,25 @@ echo "${replicated}" | base64 -d > /etc/replicated.conf
 # -----------------------------------------------------------------------------
 %{ if proxy_ip != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure proxy" | tee -a $log_pathname
-
+REGION=`curl http://169.254.169.254/latest/dynamic/instance-identity/document | grep region|awk -F\" '{print $4}'`
+AWS_SECRETS_ENDPOINT="secretsmanager.$REGION.amazonaws.com"
 proxy_ip="${proxy_ip}"
 proxy_port="${proxy_port}"
 /bin/cat <<EOF >>/etc/environment
 http_proxy="${proxy_ip}:${proxy_port}"
 https_proxy="${proxy_ip}:${proxy_port}"
-no_proxy="${no_proxy}"
+no_proxy="$AWS_SECRETS_ENDPOINT,${no_proxy}"
 EOF
 
 /bin/cat <<EOF >/etc/profile.d/proxy.sh
 http_proxy="${proxy_ip}:${proxy_port}"
 https_proxy="${proxy_ip}:${proxy_port}"
-no_proxy="${no_proxy}"
+no_proxy="$AWS_SECRETS_ENDPOINT,${no_proxy}"
 EOF
 
 export http_proxy="${proxy_ip}:${proxy_port}"
 export https_proxy="${proxy_ip}:${proxy_port}"
-export no_proxy="${no_proxy}"
+export no_proxy="$AWS_SECRETS_ENDPOINT,${no_proxy}"
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping proxy configuration" | tee -a $log_pathname
 %{ endif ~}

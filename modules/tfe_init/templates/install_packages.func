@@ -7,10 +7,13 @@ function install_packages {
 	%{ if distribution == "rhel" ~}
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip and SSMAgent with yum" | tee -a $log_pathname
 	yum install -y \
+		firewalld \
 		unzip \
 		https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 	systemctl enable amazon-ssm-agent
 	systemctl start amazon-ssm-agent
+	systemctl enable firewalld
+	systemctl start firewalld
 	%{ else ~}
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip with apt-get" | tee -a $log_pathname
 	apt-get update -y
