@@ -1,5 +1,5 @@
 locals {
-  mitmproxy_http_port = 8080
+  mitmproxy_http_port = 3128
   mitmproxy_user_data_script = templatefile(
     "${path.module}/templates/mitmproxy.sh.tpl",
     {
