@@ -1,5 +1,6 @@
-%{ if cloud == "aws" ~}
+
 function install_packages {
+%{ if cloud == "aws" ~}
 	local log_pathname=$1
 	# OS: Agnostic
 	# Description: Install AWS packages
@@ -26,5 +27,5 @@ function install_packages {
 	./aws/install
 	rm -f ./awscliv2.zip
 	rm -rf ./aws
-}
 %{ endif ~}
+}
