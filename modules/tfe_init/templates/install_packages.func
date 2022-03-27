@@ -1,6 +1,5 @@
-
-function install_packages {
 %{ if cloud == "aws" ~}
+function install_packages {
 	local log_pathname=$1
 	# OS: Agnostic
 	# Description: Install AWS packages
@@ -27,5 +26,12 @@ function install_packages {
 	./aws/install
 	rm -f ./awscliv2.zip
 	rm -rf ./aws
-%{ endif ~}
 }
+%{ endif ~}
+
+%{ if cloud == "azurerm" ~}
+function install_packages {
+	# : empty function, no packages necessary
+	:
+}
+%{ endif ~}
