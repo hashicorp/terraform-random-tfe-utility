@@ -8,14 +8,14 @@ locals {
       get_base64_secrets = data.template_file.get_base64_secrets.rendered
 
       # Configuration data
-      cloud                         = var.cloud
-      active_active                 = var.tfe_configuration.enable_active_active.value == "1" ? true : false
-      replicated                    = base64encode(jsonencode(var.replicated_configuration))
-      settings                      = base64encode(jsonencode(var.tfe_configuration))
-      tls_bootstrap_cert_pathname   = var.replicated_configuration.TlsBootstrapCert
-      tls_bootstrap_key_pathname    = var.replicated_configuration.TlsBootstrapKey
-      airgap_url                    = var.airgap_url
-      airgap_pathname               = try(var.replicated_configuration.LicenseBootstrapAirgapPackagePath, null)
+      cloud                       = var.cloud
+      active_active               = var.tfe_configuration.enable_active_active.value == "1" ? true : false
+      replicated                  = base64encode(jsonencode(var.replicated_configuration))
+      settings                    = base64encode(jsonencode(var.tfe_configuration))
+      tls_bootstrap_cert_pathname = var.replicated_configuration.TlsBootstrapCert
+      tls_bootstrap_key_pathname  = var.replicated_configuration.TlsBootstrapKey
+      airgap_url                  = var.airgap_url
+      airgap_pathname             = try(var.replicated_configuration.LicenseBootstrapAirgapPackagePath, null)
 
       # Secrets
       ca_certificate_secret_id  = var.ca_certificate_secret_id
