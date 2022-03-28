@@ -1,0 +1,12 @@
+%{ if cloud == "azurerm" ~}
+function cloud_noproxy_exclusions {
+  echo ""
+}
+%{ endif ~}
+
+%{ if cloud == "aws" ~}
+function cloud_noproxy_exclusions {
+    REGION=`curl http://169.254.169.254/latest/dynamic/instance-identity/document | grep region|awk -F\" '{print $4}'`
+    echo "secretsmanager.$REGION.amazonaws.com,"
+}
+%{ endif ~}

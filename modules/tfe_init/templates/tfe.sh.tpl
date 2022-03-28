@@ -4,6 +4,7 @@ set -euo pipefail
 
 ${get_base64_secrets}
 ${install_packages}
+${cloud_noproxy_exclusions}
 log_pathname="/var/log/ptfe.log"
 tfe_settings_file="ptfe-settings.json"
 tfe_settings_path="/etc/$tfe_settings_file"
@@ -32,25 +33,24 @@ echo "${replicated}" | base64 -d > /etc/replicated.conf
 # -----------------------------------------------------------------------------
 %{ if proxy_ip != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure proxy" | tee -a $log_pathname
-REGION=`curl http://169.254.169.254/latest/dynamic/instance-identity/document | grep region|awk -F\" '{print $4}'`
-AWS_SECRETS_ENDPOINT="secretsmanager.$REGION.amazonaws.com"
+NOPROXY_PREFIX=$(cloud_noproxy_exclusions)
 proxy_ip="${proxy_ip}"
 proxy_port="${proxy_port}"
 /bin/cat <<EOF >>/etc/environment
 http_proxy="${proxy_ip}:${proxy_port}"
 https_proxy="${proxy_ip}:${proxy_port}"
-no_proxy="$AWS_SECRETS_ENDPOINT,${no_proxy}"
+no_proxy="$NOPROXY_PREFIX${no_proxy}"
 EOF
 
 /bin/cat <<EOF >/etc/profile.d/proxy.sh
 http_proxy="${proxy_ip}:${proxy_port}"
 https_proxy="${proxy_ip}:${proxy_port}"
-no_proxy="$AWS_SECRETS_ENDPOINT,${no_proxy}"
+no_proxy="$NOPROXY_PREFIX${no_proxy}"
 EOF
 
 export http_proxy="${proxy_ip}:${proxy_port}"
 export https_proxy="${proxy_ip}:${proxy_port}"
-export no_proxy="$AWS_SECRETS_ENDPOINT,${no_proxy}"
+export no_proxy="$NOPROXY_PREFIX${no_proxy}"
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping proxy configuration" | tee -a $log_pathname
 %{ endif ~}
