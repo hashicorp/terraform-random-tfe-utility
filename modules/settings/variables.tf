@@ -113,15 +113,6 @@ variable "tbw_image" {
   }
 }
 
-variable "vault_path" {
-  default     = null
-  type        = string
-  description = <<-EOD
-  (Optional) Path on the host system to store the vault files. If extern_vault_enable is set, this
-  has no effect.
-  EOD
-}
-
 # ------------------------------------------------------
 # Log Forwarding and Metrics
 # ------------------------------------------------------
