@@ -130,5 +130,9 @@ locals {
     user_token = {
       value = random_id.user_token.hex
     }
+
+    vault_path = {
+      value = var.vault_path
+    }
   }
 }
