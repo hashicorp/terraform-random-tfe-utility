@@ -46,7 +46,7 @@ jobs:
         persist-credentials: false
 
     - name: Setup Terraform Lint
-      uses: terraform-linters/setup-tflint@v1
+      uses: hashicorp/setup-tflint@v1
       with:
         tflint_version: v0.26.0
 
@@ -63,12 +63,11 @@ jobs:
             ${{ github.workspace }}/${m}
         done
 
-    # TODO: Add back when Fixtures are added
-    # - name: Lint fixtures directory in a loop
-    #   run: |
-    #     for m in $(ls -1d fixtures/*/)
-    #     do
-    #       tflint \
-    #         --config ${{ github.workspace }}/.tflint.hcl \
-    #         ${{ github.workspace }}/${m}
-    #     done
+    - name: Lint fixtures directory in a loop
+      run: |
+        for m in $(ls -1d fixtures/*/)
+        do
+          tflint \
+            --config ${{ github.workspace }}/.tflint.hcl \
+            ${{ github.workspace }}/${m}
+        done
