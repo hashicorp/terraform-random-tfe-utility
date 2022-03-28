@@ -7,6 +7,7 @@ locals {
       # Functions
       get_base64_secrets = data.template_file.get_base64_secrets.rendered
       install_packages   = data.template_file.install_packages.rendered
+      cloud_noproxy_exclusions = data.template_file.cloud_noproxy_exclusions.rendered
 
       # Configuration data
       cloud                       = var.cloud
