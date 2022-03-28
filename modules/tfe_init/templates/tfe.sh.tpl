@@ -39,18 +39,18 @@ proxy_port="${proxy_port}"
 /bin/cat <<EOF >>/etc/environment
 http_proxy="${proxy_ip}:${proxy_port}"
 https_proxy="${proxy_ip}:${proxy_port}"
-no_proxy="$$(NOPROXY_PREFIX}${no_proxy}"
+no_proxy="$${NOPROXY_PREFIX}${no_proxy}"
 EOF
 
 /bin/cat <<EOF >/etc/profile.d/proxy.sh
 http_proxy="${proxy_ip}:${proxy_port}"
 https_proxy="${proxy_ip}:${proxy_port}"
-no_proxy="$$(NOPROXY_PREFIX}${no_proxy}"
+no_proxy="$${NOPROXY_PREFIX}${no_proxy}"
 EOF
 
 export http_proxy="${proxy_ip}:${proxy_port}"
 export https_proxy="${proxy_ip}:${proxy_port}"
-export no_proxy="$$(NOPROXY_PREFIX}${no_proxy}"
+export no_proxy="$${NOPROXY_PREFIX}${no_proxy}"
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping proxy configuration" | tee -a $log_pathname
 %{ endif ~}
