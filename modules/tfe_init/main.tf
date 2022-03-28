@@ -35,6 +35,14 @@ locals {
   )
 }
 
+data "template_file" "cloud_noproxy_exclusions" {
+  template = file("${path.module}/templates/cloud_noproxy_exclusions.func")
+
+  vars = {
+    cloud = var.cloud
+  }
+}
+
 data "template_file" "get_base64_secrets" {
   template = file("${path.module}/templates/get_base64_secrets.func")
 
