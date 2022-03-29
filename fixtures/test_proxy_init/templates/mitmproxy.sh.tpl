@@ -8,6 +8,7 @@ ${get_base64_secrets}
 echo "[$(date +"%FT%T")] Starting mitmproxy startup script" | tee --append $log_pathname
 
 echo "[$(date +"%FT%T")] Install JQ" | tee --append $log_pathname
+
 apt-get update -y
 apt-get install -y jq
 
