@@ -12,8 +12,10 @@ echo "[$(date +"%FT%T")] Install JQ" | tee --append $log_pathname
 apt-get update -y
 apt-get install -y jq
 
+%{ if cloud == aws ~}
 echo "[$(date +"%FT%T")] Installing awscli" | tee --append $log_pathname
 install_packages $log_pathname
+%{ endif ~}
 
 echo "[$(date +"%FT%T")] Installing mitmproxy" | tee --append $log_pathname
 pushd /tmp
