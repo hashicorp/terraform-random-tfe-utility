@@ -6,14 +6,16 @@ locals {
     {
       # Functions
       get_base64_secrets = data.template_file.get_base64_secrets.rendered
+      install_packages   = data.template_file.install_packages.rendered
 
       # Configuration data
       cloud                       = var.cloud
+      distribution                = var.distribution
       active_active               = var.tfe_configuration.enable_active_active.value == "1" ? true : false
       replicated                  = base64encode(jsonencode(var.replicated_configuration))
       settings                    = base64encode(jsonencode(var.tfe_configuration))
-      tls_bootstrap_cert_pathname = var.replicated_configuration.TlsBootstrapCert
-      tls_bootstrap_key_pathname  = var.replicated_configuration.TlsBootstrapKey
+      tls_bootstrap_cert_pathname = try(var.replicated_configuration.TlsBootstrapCert, null)
+      tls_bootstrap_key_pathname  = try(var.replicated_configuration.TlsBootstrapKey, null)
       airgap_url                  = var.airgap_url
       airgap_pathname             = try(var.replicated_configuration.LicenseBootstrapAirgapPackagePath, null)
 
@@ -37,5 +39,14 @@ data "template_file" "get_base64_secrets" {
 
   vars = {
     cloud = var.cloud
+  }
+}
+
+data "template_file" "install_packages" {
+  template = file("${path.module}/templates/install_packages.func")
+
+  vars = {
+    cloud        = var.cloud
+    distribution = var.distribution
   }
 }

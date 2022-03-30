@@ -395,20 +395,11 @@ variable "disk_path" {
 # ------------------------------------------------------
 # AWS
 # ------------------------------------------------------
-variable "aws_instance_profile" {
-  default     = null
-  type        = bool
-  description = <<-EOD
-  (Optional when object storage is in AWS) When true, use credentials from the AWS instance profile.
-
-  EOD
-}
-
 variable "aws_access_key_id" {
   default     = null
   type        = string
   description = <<-EOD
-  (Required when object storage is in AWS unless aws_instance_profile is set) AWS access key ID for
+  (Required when object storage is in AWS unless aws_access_key_id is set) AWS access key ID for
   S3 bucket access. To use AWSinstance profiles for this information, set it to ''.
   EOD
 }
@@ -417,7 +408,7 @@ variable "aws_secret_access_key" {
   default     = null
   type        = string
   description = <<-EOD
-  (Required when object storage is in AWS unless aws_instance_profile is set) AWS secret access key
+  (Required when object storage is in AWS unless aws_access_key_id is set) AWS secret access key
   for S3 bucket access. To use AWS instance profiles for this information, set it to ''.
   EOD
 }
