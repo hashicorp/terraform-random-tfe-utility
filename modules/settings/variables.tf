@@ -61,7 +61,7 @@ variable "production_type" {
 	`external`, `disk`, or `null`. Choose `external` when storing application
 	data in an external object storage service and database. Choose `disk` when
 	storing application data in a directory on the Terraform Enterprise instance
-	itself. Let it `null` when you want Terraform Enterprise to use its own
+	itself. Leave it `null` when you want Terraform Enterprise to use its own
 	default.
   EOD
 
