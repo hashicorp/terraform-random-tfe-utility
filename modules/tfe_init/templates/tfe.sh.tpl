@@ -1,28 +1,24 @@
 #!/usr/bin/env bash
 
-set -e -u -o pipefail
+set -euo pipefail
 
 ${get_base64_secrets}
+${install_packages}
 log_pathname="/var/log/ptfe.log"
 tfe_settings_file="ptfe-settings.json"
 tfe_settings_path="/etc/$tfe_settings_file"
 
 # -----------------------------------------------------------------------------
-# Determine distibution
-# -----------------------------------------------------------------------------
-echo "[$(date +"%FT%T")] [Terraform Enterprise] Determine distribution" | tee -a $log_pathname
-DISTRO_NAME=$(grep "^NAME=" /etc/os-release | cut -d"\"" -f2)
-
-# -----------------------------------------------------------------------------
-# Install jq (if not an airgapped environment)
+# Install jq and cloud specific packages (if not an airgapped environment)
 # -----------------------------------------------------------------------------
 %{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) ~}
-echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
+install_packages $log_pathname
 
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
 sudo curl --noproxy '*' -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
 sudo chmod +x /bin/jq
-%{ endif ~}
 
+%{ endif ~}
 
 # -----------------------------------------------------------------------------
 # Create TFE & Replicated Settings Files
@@ -36,7 +32,6 @@ echo "${replicated}" | base64 -d > /etc/replicated.conf
 # -----------------------------------------------------------------------------
 %{ if proxy_ip != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure proxy" | tee -a $log_pathname
-
 proxy_ip="${proxy_ip}"
 proxy_port="${proxy_port}"
 /bin/cat <<EOF >>/etc/environment
@@ -86,12 +81,11 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configu
 #------------------------------------------------------------------------------
 ca_certificate_directory="/dev/null"
 
-if [[ $DISTRO_NAME == *"Red Hat"* ]]
-then
-	ca_certificate_directory=/usr/share/pki/ca-trust-source/anchors
-else
-	ca_certificate_directory=/usr/local/share/ca-certificates/extra
-fi
+%{ if distribution == "rhel" ~}
+ca_certificate_directory=/usr/share/pki/ca-trust-source/anchors
+%{ else ~}
+ca_certificate_directory=/usr/local/share/ca-certificates/extra
+%{ endif ~}
 ca_cert_filepath="$ca_certificate_directory/tfe-ca-certificate.crt"
 
 %{ if ca_certificate_secret_id != null ~}
@@ -106,13 +100,13 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configur
 
 if [ -f "$ca_cert_filepath" ]
 then
-	if [[ $DISTRO_NAME == *"Red Hat"* ]]
-	then
-		update-ca-trust
-	else
-		update-ca-certificates
-	fi
-	
+	%{ if distribution == "rhel" ~}
+	update-ca-trust
+
+	%{ else ~}
+	update-ca-certificates
+	%{ endif ~}
+
 	jq ". + { ca_certs: { value: \"$(/bin/cat $ca_cert_filepath)\" } }" -- $tfe_settings_path > $tfe_settings_file.updated
 	cp ./$tfe_settings_file.updated $tfe_settings_path
 fi
@@ -120,9 +114,7 @@ fi
 # -----------------------------------------------------------------------------
 # Resize RHEL logical volume (if Azure environment)
 # -----------------------------------------------------------------------------
-%{ if cloud == "azurerm" ~}
-if [[ $DISTRO_NAME == *"Red Hat"* ]]
-then
+%{ if cloud == "azurerm" && distribution == "rhel" ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Resize RHEL logical volume" | tee -a $log_pathname
 
 # Because Microsoft is publishing only LVM-partitioned images, it is necessary to partition it to the specs that TFE requires.
@@ -133,7 +125,6 @@ pvresize /dev/disk/azure/root-part4
 # Then resize the logical volumes to meet TFE specs
 lvresize -r -L 10G /dev/mapper/rootvg-rootlv
 lvresize -r -L 40G /dev/mapper/rootvg-varlv
-fi
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
@@ -154,40 +145,41 @@ replicated_directory="/etc/replicated"
 # Bootstrap airgapped environment with prerequisites (for dev/test environments)
 echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootstrapping an Airgapped Installation" | tee -a $log_pathname
 
-if [[ $DISTRO_NAME == *"Red Hat"* ]]
-then
-yum install --assumeyes yum-utils
-yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-yum install --assumeyes docker-ce docker-ce-cli containerd.io
-else
-apt-get --assume-yes update
-apt-get --assume-yes install \
-	ca-certificates \
-	curl \
-	gnupg \
-	lsb-release
-curl --fail --silent --show-error --location https://download.docker.com/linux/ubuntu/gpg \
-	| gpg --dearmor --output /usr/share/keyrings/docker-archive-keyring.gpg
-echo \
-	"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
-	https://download.docker.com/linux/ubuntu $(lsb_release --codename --short) stable" \
-	| sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-apt-get --assume-yes update
-apt-get --assume-yes install docker-ce docker-ce-cli containerd.io
-apt-get --assume-yes autoremove
-fi
+	%{ if distribution == "rhel" ~}
+	yum install --assumeyes yum-utils
+	yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+	yum install --assumeyes docker-ce docker-ce-cli containerd.io
+	%{ else ~}
+	apt-get --assume-yes update
+	apt-get --assume-yes install \
+		ca-certificates \
+		curl \
+		gnupg \
+		lsb-release
+	curl --noproxy '*' --fail --silent --show-error --location https://download.docker.com/linux/ubuntu/gpg \
+		| gpg --dearmor --output /usr/share/keyrings/docker-archive-keyring.gpg
+	echo \
+		"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+		https://download.docker.com/linux/ubuntu $(lsb_release --codename --short) stable" \
+		| sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+	apt-get --assume-yes update
+	apt-get --assume-yes install docker-ce docker-ce-cli containerd.io
+	apt-get --assume-yes autoremove
+	%{ endif ~}
 
 replicated_filename="replicated.tar.gz"
 replicated_url="https://s3.amazonaws.com/replicated-airgap-work/$replicated_filename"
 replicated_pathname="$replicated_directory/$replicated_filename"
 
 echo "[Terraform Enterprise] Downloading Replicated from '$replicated_url' to '$replicated_pathname'" | tee -a $log_pathname
-curl --create-dirs --output "$replicated_pathname" "$replicated_url"
+curl --noproxy '*' --create-dirs --output "$replicated_pathname" "$replicated_url"
 echo "[Terraform Enterprise] Extracting Replicated in '$replicated_directory'" | tee -a $log_pathname
 tar --directory "$replicated_directory" --extract --file "$replicated_pathname"
 
 echo "[Terraform Enterprise] Copying airgap package '${airgap_url}' to '${airgap_pathname}'" | tee -a $log_pathname
-curl --create-dirs --output "${airgap_pathname}" "${airgap_url}"
+curl --noproxy '*' --create-dirs --output "${airgap_pathname}" "${airgap_url}"
+%{ else ~}
+echo "[Terraform Enterprise] Skipping Airgapped Replicated download" | tee -a $log_pathname
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
@@ -198,12 +190,13 @@ instance_ip=$(hostname -i)
 install_pathname="$replicated_directory/install.sh"
 
 %{ if airgap_pathname == null ~}
-curl --create-dirs --output $install_pathname https://get.replicated.com/docker/terraformenterprise/active-active
+curl --noproxy '*' --create-dirs --output $install_pathname https://get.replicated.com/docker/terraformenterprise/active-active
 %{ endif ~}
 
 chmod +x $install_pathname
 cd $replicated_directory
 $install_pathname \
+	fast-timeouts \
 	bypass-firewalld-warning \
 	%{ if proxy_ip != null ~}
 	http-proxy="${proxy_ip}:${proxy_port}" \
@@ -224,13 +217,12 @@ $install_pathname \
 # -----------------------------------------------------------------------------
 # Add docker0 to firewalld (for Red Hat instances only)
 # -----------------------------------------------------------------------------
-if [[ $DISTRO_NAME == *"Red Hat"* ]]
-then
-	echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
-	setenforce 0
-	echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a $log_pathname
-	firewall-cmd --permanent --zone=trusted --change-interface=docker0
-	firewall-cmd --reload
-	echo "[$(date +"%FT%T")] [Terraform Enterprise] Enable SELinux" | tee -a $log_pathname
-	setenforce 1
-fi
+%{ if distribution == "rhel" ~}
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
+setenforce 0
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a $log_pathname
+firewall-cmd --permanent --zone=trusted --change-interface=docker0
+firewall-cmd --reload
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Enable SELinux" | tee -a $log_pathname
+setenforce 1
+%{ endif ~}
