@@ -71,7 +71,7 @@ variable "production_type" {
       var.production_type == "disk" ||
       var.production_type == null
     )
-    error_message = "The production_type must be 'external' or 'disk'."
+    error_message = "The production_type must be 'external', 'disk', or omitted."
   }
 }
 
