@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e -u -o pipefail
-log_pathname="$log_pathname"
+log_pathname="/var/log/ptfe.log"
 ${install_packages}
 ${get_base64_secrets}
 
