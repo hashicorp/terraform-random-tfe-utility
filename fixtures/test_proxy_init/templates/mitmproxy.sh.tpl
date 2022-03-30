@@ -12,7 +12,7 @@ echo "[$(date +"%FT%T")] Install JQ" | tee --append $log_pathname
 apt-get update -y
 apt-get install -y jq
 
-%{ if cloud == aws ~}
+%{ if cloud == "aws" ~}
 echo "[$(date +"%FT%T")] Installing awscli" | tee --append $log_pathname
 install_packages $log_pathname
 %{ endif ~}
