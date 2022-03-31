@@ -5,6 +5,11 @@ log_pathname="/var/log/ptfe.log"
 ${install_packages}
 ${get_base64_secrets}
 
+echo "[$(date +"%FT%T")] Sleeping 30 seconds to let the network settle" | tee -a $log_pathname
+sleep 30
+
+apt-get --yes --option "Acquire::Retries=5" update
+
 echo "[$(date +"%FT%T")] Starting mitmproxy startup script" | tee --append $log_pathname
 
 echo "[$(date +"%FT%T")] Install JQ" | tee --append $log_pathname
