@@ -4,6 +4,11 @@ set -e -u -o pipefail
 
 echo "[$(date +"%FT%T")] Starting Squid startup script" | tee --append /var/log/ptfe.log
 
+echo "[$(date +"%FT%T")] Sleeping 30 seconds to let the network settle" | tee -a $log_pathname
+sleep 30
+
+apt-get --yes --option "Acquire::Retries=5" update
+
 echo "[$(date +"%FT%T")] Installing Squid" | tee --append /var/log/ptfe.log
 apt-get --assume-yes update
 apt-get --assume-yes install squid
