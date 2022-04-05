@@ -84,3 +84,12 @@ variable "replicated_configuration" {
 variable "tfe_configuration" {
   description = "The settings that will be used to configure Terraform Enterprise."
 }
+
+variable "enable_monitoring" {
+  type        = bool
+  default     = false
+  description = <<-EOD
+  Should cloud appropriate monitoring agents be installed as a part of the TFE installation
+  script? 
+  EOD
+}

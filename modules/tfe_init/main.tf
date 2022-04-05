@@ -5,8 +5,9 @@ locals {
     "${path.module}/templates/tfe.sh.tpl",
     {
       # Functions
-      get_base64_secrets = data.template_file.get_base64_secrets.rendered
-      install_packages   = data.template_file.install_packages.rendered
+      get_base64_secrets        = data.template_file.get_base64_secrets.rendered
+      install_packages          = data.template_file.install_packages.rendered
+      install_monitoring_agents = data.template_file.install_monitoring_agents.rendered
 
       # Configuration data
       cloud                       = var.cloud
@@ -18,6 +19,7 @@ locals {
       tls_bootstrap_key_pathname  = try(var.replicated_configuration.TlsBootstrapKey, null)
       airgap_url                  = var.airgap_url
       airgap_pathname             = try(var.replicated_configuration.LicenseBootstrapAirgapPackagePath, null)
+      enable_monitoring           = var.enable_monitoring
 
       # Secrets
       ca_certificate_secret_id  = var.ca_certificate_secret_id
@@ -48,5 +50,13 @@ data "template_file" "install_packages" {
   vars = {
     cloud        = var.cloud
     distribution = var.distribution
+  }
+}
+
+data "template_file" "install_monitoring_agents" {
+  template = file("${path.module}/templates/install_monitoring_agents.func")
+
+  vars = {
+    cloud = var.cloud
   }
 }

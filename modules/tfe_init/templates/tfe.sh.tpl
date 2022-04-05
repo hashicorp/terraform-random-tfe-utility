@@ -4,6 +4,8 @@ set -euo pipefail
 
 ${get_base64_secrets}
 ${install_packages}
+${install_monitoring_agents}
+
 log_pathname="/var/log/ptfe.log"
 tfe_settings_file="ptfe-settings.json"
 tfe_settings_path="/etc/$tfe_settings_file"
@@ -125,6 +127,14 @@ pvresize /dev/disk/azure/root-part4
 # Then resize the logical volumes to meet TFE specs
 lvresize -r -L 10G /dev/mapper/rootvg-rootlv
 lvresize -r -L 40G /dev/mapper/rootvg-varlv
+%{ endif ~}
+
+# -----------------------------------------------------------------------------
+# Install Monitoring Agents
+# -----------------------------------------------------------------------------
+
+%{ if enable_monitoring ~}
+install_monitoring_agents $log_pathname
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
