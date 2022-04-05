@@ -19,7 +19,7 @@ locals {
       tls_bootstrap_key_pathname  = try(var.replicated_configuration.TlsBootstrapKey, null)
       airgap_url                  = var.airgap_url
       airgap_pathname             = try(var.replicated_configuration.LicenseBootstrapAirgapPackagePath, null)
-      enable_monitoring           = var.enable_monitoring
+      enable_monitoring           = var.enable_monitoring != null ? var.enable_monitoring : false
 
       # Secrets
       ca_certificate_secret_id  = var.ca_certificate_secret_id
@@ -57,6 +57,7 @@ data "template_file" "install_monitoring_agents" {
   template = file("${path.module}/templates/install_monitoring_agents.func")
 
   vars = {
-    cloud = var.cloud
+    cloud        = var.cloud
+    distribution = var.distribution
   }
 }

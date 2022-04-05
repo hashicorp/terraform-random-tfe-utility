@@ -70,7 +70,6 @@ variable "proxy_ip" {
 }
 
 variable "proxy_port" {
-  default     = "3128"
   type        = string
   description = "Port that the proxy server will use"
 }
@@ -87,7 +86,7 @@ variable "tfe_configuration" {
 
 variable "enable_monitoring" {
   type        = bool
-  default     = false
+  default     = null
   description = <<-EOD
   Should cloud appropriate monitoring agents be installed as a part of the TFE installation
   script? 
