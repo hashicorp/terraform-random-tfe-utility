@@ -130,9 +130,19 @@ lvresize -r -L 40G /dev/mapper/rootvg-varlv
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
+# Patching GCP Yum repo configuration (if GCP environment)
+# -----------------------------------------------------------------------------
+%{ if cloud == "google" && distribution == "rhel" ~}
+echo "[Terraform Enterprise] Patching GCP Yum repo configuration" | tee -a $log_pathname
+# workaround for GCP RHEL 7 known issue 
+# https://cloud.google.com/compute/docs/troubleshooting/known-issues#keyexpired
+sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
+yum makecache
+%{ endif ~}
+
+# -----------------------------------------------------------------------------
 # Install Monitoring Agents
 # -----------------------------------------------------------------------------
-
 %{ if enable_monitoring ~}
 install_monitoring_agents $log_pathname
 %{ endif ~}
