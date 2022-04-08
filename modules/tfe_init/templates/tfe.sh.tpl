@@ -18,7 +18,6 @@ echo "[Terraform Enterprise] Patching GCP Yum repo configuration" | tee -a $log_
 # workaround for GCP RHEL 7 known issue 
 # https://cloud.google.com/compute/docs/troubleshooting/known-issues#keyexpired
 sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
-yum makecache
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
