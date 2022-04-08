@@ -11,6 +11,8 @@ locals {
 
       # Configuration data
       cloud                       = var.cloud
+      disk_path                   = var.disk_path
+      disk_device_name            = var.disk_device_name
       distribution                = var.distribution
       active_active               = var.tfe_configuration.enable_active_active.value == "1" ? true : false
       replicated                  = base64encode(jsonencode(var.replicated_configuration))
