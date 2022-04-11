@@ -2,6 +2,7 @@
 function install_monitoring_agents {
 	local log_pathname=$1
 	:
+}
 %{ endif ~}
 
 %{ if cloud == "aws" ~}
