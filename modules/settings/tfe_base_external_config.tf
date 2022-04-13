@@ -36,5 +36,5 @@ locals {
     }
   }
 
-  base_external_configs = local.pg_optional_configs != null && var.enable_active_active ? (merge(local.pg_configs, local.pg_optional_configs)) : local.pg_configs
+  base_external_configs = local.pg_optional_configs != null && (var.enable_active_active || var.production_type == "external") ? (merge(local.pg_configs, local.pg_optional_configs)) : local.pg_configs
 }
