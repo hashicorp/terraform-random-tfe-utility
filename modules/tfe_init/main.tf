@@ -10,20 +10,21 @@ locals {
       install_monitoring_agents = data.template_file.install_monitoring_agents.rendered
 
       # Configuration data
+      active_active               = var.tfe_configuration.enable_active_active.value == "1" ? true : false
+      airgap_url                  = var.airgap_url
+      airgap_pathname             = try(var.replicated_configuration.LicenseBootstrapAirgapPackagePath, null)
       cloud                       = var.cloud
       custom_image_tag            = try(var.tfe_configuration.custom_image_tag.value, null)
       disk_path                   = var.disk_path
       disk_device_name            = var.disk_device_name
       distribution                = var.distribution
-      active_active               = var.tfe_configuration.enable_active_active.value == "1" ? true : false
+      docker_config               = filebase64("${path.module}/files/daemon.json")
+      enable_monitoring           = var.enable_monitoring != null ? var.enable_monitoring : false
       replicated                  = base64encode(jsonencode(var.replicated_configuration))
       settings                    = base64encode(jsonencode(var.tfe_configuration))
       tls_bootstrap_cert_pathname = try(var.replicated_configuration.TlsBootstrapCert, null)
       tls_bootstrap_key_pathname  = try(var.replicated_configuration.TlsBootstrapKey, null)
-      airgap_url                  = var.airgap_url
-      airgap_pathname             = try(var.replicated_configuration.LicenseBootstrapAirgapPackagePath, null)
-      enable_monitoring           = var.enable_monitoring != null ? var.enable_monitoring : false
-
+      
       # Secrets
       ca_certificate_secret_id  = var.ca_certificate_secret_id
       certificate_secret_id     = var.certificate_secret_id
