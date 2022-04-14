@@ -264,7 +264,7 @@ $install_pathname \
 # -----------------------------------------------------------------------------
 # Add docker0 to firewalld (for Red Hat instances only)
 # -----------------------------------------------------------------------------
-%{ if distribution == "rhel" ~}
+%{ if distribution == "rhel" && cloud != "google" ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
 setenforce 0
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a $log_pathname
