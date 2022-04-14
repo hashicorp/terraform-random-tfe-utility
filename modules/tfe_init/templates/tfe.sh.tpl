@@ -39,6 +39,19 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Create configuration files" | te
 sudo echo "${settings}" | sudo base64 -d > $tfe_settings_path
 echo "${replicated}" | base64 -d > /etc/replicated.conf
 
+
+# -----------------------------------------------------------------------------
+# Configure Docker (if GCP environment)
+# -----------------------------------------------------------------------------
+%{ if cloud == "google" ~}
+docker_directory="/etc/docker"
+echo "[Terraform Enterprise] Creating Docker directory at '$docker_directory'" | tee -a $log_pathname
+mkdir -p $docker_directory
+docker_daemon_pathname="$docker_directory/daemon.json"
+echo "[Terraform Enterprise] Writing Docker daemon to '$docker_daemon_pathname'" | tee -a $log_pathname
+echo "${docker_config}" | base64 --decode > $docker_daemon_pathname
+%{ endif ~}
+
 # -----------------------------------------------------------------------------
 # Configure the proxy (if applicable)
 # -----------------------------------------------------------------------------
@@ -272,4 +285,17 @@ firewall-cmd --permanent --zone=trusted --change-interface=docker0
 firewall-cmd --reload
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Enable SELinux" | tee -a $log_pathname
 setenforce 1
+%{ endif ~}
+
+# -----------------------------------------------------------------------------
+# Pulling custom worker image (currently for GCP environments only)
+# -----------------------------------------------------------------------------
+%{ if custom_image_tag != null && cloud == "google" ~}
+%{ if length(regexall("^.+-docker\\.pkg\\.dev|^.*\\.?gcr\\.io", custom_image_tag)) > 0 ~}
+echo "[Terraform Enterprise] Registering gcloud as a Docker credential helper" | tee -a
+gcloud auth configure-docker --quiet ${split("/", custom_image_tag)[0]}
+
+%{ endif ~}
+echo "[Terraform Enterprise] Pulling custom worker image '${custom_image_tag}'" | tee -a
+docker pull ${custom_image_tag}
 %{ endif ~}

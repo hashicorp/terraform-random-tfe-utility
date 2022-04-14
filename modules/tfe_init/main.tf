@@ -11,6 +11,7 @@ locals {
 
       # Configuration data
       cloud                       = var.cloud
+      custom_image_tag            = try(var.tfe_configuration.custom_image_tag.value, null)
       disk_path                   = var.disk_path
       disk_device_name            = var.disk_device_name
       distribution                = var.distribution

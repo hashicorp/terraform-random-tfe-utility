@@ -44,7 +44,6 @@ variable "capacity_memory" {
 }
 
 variable "custom_image_tag" {
-  default     = null
   type        = string
   description = <<-EOD
   (Required if tbw_image is 'custom_image'.) The name and tag for your alternative Terraform
@@ -95,7 +94,6 @@ variable "release_sequence" {
 }
 
 variable "tbw_image" {
-  default     = null
   type        = string
   description = <<-EOD
   Set this to 'custom_image' if you want to use an alternative Terraform build worker image,
