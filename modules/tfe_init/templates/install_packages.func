@@ -31,7 +31,12 @@ function install_packages {
 
 %{ if cloud == "azurerm" ~}
 function install_packages {
-	# : empty function, no packages necessary
+	:
+}
+%{ endif ~}
+
+%{ if cloud == "google" ~}
+function install_packages {
 	:
 }
 %{ endif ~}
