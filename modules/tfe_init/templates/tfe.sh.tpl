@@ -23,7 +23,7 @@ sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
 # -----------------------------------------------------------------------------
 # Install jq and cloud specific packages (if not an airgapped environment)
 # -----------------------------------------------------------------------------
-%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) ~}
+%{ if (airgap_url == null && airgap_pathname == null) || (airgap_url != null && airgap_pathname != null) ~}
 install_packages $log_pathname
 
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
@@ -38,7 +38,6 @@ sudo chmod +x /bin/jq
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Create configuration files" | tee -a $log_pathname
 sudo echo "${settings}" | sudo base64 -d > $tfe_settings_path
 echo "${replicated}" | base64 -d > /etc/replicated.conf
-
 
 # -----------------------------------------------------------------------------
 # Configure Docker (if GCP environment)
