@@ -70,7 +70,6 @@ variable "proxy_ip" {
 }
 
 variable "proxy_port" {
-  default     = "3128"
   type        = string
   description = "Port that the proxy server will use"
 }
@@ -83,4 +82,25 @@ variable "replicated_configuration" {
 
 variable "tfe_configuration" {
   description = "The settings that will be used to configure Terraform Enterprise."
+}
+
+variable "enable_monitoring" {
+  type        = bool
+  default     = null
+  description = <<-EOD
+  Should cloud appropriate monitoring agents be installed as a part of the TFE installation
+  script? 
+  EOD
+}
+
+# Mounted Disk
+# ------------
+variable "disk_device_name" {
+  description = "The name of the disk device on which Terraform Enterprise will store data in Mounted Disk mode."
+  type        = string
+}
+
+variable "disk_path" {
+  description = "The pathname of the directory in which Terraform Enterprise will store data in Mounted Disk mode."
+  type        = string
 }

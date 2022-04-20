@@ -4,14 +4,26 @@ set -euo pipefail
 
 ${get_base64_secrets}
 ${install_packages}
+${install_monitoring_agents}
+
 log_pathname="/var/log/ptfe.log"
 tfe_settings_file="ptfe-settings.json"
 tfe_settings_path="/etc/$tfe_settings_file"
 
 # -----------------------------------------------------------------------------
+# Patching GCP Yum repo configuration (if GCP environment)
+# -----------------------------------------------------------------------------
+%{ if cloud == "google" && distribution == "rhel" ~}
+echo "[Terraform Enterprise] Patching GCP Yum repo configuration" | tee -a $log_pathname
+# workaround for GCP RHEL 7 known issue 
+# https://cloud.google.com/compute/docs/troubleshooting/known-issues#keyexpired
+sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
+%{ endif ~}
+
+# -----------------------------------------------------------------------------
 # Install jq and cloud specific packages (if not an airgapped environment)
 # -----------------------------------------------------------------------------
-%{ if airgap_url == null || (airgap_url != null && airgap_pathname != null) ~}
+%{ if (airgap_url == null && airgap_pathname == null) || (airgap_url != null && airgap_pathname != null) ~}
 install_packages $log_pathname
 
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
@@ -26,6 +38,18 @@ sudo chmod +x /bin/jq
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Create configuration files" | tee -a $log_pathname
 sudo echo "${settings}" | sudo base64 -d > $tfe_settings_path
 echo "${replicated}" | base64 -d > /etc/replicated.conf
+
+# -----------------------------------------------------------------------------
+# Configure Docker (if GCP environment)
+# -----------------------------------------------------------------------------
+%{ if cloud == "google" ~}
+docker_directory="/etc/docker"
+echo "[Terraform Enterprise] Creating Docker directory at '$docker_directory'" | tee -a $log_pathname
+mkdir -p $docker_directory
+docker_daemon_pathname="$docker_directory/daemon.json"
+echo "[Terraform Enterprise] Writing Docker daemon to '$docker_daemon_pathname'" | tee -a $log_pathname
+echo "${docker_config}" | base64 --decode > $docker_daemon_pathname
+%{ endif ~}
 
 # -----------------------------------------------------------------------------
 # Configure the proxy (if applicable)
@@ -128,6 +152,41 @@ lvresize -r -L 40G /dev/mapper/rootvg-varlv
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
+# Configure Mounted Disk Installation
+# -----------------------------------------------------------------------------
+%{ if disk_path != null ~}
+device="/dev/${disk_device_name}"
+echo "[Terraform Enterprise] Checking disk at '$device' for EXT4 filesystem" | tee -a $log_pathname
+
+if lsblk --fs $device | grep ext4
+then
+  echo "[Terraform Enterprise] EXT4 filesystem detected on disk at '$device'" | tee -a $log_pathname
+else
+  echo "[Terraform Enterprise] Creating EXT4 filesystem on disk at '$device'" | tee -a $log_pathname
+
+  mkfs.ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard $device
+fi
+
+echo "[Terraform Enterprise] Creating mounted disk directory at '${disk_path}'" | tee -a $log_pathname
+mkdir --parents ${disk_path}
+
+echo "[Terraform Enterprise] Mounting disk '$device' to directory at '${disk_path}'" | tee -a $log_pathname
+mount --options discard,defaults $device ${disk_path}
+chmod og+rw ${disk_path}
+
+echo "[Terraform Enterprise] Configuring automatic mounting of '$device' to directory at '${disk_path}' on reboot" | tee -a $log_pathname
+echo "UUID=$(lsblk --noheadings --output uuid $device) ${disk_path} ext4 discard,defaults 0 2" >> /etc/fstab
+
+%{ endif ~}
+
+# -----------------------------------------------------------------------------
+# Install Monitoring Agents
+# -----------------------------------------------------------------------------
+%{ if enable_monitoring ~}
+install_monitoring_agents $log_pathname
+%{ endif ~}
+
+# -----------------------------------------------------------------------------
 # Retrieve TFE license (if not an airgapped environment)
 # -----------------------------------------------------------------------------
 %{ if tfe_license_secret_id != null ~}
@@ -217,7 +276,7 @@ $install_pathname \
 # -----------------------------------------------------------------------------
 # Add docker0 to firewalld (for Red Hat instances only)
 # -----------------------------------------------------------------------------
-%{ if distribution == "rhel" ~}
+%{ if distribution == "rhel" && cloud != "google" ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
 setenforce 0
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a $log_pathname
@@ -225,4 +284,17 @@ firewall-cmd --permanent --zone=trusted --change-interface=docker0
 firewall-cmd --reload
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Enable SELinux" | tee -a $log_pathname
 setenforce 1
+%{ endif ~}
+
+# -----------------------------------------------------------------------------
+# Pulling custom worker image (currently for GCP environments only)
+# -----------------------------------------------------------------------------
+%{ if custom_image_tag != null && cloud == "google" ~}
+%{ if length(regexall("^.+-docker\\.pkg\\.dev|^.*\\.?gcr\\.io", custom_image_tag)) > 0 ~}
+echo "[Terraform Enterprise] Registering gcloud as a Docker credential helper" | tee -a
+gcloud auth configure-docker --quiet ${split("/", custom_image_tag)[0]}
+
+%{ endif ~}
+echo "[Terraform Enterprise] Pulling custom worker image '${custom_image_tag}'" | tee -a
+docker pull ${custom_image_tag}
 %{ endif ~}
