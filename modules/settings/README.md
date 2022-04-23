@@ -17,7 +17,6 @@ module "settings" {
   source = "git::https://github.com/hashicorp/terraform-random-tfe-utility//modules/settings?ref=main"
 
   # TFE Base Configuration
-  installation_type = var.installation_type
   production_type   = var.production_type
   iact_subnet_list  = var.iact_subnet_list
   trusted_proxies   = local.trusted_proxies

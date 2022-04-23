@@ -4,10 +4,6 @@ locals {
       value = var.hostname
     }
 
-    installation_type = {
-      value = var.installation_type
-    }
-
     production_type = {
       value = var.production_type
     }
@@ -132,3 +128,4 @@ locals {
     }
   }
 }
+
