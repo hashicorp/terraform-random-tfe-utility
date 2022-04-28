@@ -52,7 +52,7 @@ This example assumes that the following resources exist:
   
 ## How to Use This Module
 
-*This section provides step-by-step instructions on how to run the module for each cloud provider. This includes steps on how to set credentials, provider block, creating any local files such as terraform.auto.tfvars and commands that are triggered to init, plan and apply.*
+> *This section provides step-by-step instructions on how to run the module for each cloud provider. This includes steps on how to set credentials, provider block, creating any local files such as terraform.auto.tfvars and commands that are triggered to init, plan and apply.*
 
 > PLEASE UPDATE APPLICABLE VALUES IN *[(XXXXXXX)]* 
 
