@@ -87,7 +87,7 @@ Unless amended, this example will not create an initial admin user using the IAC
 
 ### Connecting to [proxy/bastion] server
 
-> *Applicable only when connecting via proxy/bastion host*
+> *Applicable only when connecting via proxy/bastion host.*
 > *In short, to set up a proxy server in Google Chrome, you're just doing the first few steps in the browser, and then completing the process in your machine's operating system*
 
 1. To create a tunnel for Chrome:
