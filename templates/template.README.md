@@ -8,7 +8,7 @@
 
 This example for Terraform Enterprise creates a TFE installation with the following traits:
 
--  [(Standalone / Active-Active)] architecture
+-  [(Standalone / Active/Active)] architecture
 -  [(External Services / Mounted Disk)] production type
 -  [(Airgapped)] 
 -  [(n1-standard-4 / Standard_D4_v3 / m5.xlarge)] virtual machine type
