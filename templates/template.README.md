@@ -85,7 +85,7 @@ The build should take approximately 10-15 minutes to deploy. Once the module has
 
 Unless amended, this example will not create an initial admin user using the IACT, but it does output the URL for your convenience. Follow the advice in this document to create the initial admin user, and log into the system using this user in order to configure it for use.
 
-### Connecting to [proxy/bastion] server
+### Connecting to [(proxy/bastion)] server
 
 > *Applicable only when connecting via proxy/bastion host.*
 > *In short, to set up a proxy server in Google Chrome, you're just doing the first few steps in the browser, and then completing the process in your machine's operating system*
@@ -101,8 +101,8 @@ Unless amended, this example will not create an initial admin user using the IAC
    - [macOS](https://support.apple.com/en-ca/guide/mac-help/mchlp2591/mac)
    - [Windows](https://www.dummies.com/article/technology/computers/operating-systems/windows/windows-10/how-to-set-up-a-proxy-in-windows-10-140262/#tab2)
    
-3. SSH to proxy/bastion via: `$ ssh -N -p 22 -D localhost:5000 <[bastionuser/proxyuser]>@<[bastionhost/proxyserver]> -i ../path/to/id_rsa`
-4. The TFE URL is now aacessible via [proxy/bastion].
+3. SSH to [(proxy/bastion)] via: `$ ssh -N -p 22 -D localhost:5000 <[(bastionuser/proxyuser)]>@<[(bastionhost/proxyserver)]> -i ../path/to/id_rsa`
+4. The TFE URL is now aacessible via [(proxy/bastion)].
 
 ### Connecting to the TFE Console
 
