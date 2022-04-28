@@ -63,7 +63,7 @@ This example assumes that the following resources exist:
  3. Clone repository.
  4. Change directory into desired example folder.
  5. Create a local `terraform.auto.tfvars` file and instantiate the required inputs as required in the respective `./examples/[(example-name)]/variables.tf` including the path to the license under the `license_file` variable value.
- 6. Authenticate against the [(AWS/AZURERM/GOOGLE)] provider. See [instructions](replace with appropriate URL below).
+ 6. Authenticate against the [(AWS/AzureRM/Google)] provider. See [instructions](replace with appropriate URL below).
     - <https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/azure_cli>
     - <https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration>
     - <https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication>
@@ -117,7 +117,7 @@ The TFE Console is only available in a standalone environment
 
 ### Connecting to the TFE Application
 
-1. Navigate to the URL supplied via the `login_url` Terraform output. (It may take several minutes for this to be available after initial deployment - you may monitor the progress of cloud init if desired on one of the instances)
+1. Navigate to the URL supplied via the `login_url` Terraform output. (It may take several minutes for this to be available after initial deployment. You may monitor the progress of cloud init if desired on one of the instances.)
 2. Enter a `username`, `email`, and `password` for the initial user.
 3. Click `Create an account`.
 4. After the initial user is created you may access the TFE Application normally using the URL supplied via `tfe_application_url` Terraform output.
