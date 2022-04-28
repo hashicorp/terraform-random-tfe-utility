@@ -25,7 +25,7 @@ This example for Terraform Enterprise creates a TFE installation with the follow
 
 This example assumes that the following resources exist:
 
-- TFE license is on a filepath defined by var.license_file 
+- TFE license is on a file path defined by `var.license_file` 
 - Airgap prerequisites :
   - The vm image (only for completely air-gapped environment) is prepared according to the [documentation](https://www.terraform.io/enterprise/install/interactive/installer#prepare-the-instance)
     - Certificate and key data is present on the vm image at the following paths (when applicable):
@@ -58,18 +58,18 @@ This example assumes that the following resources exist:
 
 ### Deployment
 
- 1. Read the entire README.md for the root module.
- 2. Ensure account meets module pre-requisites from above.
+ 1. Read the entire [README.md](../../README.md) of the root module.
+ 2. Ensure account meets module prerequisites from above.
  3. Clone repository.
- 4. Change directory into desired example folder
- 5. Create a local terraform.auto.tfvars file and instantiate the required inputs as required in respective ./examples/<example_name>/variables.tf including the path to the license under the license_file variable value.
- 6. Authenticate against [(aws/azurerm/google)] provider. See [instructions](replace with appropriate URL below).
+ 4. Change directory into desired example folder.
+ 5. Create a local `terraform.auto.tfvars` file and instantiate the required inputs as required in the respective `./examples/[(example-name)]/variables.tf` including the path to the license under the `license_file` variable value.
+ 6. Authenticate against the [(AWS/AZURERM/GOOGLE)] provider. See [instructions](replace with appropriate URL below).
     - <https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/azure_cli>
     - <https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration>
     - <https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication>
- 7. Initialize terraform and apply the module configurations using below commands.
+ 7. Initialize terraform and apply the module configurations using the commands below :
 
-    NOTE : `terraform plan` will print out the execution plan which describes the actions Terraform will take in order to build your infrastructure to match the module configuration. If anything in the plan seems incorrect or dangerous, it is safe to abort here and do not proceed to `terraform apply`
+    NOTE: `terraform plan` will print out the execution plan which describes the actions Terraform will take in order to build your infrastructure to match the module configuration. If anything in the plan seems incorrect or dangerous, it is safe to abort here and not proceed to `terraform apply`
 
     ```
     terraform init
@@ -83,7 +83,7 @@ This example assumes that the following resources exist:
 
 The build should take approximately 10-15 minutes to deploy. Once the module has completed, give the platform another 10 minutes or so prior to attempting to interact with it in order for all containers to start up.
 
-Unless amended, this example will not create an initial admin user using the IACT, but does output the URL for convenience. Follow the advice in this document in order to create the initial admin user, and login to the system using this user in order to configure it for use.
+Unless amended, this example will not create an initial admin user using the IACT, but it does output the URL for your convenience. Follow the advice in this document to create the initial admin user, and log into the system using this user in order to configure it for use.
 
 ### Connecting to [proxy/bastion] server
 
@@ -92,17 +92,17 @@ Unless amended, this example will not create an initial admin user using the IAC
 
 1. To create a tunnel for Chrome:
    By default, Chrome uses your macOS or Windows proxy. To change your proxy settings from within Chrome, take the following steps: 
-   - Open the Chrome toolbar and select Settings.
-   - Scroll down to the bottom of the display. Click on Show advanced settings...
-   - Scroll down to “System” and choose Open your computer’s proxy settings.
+   - Open the Chrome toolbar and select "Settings".
+   - Scroll down to the bottom of the display. Click on "Show advanced settings".
+   - Scroll down to “System” and choose "Open your computer’s proxy settings".
    - Set Chrome proxy server settings.
    
-2. Next, follow the instructions for your operating system to set up your proxy server settings
-   - [mac](https://support.apple.com/en-ca/guide/mac-help/mchlp2591/mac)
-   - [windows](https://www.dummies.com/article/technology/computers/operating-systems/windows/windows-10/how-to-set-up-a-proxy-in-windows-10-140262/#tab2)
+2. Next, follow the instructions for your operating system to set up your proxy server settings:
+   - [macOS](https://support.apple.com/en-ca/guide/mac-help/mchlp2591/mac)
+   - [Windows](https://www.dummies.com/article/technology/computers/operating-systems/windows/windows-10/how-to-set-up-a-proxy-in-windows-10-140262/#tab2)
    
-3. SSH to proxy/bastion via `$ ssh -N -p 22 -D localhost:5000 <[bastionuser/proxyuser]>@<[bastionhost/proxyserver]> -i ../path/to/id_rsa`
-4. TFE URL is now aacessible via [proxy/bastion]
+3. SSH to proxy/bastion via: `$ ssh -N -p 22 -D localhost:5000 <[bastionuser/proxyuser]>@<[bastionhost/proxyserver]> -i ../path/to/id_rsa`
+4. The TFE URL is now aacessible via [proxy/bastion].
 
 ### Connecting to the TFE Console
 
@@ -117,7 +117,7 @@ The TFE Console is only available in a standalone environment
 
 ### Connecting to the TFE Application
 
-1. Navigate to the URL supplied via `login_url` Terraform output (it may take several minutes for this to be available after initial deployment - you may monitor the progress of cloud init if desired on one of the instances)
-2. Enter a `username`, `email`, and `password` for the initial user
-3. Click `Create an account`
-4. After the initial user is created you may access the TFE Application normally using the URL supplied via `tfe_application_url` Terraform output
+1. Navigate to the URL supplied via the `login_url` Terraform output. (It may take several minutes for this to be available after initial deployment - you may monitor the progress of cloud init if desired on one of the instances)
+2. Enter a `username`, `email`, and `password` for the initial user.
+3. Click `Create an account`.
+4. After the initial user is created you may access the TFE Application normally using the URL supplied via `tfe_application_url` Terraform output.
