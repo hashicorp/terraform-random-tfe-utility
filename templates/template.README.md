@@ -4,20 +4,24 @@
 
 > *This section describes the high level traits of the TFE installation*
 
-This example for Terraform Enterprise creates a TFE installation with the following traits.
+> PLEASE UPDATE APPLICABLE TRAITS IN *[(XXXXXXX)]*
 
--  [Standalone / Active-Active] 
--  [operational type ( External Services / Mounted Disk)] 
--  [environment (Airgap / Non-Airgap)] 
--  [Virtual Machine Type (n1-standard-4 / Standard_D4_v3 / m5.xlarge)] 
--  [Virtual Machine Image] (Ubuntu 20.04,  RHEL 7.9) 
--  A [publicly / privately] accessible [HTTP / TCP] load balancer with TLS [termination / pass-through] 
--  An ubuntu based [mitm / squid]proxy server with TLS termination 
+This example for Terraform Enterprise creates a TFE installation with the following traits:
+
+-  [(Standalone / Active-Active)] architecture
+-  [(External Services / Mounted Disk)] production type
+-  [(Airgapped)] 
+-  [(n1-standard-4 / Standard_D4_v3 / m5.xlarge)] virtual machine type
+-  [(Ubuntu 20.04,  RHEL 7.9)]
+-  A [(publicly / privately)] accessible [(HTTP / TCP)] load balancer with TLS [(termination / pass-through)] 
+-  An ubuntu based [(mitm / squid)]proxy server with TLS termination 
 
 ## Prerequisites
 
  > *This section describes the prerequisites assumed by the installation modules.*
  > *Prerequisites are external resources that the module consumes like TFE license,certificates, vm-image, airgap package etc*
+
+> PLEASE INCLUDE ONLY APPLICABLE PREREQUISITES 
 
 This example assumes that the following resources exist:
 
@@ -49,6 +53,8 @@ This example assumes that the following resources exist:
 ## How to Use This Module
 
 *This section provides step-by-step instructions on how to run the module for each cloud provider. This includes steps on how to set credentials, provider block, creating any local files such as terraform.auto.tfvars and commands that are triggered to init, plan and apply.*
+
+> PLEASE UPDATE APPLICABLE VALUES IN *[(XXXXXXX)]* 
 
 ### Deployment
 
