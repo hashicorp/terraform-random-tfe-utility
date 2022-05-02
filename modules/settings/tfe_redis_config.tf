@@ -5,7 +5,7 @@ locals {
     }
 
     redis_port = {
-      value = var.redis_use_tls != null ? var.redis_use_tls ? "6380" : "6379" : null
+      value = var.redis_port != null ? tostring(var.redis_port) : var.redis_use_tls != null ? var.redis_use_tls ? "6380" : "6379" : null
     }
 
     redis_use_password_auth = {

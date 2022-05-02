@@ -354,6 +354,14 @@ variable "redis_pass" {
   EOD
 }
 
+variable "redis_port" {
+  default     = null
+  type        = number
+  description = <<-EOD
+  The port for the Redis instance.
+  EOD
+}
+
 variable "redis_use_password_auth" {
   default     = null
   type        = bool
