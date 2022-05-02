@@ -649,3 +649,11 @@ variable "trusted_proxies" {
   By default the list is empty.
   EOD
 }
+
+variable "ca_certs" {
+  default     = null
+  type        = string
+  description = <<-EOD
+  The TLS CA certificates to be trusted by Terraform Enterprise.
+  EOD
+}

@@ -17,6 +17,10 @@ locals {
       value = var.backup_token
     }
 
+    ca_certs = {
+      value = var.ca_certs
+    }
+
     capacity_concurrency = {
       value = var.capacity_concurrency != null ? tostring(var.capacity_concurrency) : null
     }
