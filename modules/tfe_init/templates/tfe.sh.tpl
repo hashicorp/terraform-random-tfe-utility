@@ -131,8 +131,10 @@ then
 	update-ca-certificates
 	%{ endif ~}
 
+	# Append the existing TLS certificates to the new TLS certificate we're
+	# about to add.
 	if jq -r -e '.ca_certs.value' -- $tfe_settings_path; then
-		jq -r -e '.ca_certs.value' -- $tfe_settings_path >> $ca_cert_filepath
+		jq -r '.ca_certs.value' -- $tfe_settings_path >> $ca_cert_filepath
 	fi
 
 	jq ". + { ca_certs: { value: \"$(/bin/cat $ca_cert_filepath)\" } }" -- $tfe_settings_path > $tfe_settings_file.updated
