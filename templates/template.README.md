@@ -8,7 +8,7 @@
 
 This example for Terraform Enterprise creates a TFE installation with the following traits:
 
--  [(Standalone / Active/Active)] architecture
+-  [(Standalone / [Active/Active](https://www.terraform.io/enterprise/install/automated/active-active))] architecture defined by `var.node_count`
 -  [(External Services / Mounted Disk)] production type
 -  [(Airgapped)] 
 -  [(n1-standard-4 / Standard_D4_v3 / m5.xlarge)] virtual machine type
@@ -45,10 +45,9 @@ This example assumes that the following resources exist:
     - TFE CA certificate (certificate)
     - Key Vault secret which contains the Base64 encoded version of a PEM encoded public certificate for the Virtual Machine Scale Set
     - Key Vault secret which contains the Base64 encoded version of a PEM encoded private key for the Virtual Machine Scale Set.
-- Valid CA certificate and private key for MITM proxy *(applicable only if MITM proxy is used)*
-  - GCP - GCP Secret ID which contains the Base64 encoded version of a PEM encoded certificate and private key for mitm proxy server.
-  - AWS - AWS Secret Manager Secret name which contains the Base64 encoded version of a PEM encoded certificate and private key for mitm proxy server.
-  - Azure - An Azure Key Vault secret which contains the Base64 encoded version of a PEM encoded certificate and private key for mitm proxy server.
+- A valid CA certificate and private key for the MITM proxy that are both stored in the [(Azure Key Vault / Secrets Manager)] as secrets. These should be Base64 encoded versions of a PEM encoded certificate and private key. *(applicable only if MITM proxy is used)*
+- Existing Virtual Network ([VPC/VNET])
+- Existing Virtual Machine Image
   
 ## How to Use This Module
 
@@ -67,9 +66,9 @@ This example assumes that the following resources exist:
     - <https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/azure_cli>
     - <https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication-and-configuration>
     - <https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/provider_reference#authentication>
- 7. Initialize terraform and apply the module configurations using the commands below :
+ 7. Initialize terraform and apply the module configurations using the commands below:
 
-    NOTE: `terraform plan` will print out the execution plan which describes the actions Terraform will take in order to build your infrastructure to match the module configuration. If anything in the plan seems incorrect or dangerous, it is safe to abort here and not proceed to `terraform apply`
+    NOTE: `terraform plan` will print out the execution plan which describes the actions Terraform will take in order to build your infrastructure to match the module configuration. If anything in the plan seems incorrect or dangerous, it is safe to abort here and not proceed to `terraform apply`.
 
     ```
     terraform init
@@ -96,11 +95,9 @@ Unless amended, this example will not create an initial admin user using the IAC
    - Scroll down to the bottom of the display. Click on "Show advanced settings".
    - Scroll down to “System” and choose "Open your computer’s proxy settings".
    - Set Chrome proxy server settings.
-   
 2. Next, follow the instructions for your operating system to set up your proxy server settings:
    - [macOS](https://support.apple.com/en-ca/guide/mac-help/mchlp2591/mac)
    - [Windows](https://www.dummies.com/article/technology/computers/operating-systems/windows/windows-10/how-to-set-up-a-proxy-in-windows-10-140262/#tab2)
-   
 3. SSH to [(proxy/bastion)] via: `$ ssh -N -p 22 -D localhost:5000 <[(bastionuser/proxyuser)]>@<[(bastionhost/proxyserver)]> -i ../path/to/id_rsa`
 4. The TFE URL is now aacessible via [(proxy/bastion)].
 
@@ -120,4 +117,4 @@ The TFE Console is only available in a standalone environment
 1. Navigate to the URL supplied via the `login_url` Terraform output. (It may take several minutes for this to be available after initial deployment. You may monitor the progress of cloud init if desired on one of the instances.)
 2. Enter a `username`, `email`, and `password` for the initial user.
 3. Click `Create an account`.
-4. After the initial user is created you may access the TFE Application normally using the URL supplied via `tfe_application_url` Terraform output.
+4. After the initial user is created you may access the TFE Application normally using the URL supplied via `login_url` Terraform output.
