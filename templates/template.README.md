@@ -10,8 +10,7 @@ This example for Terraform Enterprise creates a TFE installation with the follow
 
 -  [(Standalone / [Active/Active](https://www.terraform.io/enterprise/install/automated/active-active))] architecture defined by `var.node_count`
 -  [(External Services / Mounted Disk)] production type
--  [(Airgapped)]
--  Airgapped (mocked)
+-  [Airgapped (mocked)]
 -  This example merely tests that the `airgap_url` package is able to install TFE. It does not, however, assume that the environment is air-gapped, and it therefore installs the prerequisites for an air-gapped installation too. 
 -  [(n1-standard-4 / Standard_D4_v3 / m5.xlarge)] virtual machine type
 -  [(Ubuntu 20.04,  RHEL 7.9)]
