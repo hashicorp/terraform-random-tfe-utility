@@ -8,14 +8,14 @@
 
 This example for Terraform Enterprise creates a TFE installation with the following traits:
 
--  [(Standalone / [Active/Active](https://www.terraform.io/enterprise/install/automated/active-active))] architecture defined by `var.node_count`
--  [(External Services / Mounted Disk)] production type
--  [Airgapped (mocked)]
--  This example merely tests that the `airgap_url` package is able to install TFE. It does not, however, assume that the environment is air-gapped, and it therefore installs the prerequisites for an air-gapped installation too. 
--  [(n1-standard-4 / Standard_D4_v3 / m5.xlarge)] virtual machine type
--  [(Ubuntu 20.04,  RHEL 7.9)]
--  A [(publicly / privately)] accessible [(HTTP / TCP)] load balancer with TLS [(termination / pass-through)] 
--  An ubuntu based [(mitm / squid)]proxy server with TLS termination 
+- [(Standalone / [Active/Active](https://www.terraform.io/enterprise/install/automated/active-active))] architecture defined by `var.node_count`
+- [(External Services / Mounted Disk)] production type
+- [Air gapped (mocked)]
+- This example merely tests that the `airgap_url` package is able to install TFE. It does not, however, assume that the environment is air gapped, and it therefore installs the prerequisites for an air gapped installation, too.
+- [(n1-standard-4 / Standard_D4_v3 / m5.xlarge)] virtual machine type
+- [(Ubuntu 20.04,  RHEL 7.9)]
+- A [(publicly / privately)] accessible [(HTTP / TCP)] load balancer with TLS [(termination / pass-through)] 
+- An ubuntu based [(mitm / squid)]proxy server with TLS termination 
 
 ## Prerequisites
 
@@ -27,7 +27,7 @@ This example for Terraform Enterprise creates a TFE installation with the follow
 This example assumes that the following resources exist:
 
 - TFE license is on a file path defined by `var.license_file` 
-- Airgap prerequisites :
+- Air gap prerequisites :
   - The vm image is prepared according to the [documentation](https://www.terraform.io/enterprise/install/interactive/installer#prepare-the-instance)
     - Certificate and key data is present on the vm image at the following paths (when applicable):
       - The value of the secret represented by the root module's `key_secret_id` variable is present at the  path defined by `var.tls_bootstrap_cert_pathname` (0600 access permissions).
