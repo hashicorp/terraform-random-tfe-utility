@@ -35,9 +35,9 @@ This example assumes that the following resources exist:
       - The value of the secret represented by the root module's `ca_certificate_secret_id` variable is present at the path:
         - RHEL   - /usr/share/pki/ca-trust-source/anchors/tfe-ca-certificate.crt
         - Ubuntu - /usr/local/share/ca-certificates/extra/tfe-ca-certificate.crt
-  - The airgap package is on a filepath defined by `var.tfe_license_bootstrap_airgap_package_path`.
+  - The air gap package is on a filepath defined by `var.tfe_license_bootstrap_airgap_package_path`.
   - The extracted Replicated package from https://install.terraform.io/airgap/latest.tar.gz is at `/tmp/replicated/replicated.tar.gz`.
-  - The URL of an airgap package
+  - The URL of an air gap package
 - A DNS zone
 - Valid managed SSL certificate to use with load balancer:
   - GCP   - Create/Import a managed SSL Certificate in Network Services -> Load Balancing to serve as the certificate for the DNS A Record.
