@@ -8,13 +8,14 @@
 
 This example for Terraform Enterprise creates a TFE installation with the following traits:
 
--  [(Standalone / [Active/Active](https://www.terraform.io/enterprise/install/automated/active-active))] architecture defined by `var.node_count`
--  [(External Services / Mounted Disk)] production type
--  [(Airgapped)] 
--  [(n1-standard-4 / Standard_D4_v3 / m5.xlarge)] virtual machine type
--  [(Ubuntu 20.04,  RHEL 7.9)]
--  A [(publicly / privately)] accessible [(HTTP / TCP)] load balancer with TLS [(termination / pass-through)] 
--  An ubuntu based [(mitm / squid)]proxy server with TLS termination 
+- [(Standalone / [Active/Active](https://www.terraform.io/enterprise/install/automated/active-active))] architecture defined by `var.node_count`
+- [(External Services / Mounted Disk)] production type
+- [Air gapped (mocked)]
+- This example merely tests that the `airgap_url` package is able to install TFE. It does not, however, assume that the environment is air gapped, and it therefore installs the prerequisites for an air gapped installation, too.
+- [(n1-standard-4 / Standard_D4_v3 / m5.xlarge)] virtual machine type
+- [(Ubuntu 20.04,  RHEL 7.9)]
+- A [(publicly / privately)] accessible [(HTTP / TCP)] load balancer with TLS [(termination / pass-through)] 
+- An ubuntu based [(mitm / squid)]proxy server with TLS termination 
 
 ## Prerequisites
 
@@ -26,17 +27,17 @@ This example for Terraform Enterprise creates a TFE installation with the follow
 This example assumes that the following resources exist:
 
 - TFE license is on a file path defined by `var.license_file` 
-- Airgap prerequisites :
-  - The vm image (only for completely air-gapped environment) is prepared according to the [documentation](https://www.terraform.io/enterprise/install/interactive/installer#prepare-the-instance)
+- Air gap prerequisites :
+  - The vm image is prepared according to the [documentation](https://www.terraform.io/enterprise/install/interactive/installer#prepare-the-instance)
     - Certificate and key data is present on the vm image at the following paths (when applicable):
-      - The value of the secret represented by the root module's key_secret_id variable is present at the  path defined by var.tls_bootstrap_cert_pathname (0600 access permissions).
-      - The value of the secret represented by the root module's certificate_secret_id variable is present at the path defined by var.tls_bootstrap_key_pathname (0600 access permissions).
-      - The value of the secret represented by the root module's ca_certificate_secret_id variable is present at the path:
+      - The value of the secret represented by the root module's `key_secret_id` variable is present at the  path defined by `var.tls_bootstrap_cert_pathname` (0600 access permissions).
+      - The value of the secret represented by the root module's `certificate_secret_id` variable is present at the path defined by `var.tls_bootstrap_key_pathname` (0600 access permissions).
+      - The value of the secret represented by the root module's `ca_certificate_secret_id` variable is present at the path:
         - RHEL   - /usr/share/pki/ca-trust-source/anchors/tfe-ca-certificate.crt
         - Ubuntu - /usr/local/share/ca-certificates/extra/tfe-ca-certificate.crt
-  - The URL of an airgap package
-  - The airgap package is on a filepath defined by var.tfe_license_bootstrap_airgap_package_path
-  - The extracted Replicated package from https://install.terraform.io/airgap/latest.tar.gz is at `/tmp/replicated/replicated.tar.gz`
+  - The air gap package is on a filepath defined by `var.tfe_license_bootstrap_airgap_package_path`.
+  - The extracted Replicated package from https://install.terraform.io/airgap/latest.tar.gz is at `/tmp/replicated/replicated.tar.gz`.
+  - The URL of an air gap package
 - A DNS zone
 - Valid managed SSL certificate to use with load balancer:
   - GCP   - Create/Import a managed SSL Certificate in Network Services -> Load Balancing to serve as the certificate for the DNS A Record.
