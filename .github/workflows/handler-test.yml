@@ -30,6 +30,17 @@ jobs:
           repository: hashicorp/terraform-aws-terraform-enterprise
           persist-credentials: false
 
+      - name: Set Terraform Backend to TFC Workspace
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          sed --in-place 's/terraform {/terraform {\n\
+            backend "remote" {\n\
+              organization = "terraform-enterprise-modules-test"\n\
+              workspaces {\n\
+                name = "aws-standalone-vault"\n\
+              }\n\
+            }\n/' versions.tf
+
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
         uses: actions/checkout@v2
