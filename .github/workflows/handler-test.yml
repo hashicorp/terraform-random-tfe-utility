@@ -141,7 +141,7 @@ jobs:
           IACT: ${{ steps.retrieve-iact.outputs.token }}
         run: |
           echo \
-            '{"username": "test", "email": "tf-onprem-team@hashicorp.com", "password": "$TFE_PASSWORD"}' \
+            '{"username": "test", "email": "team-tf-enterprise@hashicorp.com", "password": "$TFE_PASSWORD"}' \
             > ./payload.json
           response=$( \
             curl \
@@ -168,7 +168,7 @@ jobs:
           K6_PATHNAME: "./k6"
           TFE_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}"
           TFE_API_TOKEN: "${{ steps.retrieve-admin-token.outputs.token }}"
-          TFE_EMAIL: tf-onprem-team@hashicorp.com
+          TFE_EMAIL: team-tf-enterprise@hashicorp.com
         run: |
           make smoke-test
 
