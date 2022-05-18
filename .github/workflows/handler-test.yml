@@ -108,7 +108,7 @@ jobs:
         id: retrieve-health-check-url
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          terraform output -no-color -raw health_check_url
+          terraform output -no-color -raw ptfe_health_check
 
       - name: Wait For TFE
         id: wait-for-tfe
@@ -123,33 +123,21 @@ jobs:
         id: retrieve-tfe-url
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          terraform output -no-color -raw tfe_url
-
-      - name: Retrieve IACT URL
-        id: retrieve-iact-url
-        working-directory: ${{ env.WORK_DIR_PATH }}
-        run: |
-          terraform output -no-color -raw iact_url
+          terraform output -no-color -raw ptfe_endpoint
 
       - name: Retrieve IACT
         id: retrieve-iact
         env:
-          IACT_URL: ${{ steps.retrieve-iact-url.outputs.stdout }}
+          IACT_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}/admin/retrieve-iact"
         run: |
           token=$(curl --fail --retry 5 --verbose "$IACT_URL")
           echo "::set-output name=token::$token"
-
-      - name: Retrieve Initial Admin User URL
-        id: retrieve-initial-admin-user-url
-        working-directory: ${{ env.WORK_DIR_PATH }}
-        run: |
-          terraform output -no-color -raw initial_admin_user_url
 
       - name: Create Admin in TFE
         id: create-admin
         env:
           TFE_PASSWORD: ${{ secrets.TFE_PASSWORD }}
-          IAU_URL: ${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}
+          IAU_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}/admin/initial-admin-user"
           IACT: ${{ steps.retrieve-iact.outputs.token }}
         run: |
           echo \
