@@ -28,7 +28,6 @@ jobs:
         with:
           path: ${{ env.WORK_DIR_PATH }}
           repository: hashicorp/terraform-aws-terraform-enterprise
-          persist-credentials: false
 
       - name: Set Terraform Backend to TFC Workspace
         working-directory: ${{ env.WORK_DIR_PATH }}
