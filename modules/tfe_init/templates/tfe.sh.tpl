@@ -10,6 +10,8 @@ log_pathname="/var/log/ptfe.log"
 tfe_settings_file="ptfe-settings.json"
 tfe_settings_path="/etc/$tfe_settings_file"
 
+echo "[Terraform Enterprise] TESTING SOURCE BRANCH CHANGE" | tee -a $log_pathname
+
 # -----------------------------------------------------------------------------
 # Patching GCP Yum repo configuration (if GCP environment)
 # -----------------------------------------------------------------------------
