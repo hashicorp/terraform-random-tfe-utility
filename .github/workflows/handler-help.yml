@@ -27,10 +27,27 @@ jobs:
 
             ## Test Case Names
             
-            * aws-standalone-vault
+            ### AWS
+
             * aws-active-active-rhel7-proxy
-            * azure-standalone-external
-            * azure-standalone-mounted-disk
+            * aws-private-active-active
+            * aws-private-tcp-active-active
+            * aws-public-active-active
+            * aws-standalone-vault
+
+            ## AzureRM
+
+            * azurerm-private-active-active
+            * azurerm-private-tcp-active-active
+            * azurerm-public-active-active
+            * azurerm-standalone-external
+            * azurerm-standalone-mounted-disk
+
+            ## Google
+
+            * google-private-active-active
+            * google-private-tcp-active-active
+            * google-public-active-active
             * google-standalone-external-rhel8-worker
             * google-standalone-mounted-disk
           reaction-type: confused
