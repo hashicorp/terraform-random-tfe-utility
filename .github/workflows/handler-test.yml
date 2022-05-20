@@ -36,7 +36,7 @@ jobs:
             backend "remote" {\n\
               organization = "terraform-enterprise-modules-test"\n\
               workspaces {\n\
-                name = "aws-standalone-vault"\n\
+                name = "utility-aws-standalone-vault"\n\
               }\n\
             }\n/' versions.tf
 
@@ -228,7 +228,7 @@ jobs:
             backend "remote" {\n\
               organization = "terraform-enterprise-modules-test"\n\
               workspaces {\n\
-                name = "aws-active-active-rhel7-proxy"\n\
+                name = "utility-aws-active-active-rhel7-proxy"\n\
               }\n\
             }\n/' versions.tf
 
