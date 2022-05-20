@@ -6,81 +6,6 @@ on:
       - destroy-command
 
 jobs:
-  aws_standalone_vault:
-    name: Destroy resources from AWS Standalone Vault
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-standalone-vault') }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    env:
-      WORK_DIR_PATH: ./tests/aws-standalone-vault
-      AWS_DEFAULT_REGION: us-east-2
-    steps:
-      - name: Create URL to the run output
-        id: vars
-        run: echo ::set-output name=run-url::https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
-
-      # Checkout the branch of the AWS TFE module to be used to test changes
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          path: ${{ env.WORK_DIR_PATH }}
-          repository: hashicorp/terraform-aws-terraform-enterprise
-
-      - name: Set Terraform Backend to TFC Workspace
-        working-directory: ${{ env.WORK_DIR_PATH }}
-        run: |
-          sed --in-place 's/terraform {/terraform {\n\
-            backend "remote" {\n\
-              organization = "terraform-enterprise-modules-test"\n\
-              workspaces {\n\
-                name = "utility-aws-standalone-vault"\n\
-              }\n\
-            }\n/' versions.tf
-
-      - name: Set Terraform Utility Module Sources
-        working-directory: ${{ env.WORK_DIR_PATH }}
-        env:
-          SHA: ${{ github.event.client_payload.pull_request.head.sha }}
-        run: |
-          sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
-          sed --in-place "s/?ref=main/?ref=$SHA/" tests/standalone-vault/main.tf
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          cli_config_credentials_hostname: 'app.terraform.io'
-          cli_config_credentials_token: ${{ secrets.AWS_STANDALONE_VAULT_TFC_TOKEN }}
-          terraform_version: 1.1.5
-          terraform_wrapper: true
-
-      - name: Terraform Init
-        id: init
-        working-directory: ${{ env.WORK_DIR_PATH }}
-        run: terraform init -input=false -no-color
-
-      - name: Terraform Destroy
-        id: destroy
-        working-directory: ${{ env.WORK_DIR_PATH }}
-        run: terraform destroy -auto-approve -input=false -no-color
-
-      - name: Update comment
-        if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
-          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
-          body: |
-            ${{ format('### {0} Terraform AWS Standalone Vault Destruction Report', job.status == 'success' && ':white_check_mark:' || ':x:') }}
-
-            ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
-
-            ${{ format('- {0} Terraform Init', steps.init.outcome == 'success' && ':white_check_mark:' || ':x:') }}
-
-            ${{ format('- {0} Terraform Destroy', steps.destroy.outcome == 'success' && ':white_check_mark:' || ':x:') }}
-
   aws_active_active_rhel7_proxy:
     name: Destroy resources from AWS Active-Active RHEL7 Proxy
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-active-active-rhel7-proxy') }}
@@ -126,7 +51,7 @@ jobs:
         uses: hashicorp/setup-terraform@v1
         with:
           cli_config_credentials_hostname: 'app.terraform.io'
-          cli_config_credentials_token: ${{ secrets.AWS_ACTIVE_ACTIVE_RHEL7_PROXY_TFC_TOKEN }}
+          cli_config_credentials_token: ${{ secrets.UTILITY_AWS_ACTIVE_ACTIVE_RHEL7_PROXY_TFC_TOKEN }}
           terraform_version: 1.1.5
           terraform_wrapper: true
 
@@ -149,6 +74,287 @@ jobs:
           comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
           body: |
             ${{ format('### {0} Terraform AWS Active-Active RHEL7 Proxy Destruction Report', job.status == 'success' && ':white_check_mark:' || ':x:') }}
+
+            ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
+
+            ${{ format('- {0} Terraform Init', steps.init.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+
+            ${{ format('- {0} Terraform Destroy', steps.destroy.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+
+  aws_private_active_active:
+    name: Destroy resources from AWS Private Active-Active
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-active-active') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      WORK_DIR_PATH: ./tests/aws-private-active-active
+      AWS_DEFAULT_REGION: us-east-2
+    steps:
+      - name: Create URL to the run output
+        id: vars
+        run: echo ::set-output name=run-url::https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+
+      # Checkout the branch of the AWS TFE module to be used to test changes
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.WORK_DIR_PATH }}
+          repository: hashicorp/terraform-aws-terraform-enterprise
+
+      - name: Set Terraform Backend to TFC Workspace
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          sed --in-place 's/name = \"aws-private-active-active\"/name = \"utility-aws-private-active-active\"/' versions.tf 
+
+      - name: Set Terraform Utility Module Sources
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        env:
+          SHA: ${{ github.event.client_payload.pull_request.head.sha }}
+        run: |
+          sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" fixtures/test_proxy/main.tf
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_hostname: 'app.terraform.io'
+          cli_config_credentials_token: ${{ secrets.UTILITY_AWS_PRIVATE_ACTIVE_ACTIVE_TFC_TOKEN }}
+          terraform_version: 1.1.5
+          terraform_wrapper: true
+
+      - name: Terraform Init
+        id: init
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform init -input=false -no-color
+
+      - name: Terraform Destroy
+        id: destroy
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform destroy -auto-approve -input=false -no-color
+
+      - name: Update comment
+        if: ${{ always() }}
+        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            ${{ format('### {0} Terraform AWS Private Active-Active Destruction Report', job.status == 'success' && ':white_check_mark:' || ':x:') }}
+
+            ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
+
+            ${{ format('- {0} Terraform Init', steps.init.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+
+            ${{ format('- {0} Terraform Destroy', steps.destroy.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+
+  aws_private_tcp_active_active:
+    name: Destroy resources from AWS Private TCP Active-Active
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-tcp-active-active') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      WORK_DIR_PATH: ./tests/aws-private-tcp-active-active
+      AWS_DEFAULT_REGION: us-east-2
+    steps:
+      - name: Create URL to the run output
+        id: vars
+        run: echo ::set-output name=run-url::https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+
+      # Checkout the branch of the AWS TFE module to be used to test changes
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.WORK_DIR_PATH }}
+          repository: hashicorp/terraform-aws-terraform-enterprise
+
+      - name: Set Terraform Backend to TFC Workspace
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          sed --in-place 's/name = \"aws-private-tcp-active-active\"/name = \"utility-aws-private-tcp-active-active\"/' versions.tf 
+
+      - name: Set Terraform Utility Module Sources
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        env:
+          SHA: ${{ github.event.client_payload.pull_request.head.sha }}
+        run: |
+          sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" fixtures/test_proxy/main.tf
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_hostname: 'app.terraform.io'
+          cli_config_credentials_token: ${{ secrets.UTILITY_AWS_PRIVATE_TCP_ACTIVE_ACTIVE_TFC_TOKEN }}
+          terraform_version: 1.1.5
+          terraform_wrapper: true
+
+      - name: Terraform Init
+        id: init
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform init -input=false -no-color
+
+      - name: Terraform Destroy
+        id: destroy
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform destroy -auto-approve -input=false -no-color
+
+      - name: Update comment
+        if: ${{ always() }}
+        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            ${{ format('### {0} Terraform AWS Private TCP Active-Active Destruction Report', job.status == 'success' && ':white_check_mark:' || ':x:') }}
+
+            ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
+
+            ${{ format('- {0} Terraform Init', steps.init.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+
+            ${{ format('- {0} Terraform Destroy', steps.destroy.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+
+  aws_public_active_active:
+    name: Destroy resources from AWS Public Active-Active
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-public-active-active') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      WORK_DIR_PATH: ./tests/aws-public-active-active
+      AWS_DEFAULT_REGION: us-east-2
+    steps:
+      - name: Create URL to the run output
+        id: vars
+        run: echo ::set-output name=run-url::https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+
+      # Checkout the branch of the AWS TFE module to be used to test changes
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.WORK_DIR_PATH }}
+          repository: hashicorp/terraform-aws-terraform-enterprise
+
+      - name: Set Terraform Backend to TFC Workspace
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          sed --in-place 's/name = \"aws-public-active-active\"/name = \"utility-aws-public-active-active\"/' versions.tf 
+
+      - name: Set Terraform Utility Module Sources
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        env:
+          SHA: ${{ github.event.client_payload.pull_request.head.sha }}
+        run: |
+          sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_hostname: 'app.terraform.io'
+          cli_config_credentials_token: ${{ secrets.UTILITY_AWS_PUBLIC_ACTIVE_ACTIVE_TFC_TOKEN }}
+          terraform_version: 1.1.5
+          terraform_wrapper: true
+
+      - name: Terraform Init
+        id: init
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform init -input=false -no-color
+
+      - name: Terraform Destroy
+        id: destroy
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform destroy -auto-approve -input=false -no-color
+
+      - name: Update comment
+        if: ${{ always() }}
+        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            ${{ format('### {0} Terraform AWS Public Active-Active Destruction Report', job.status == 'success' && ':white_check_mark:' || ':x:') }}
+
+            ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
+
+            ${{ format('- {0} Terraform Init', steps.init.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+
+            ${{ format('- {0} Terraform Destroy', steps.destroy.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+
+  aws_standalone_vault:
+    name: Destroy resources from AWS Standalone Vault
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-standalone-vault') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      WORK_DIR_PATH: ./tests/aws-standalone-vault
+      AWS_DEFAULT_REGION: us-east-2
+    steps:
+      - name: Create URL to the run output
+        id: vars
+        run: echo ::set-output name=run-url::https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+
+      # Checkout the branch of the AWS TFE module to be used to test changes
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.WORK_DIR_PATH }}
+          repository: hashicorp/terraform-aws-terraform-enterprise
+
+      - name: Set Terraform Backend to TFC Workspace
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          sed --in-place 's/terraform {/terraform {\n\
+            backend "remote" {\n\
+              organization = "terraform-enterprise-modules-test"\n\
+              workspaces {\n\
+                name = "utility-aws-standalone-vault"\n\
+              }\n\
+            }\n/' versions.tf
+
+      - name: Set Terraform Utility Module Sources
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        env:
+          SHA: ${{ github.event.client_payload.pull_request.head.sha }}
+        run: |
+          sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" tests/standalone-vault/main.tf
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_hostname: 'app.terraform.io'
+          cli_config_credentials_token: ${{ secrets.UTILITY_AWS_STANDALONE_VAULT_TFC_TOKEN }}
+          terraform_version: 1.1.5
+          terraform_wrapper: true
+
+      - name: Terraform Init
+        id: init
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform init -input=false -no-color
+
+      - name: Terraform Destroy
+        id: destroy
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform destroy -auto-approve -input=false -no-color
+
+      - name: Update comment
+        if: ${{ always() }}
+        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          body: |
+            ${{ format('### {0} Terraform AWS Standalone Vault Destruction Report', job.status == 'success' && ':white_check_mark:' || ':x:') }}
 
             ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
 
