@@ -14,7 +14,7 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      WORK_DIR_PATH: ./tests/aws-active-active-rhel7-proxy
+      WORK_DIR_PATH: ./tests/active-active-rhel7-proxy
       AWS_DEFAULT_REGION: us-east-2
     steps:
       - name: Create URL to the run output
@@ -25,7 +25,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: ${{ env.WORK_DIR_PATH }}
           repository: hashicorp/terraform-aws-terraform-enterprise
 
       - name: Set Terraform Backend to TFC Workspace
@@ -44,8 +43,8 @@ jobs:
         env:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
-          sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
-          sed --in-place "s/?ref=main/?ref=$SHA/" fixtures/test_proxy/main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../fixtures/test_proxy/main.tf
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -89,7 +88,7 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      WORK_DIR_PATH: ./tests/aws-private-active-active
+      WORK_DIR_PATH: ./tests/private-active-active
       AWS_DEFAULT_REGION: us-east-2
     steps:
       - name: Create URL to the run output
@@ -100,21 +99,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: ${{ env.WORK_DIR_PATH }}
           repository: hashicorp/terraform-aws-terraform-enterprise
 
-      - name: Set Terraform Backend to TFC Workspace
+      - name: Update Terraform Backend to TFC Workspace for Utility Module
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          sed --in-place 's/name = \"aws-private-active-active\"/name = \"utility-aws-private-active-active\"/' versions.tf 
+          sed --in-place 's/aws-private-active-active/utility-aws-private-active-active/' versions.tf
 
       - name: Set Terraform Utility Module Sources
         working-directory: ${{ env.WORK_DIR_PATH }}
         env:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
-          sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
-          sed --in-place "s/?ref=main/?ref=$SHA/" fixtures/test_proxy/main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../fixtures/test_proxy/main.tf
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -158,7 +156,7 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      WORK_DIR_PATH: ./tests/aws-private-tcp-active-active
+      WORK_DIR_PATH: ./tests/private-tcp-active-active
       AWS_DEFAULT_REGION: us-east-2
     steps:
       - name: Create URL to the run output
@@ -169,21 +167,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: ${{ env.WORK_DIR_PATH }}
           repository: hashicorp/terraform-aws-terraform-enterprise
 
-      - name: Set Terraform Backend to TFC Workspace
+      - name: Update Terraform Backend to TFC Workspace for Utility Module
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          sed --in-place 's/name = \"aws-private-tcp-active-active\"/name = \"utility-aws-private-tcp-active-active\"/' versions.tf 
+          sed --in-place 's/aws-private-tcp-active-active/utility-aws-private-tcp-active-active/' versions.tf 
 
       - name: Set Terraform Utility Module Sources
         working-directory: ${{ env.WORK_DIR_PATH }}
         env:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
-          sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
-          sed --in-place "s/?ref=main/?ref=$SHA/" fixtures/test_proxy/main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../fixtures/test_proxy/main.tf
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -227,7 +224,7 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      WORK_DIR_PATH: ./tests/aws-public-active-active
+      WORK_DIR_PATH: ./tests/public-active-active
       AWS_DEFAULT_REGION: us-east-2
     steps:
       - name: Create URL to the run output
@@ -238,20 +235,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: ${{ env.WORK_DIR_PATH }}
           repository: hashicorp/terraform-aws-terraform-enterprise
 
-      - name: Set Terraform Backend to TFC Workspace
+      - name: Update Terraform Backend to TFC Workspace for Utility Module
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          sed --in-place 's/name = \"aws-public-active-active\"/name = \"utility-aws-public-active-active\"/' versions.tf 
+          sed --in-place 's/aws-public-active-active/utility-aws-public-active-active/' versions.tf
 
       - name: Set Terraform Utility Module Sources
         working-directory: ${{ env.WORK_DIR_PATH }}
         env:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
-          sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -295,7 +291,7 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      WORK_DIR_PATH: ./tests/aws-standalone-vault
+      WORK_DIR_PATH: ./tests/standalone-vault
       AWS_DEFAULT_REGION: us-east-2
     steps:
       - name: Create URL to the run output
@@ -306,7 +302,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: ${{ env.WORK_DIR_PATH }}
           repository: hashicorp/terraform-aws-terraform-enterprise
 
       - name: Set Terraform Backend to TFC Workspace
@@ -325,8 +320,8 @@ jobs:
         env:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
           sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
-          sed --in-place "s/?ref=main/?ref=$SHA/" tests/standalone-vault/main.tf
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1

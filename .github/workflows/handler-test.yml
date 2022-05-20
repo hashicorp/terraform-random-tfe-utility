@@ -482,7 +482,7 @@ jobs:
         with:
           cli_config_credentials_hostname: 'app.terraform.io'
           cli_config_credentials_token: ${{ secrets.UTILITY_AWS_PRIVATE_TCP_ACTIVE_ACTIVE_TFC_TOKEN }}
-          terraform_version: 0.14.8
+          terraform_version: 1.1.5
           terraform_wrapper: true
 
       # Run Terraform commands between these comments vvv
@@ -646,7 +646,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@v1
+        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -722,7 +722,7 @@ jobs:
         with:
           cli_config_credentials_hostname: 'app.terraform.io'
           cli_config_credentials_token: ${{ secrets.UTILITY_AWS_PUBLIC_ACTIVE_ACTIVE_TFC_TOKEN }}
-          terraform_version: 0.14.8
+          terraform_version: 1.1.5
           terraform_wrapper: true
 
       # Run Terraform commands between these comments vvv
@@ -837,7 +837,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@v1
+        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
