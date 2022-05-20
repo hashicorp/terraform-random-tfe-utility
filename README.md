@@ -34,4 +34,3 @@ Test modules from the following repositories are used:
 * [AWS](https://github.com/hashicorp/terraform-aws-terraform-enterprise/blob/main/tests/README.md)
 * [AzureRM](https://github.com/hashicorp/terraform-azurerm-terraform-enterprise/blob/main/tests/README.md)
 * [Google](https://github.com/hashicorp/terraform-google-terraform-enterprise/blob/main/tests/README.md)
-test
