@@ -38,7 +38,6 @@ jobs:
                 name = "utility-aws-active-active-rhel7-proxy"\n\
               }\n\
             }\n/' versions.tf
-            cat versions.tf
 
       - name: Set Terraform Utility Module Sources
         working-directory: ${{ env.WORK_DIR_PATH }}
@@ -46,9 +45,7 @@ jobs:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
           sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
-          cat ../../main.tf
           sed --in-place "s/?ref=main/?ref=$SHA/" ../../fixtures/test_proxy/main.tf
-          cat ../../fixtures/test_proxy/main.tf
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
@@ -220,8 +217,7 @@ jobs:
       - name: Update Terraform Backend to TFC Workspace for Utility Module
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          sed --in-place s/aws-private-active-active/utility-aws-private-active-active/' versions.tf
-          cat versions.tf
+          sed --in-place 's/aws-private-active-active/utility-aws-private-active-active/' versions.tf
 
       - name: Set Terraform Utility Module Sources
         working-directory: ${{ env.WORK_DIR_PATH }}
@@ -229,9 +225,7 @@ jobs:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
           sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
-          cat ../../main.tf
-          sed --in-place "s/?ref=main/?ref=$SHA/" fixtures/test_proxy/main.tf
-          cat fixtures/test_proxy/main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../fixtures/test_proxy/main.tf
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
@@ -457,7 +451,6 @@ jobs:
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           sed --in-place 's/aws-private-tcp-active-active/utility-aws-private-tcp-active-active/' versions.tf 
-          cat versions.tf
 
       - name: Set Terraform Utility Module Sources
         working-directory: ${{ env.WORK_DIR_PATH }}
@@ -465,9 +458,7 @@ jobs:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
           sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
-          ../../main.tf
-          sed --in-place "s/?ref=main/?ref=$SHA/" fixtures/test_proxy/main.tf
-          fixtures/test_proxy/main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../fixtures/test_proxy/main.tf
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
@@ -701,7 +692,6 @@ jobs:
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           sed --in-place 's/aws-public-active-active/utility-aws-public-active-active/' versions.tf
-          cat versions.tf
 
       - name: Set Terraform Utility Module Sources
         working-directory: ${{ env.WORK_DIR_PATH }}
@@ -709,7 +699,6 @@ jobs:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
           sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
-          cat ../../main.tf
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
@@ -900,7 +889,6 @@ jobs:
                 name = "utility-aws-standalone-vault"\n\
               }\n\
             }\n/' versions.tf
-          cat versions.tf
 
       - name: Set Terraform Utility Module Sources
         working-directory: ${{ env.WORK_DIR_PATH }}
@@ -908,9 +896,7 @@ jobs:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
           sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
-          cat ../../main.tf
           sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
-          cat main.tf
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
