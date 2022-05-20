@@ -219,7 +219,8 @@ jobs:
       - name: Update Terraform Backend to TFC Workspace for Utility Module
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          sed --in-place 's/name = \"aws-private-active-active\"/name = \"utility-aws-private-active-active\"/' versions.tf 
+          sed --in-place 's/name = \"aws-private-active-active\"/name = \"utility-aws-private-active-active\"/' versions.tf
+          cat versions.tf
 
       - name: Set Terraform Utility Module Sources
         working-directory: ${{ env.WORK_DIR_PATH }}
@@ -695,7 +696,8 @@ jobs:
       - name: Update Terraform Backend to TFC Workspace for Utility Module
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          sed --in-place 's/name = \"aws-public-active-active\"/name = \"utility-aws-public-active-active\"/' versions.tf 
+          sed --in-place 's/name = "aws-public-active-active"/name = "utility-aws-public-active-active"/' versions.tf
+          cat versions.tf
 
       - name: Set Terraform Utility Module Sources
         working-directory: ${{ env.WORK_DIR_PATH }}
