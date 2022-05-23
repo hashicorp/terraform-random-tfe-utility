@@ -84,11 +84,6 @@ jobs:
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: terraform validate -no-color
 
-      - name: Write GitHub Actions runner CIDR to Terraform Variables
-        working-directory: ${{ env.WORK_DIR_PATH }}
-        run: |
-          echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" > github.auto.tfvars
-
       - name: Terraform Apply
         id: apply
         working-directory: ${{ env.WORK_DIR_PATH }}
@@ -100,6 +95,46 @@ jobs:
         run: |
           terraform output -no-color -raw ptfe_health_check
 
+      - name: Retrieve Instance ID
+        id: retrieve-instance-id
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          terraform output -no-color -raw proxy_instance_id
+
+      - name: Write Private SSH Key
+        env:
+          SSH_KEY_BASE64: ${{ secrets.AWS_ACTIVE_ACTIVE_RHEL7_PROXY_SSH_KEY_BASE64 }}
+        run: |
+          echo "$SSH_KEY_BASE64" | base64 --decode > ./ssh-key.pem
+          chmod 0400 ./ssh-key.pem
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACTIVE_ACTIVE_RHEL7_PROXY_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ACTIVE_ACTIVE_RHEL7_PROXY_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+          role-to-assume: ${{ secrets.AWS_ACTIVE_ACTIVE_RHEL7_PROXY_AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 2400
+          role-skip-session-tagging: true
+
+      - name: Start SOCKS5 Proxy
+        env:
+          INSTANCE_ID: ${{ steps.retrieve-instance-id.outputs.stdout }}
+        run: |
+          aws ec2 wait instance-status-ok --instance-ids "$INSTANCE_ID"
+          ssh \
+            -o 'BatchMode yes' \
+            -o 'StrictHostKeyChecking accept-new' \
+            -o 'ProxyCommand sh -c \
+              "aws ssm start-session \
+                --target %h \
+                --document-name AWS-StartSSHSession \
+                --parameters \"portNumber=%p\""' \
+            -i ./ssh-key.pem \
+            -f -N -p 22 -D localhost:5000 \
+            ubuntu@"$INSTANCE_ID"
+
       - name: Wait For TFE
         id: wait-for-tfe
         timeout-minutes: 15
@@ -107,7 +142,11 @@ jobs:
           HEALTH_CHECK_URL: ${{ steps.retrieve-health-check-url.outputs.stdout }}
         run: |
           echo "Curling \`health_check_url\` for a return status of 200..."
-          while ! curl -sfS --max-time 5 "$HEALTH_CHECK_URL"; do sleep 5; done
+          while ! curl \
+            -sfS --max-time 5 \
+            --proxy socks5://localhost:5000 \
+            $HEALTH_CHECK_URL; \
+            do sleep 5; done
 
       - name: Retrieve TFE URL
         id: retrieve-tfe-url
@@ -120,7 +159,7 @@ jobs:
         env:
           IACT_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}/admin/retrieve-iact"
         run: |
-          token=$(curl --fail --retry 5 --verbose "$IACT_URL")
+          token=$(curl --fail --retry 5 --verbose --proxy socks5://localhost:5000 "$IACT_URL")
           echo "::set-output name=token::$token"
 
       - name: Create Admin in TFE
@@ -140,6 +179,7 @@ jobs:
             --verbose \
             --header 'Content-Type: application/json' \
             --data @./payload.json \
+            --proxy socks5://localhost:5000 \
             "$IAU_URL"?token="$IACT")
           echo "::set-output name=response::$response"
 
@@ -159,6 +199,8 @@ jobs:
           TFE_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}"
           TFE_API_TOKEN: "${{ steps.retrieve-admin-token.outputs.token }}"
           TFE_EMAIL: team-tf-enterprise@hashicorp.com
+          http_proxy: socks5://localhost:5000/
+          https_proxy: socks5://localhost:5000/
         run: |
           make smoke-test
 
