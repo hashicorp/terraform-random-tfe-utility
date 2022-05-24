@@ -14,7 +14,7 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      WORK_DIR_PATH: ./tests/aws-active-active-rhel7-proxy
+      WORK_DIR_PATH: ./tests/active-active-rhel7-proxy
       K6_WORK_DIR_PATH: ./tests/tfe-load-test
       AWS_DEFAULT_REGION: us-east-2
     steps:
@@ -26,7 +26,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: ${{ env.WORK_DIR_PATH }}
           repository: hashicorp/terraform-aws-terraform-enterprise
 
       - name: Set Terraform Backend to TFC Workspace
@@ -45,8 +44,8 @@ jobs:
         env:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
-          sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
-          sed --in-place "s/?ref=main/?ref=$SHA/" fixtures/test_proxy/main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../fixtures/test_proxy/main.tf
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
@@ -85,11 +84,6 @@ jobs:
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: terraform validate -no-color
 
-      - name: Write GitHub Actions runner CIDR to Terraform Variables
-        working-directory: ${{ env.WORK_DIR_PATH }}
-        run: |
-          echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" > github.auto.tfvars
-
       - name: Terraform Apply
         id: apply
         working-directory: ${{ env.WORK_DIR_PATH }}
@@ -101,6 +95,46 @@ jobs:
         run: |
           terraform output -no-color -raw ptfe_health_check
 
+      - name: Retrieve Instance ID
+        id: retrieve-instance-id
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          terraform output -no-color -raw proxy_instance_id
+
+      - name: Write Private SSH Key
+        env:
+          SSH_KEY_BASE64: ${{ secrets.AWS_ACTIVE_ACTIVE_RHEL7_PROXY_SSH_KEY_BASE64 }}
+        run: |
+          echo "$SSH_KEY_BASE64" | base64 --decode > ./ssh-key.pem
+          chmod 0400 ./ssh-key.pem
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACTIVE_ACTIVE_RHEL7_PROXY_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ACTIVE_ACTIVE_RHEL7_PROXY_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+          role-to-assume: ${{ secrets.AWS_ACTIVE_ACTIVE_RHEL7_PROXY_AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 2400
+          role-skip-session-tagging: true
+
+      - name: Start SOCKS5 Proxy
+        env:
+          INSTANCE_ID: ${{ steps.retrieve-instance-id.outputs.stdout }}
+        run: |
+          aws ec2 wait instance-status-ok --instance-ids "$INSTANCE_ID"
+          ssh \
+            -o 'BatchMode yes' \
+            -o 'StrictHostKeyChecking accept-new' \
+            -o 'ProxyCommand sh -c \
+              "aws ssm start-session \
+                --target %h \
+                --document-name AWS-StartSSHSession \
+                --parameters \"portNumber=%p\""' \
+            -i ./ssh-key.pem \
+            -f -N -p 22 -D localhost:5000 \
+            ubuntu@"$INSTANCE_ID"
+
       - name: Wait For TFE
         id: wait-for-tfe
         timeout-minutes: 15
@@ -108,7 +142,11 @@ jobs:
           HEALTH_CHECK_URL: ${{ steps.retrieve-health-check-url.outputs.stdout }}
         run: |
           echo "Curling \`health_check_url\` for a return status of 200..."
-          while ! curl -sfS --max-time 5 "$HEALTH_CHECK_URL"; do sleep 5; done
+          while ! curl \
+            -sfS --max-time 5 \
+            --proxy socks5://localhost:5000 \
+            $HEALTH_CHECK_URL; \
+            do sleep 5; done
 
       - name: Retrieve TFE URL
         id: retrieve-tfe-url
@@ -121,7 +159,7 @@ jobs:
         env:
           IACT_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}/admin/retrieve-iact"
         run: |
-          token=$(curl --fail --retry 5 --verbose "$IACT_URL")
+          token=$(curl --fail --retry 5 --verbose --proxy socks5://localhost:5000 "$IACT_URL")
           echo "::set-output name=token::$token"
 
       - name: Create Admin in TFE
@@ -141,6 +179,7 @@ jobs:
             --verbose \
             --header 'Content-Type: application/json' \
             --data @./payload.json \
+            --proxy socks5://localhost:5000 \
             "$IAU_URL"?token="$IACT")
           echo "::set-output name=response::$response"
 
@@ -160,6 +199,8 @@ jobs:
           TFE_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}"
           TFE_API_TOKEN: "${{ steps.retrieve-admin-token.outputs.token }}"
           TFE_EMAIL: team-tf-enterprise@hashicorp.com
+          http_proxy: socks5://localhost:5000/
+          https_proxy: socks5://localhost:5000/
         run: |
           make smoke-test
 
@@ -201,7 +242,7 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      WORK_DIR_PATH: ./tests/aws-private-active-active
+      WORK_DIR_PATH: ./tests/private-active-active
       K6_WORK_DIR_PATH: ./tests/tfe-load-test
       AWS_DEFAULT_REGION: us-east-2
     steps:
@@ -213,22 +254,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: ${{ env.WORK_DIR_PATH }}
           repository: hashicorp/terraform-aws-terraform-enterprise
 
       - name: Update Terraform Backend to TFC Workspace for Utility Module
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          sed --in-place 's/name = \"aws-private-active-active\"/name = \"utility-aws-private-active-active\"/' versions.tf
-          cat versions.tf
+          sed --in-place 's/aws-private-active-active/utility-aws-private-active-active/' versions.tf
 
       - name: Set Terraform Utility Module Sources
         working-directory: ${{ env.WORK_DIR_PATH }}
         env:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
-          sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
-          sed --in-place "s/?ref=main/?ref=$SHA/" fixtures/test_proxy/main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../fixtures/test_proxy/main.tf
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
@@ -436,7 +475,7 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      WORK_DIR_PATH: ./tests/aws-private-tcp-active-active
+      WORK_DIR_PATH: ./tests/private-tcp-active-active
       K6_WORK_DIR_PATH: ./tests/tfe-load-test
       AWS_DEFAULT_REGION: us-east-2
     steps:
@@ -448,21 +487,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: ${{ env.WORK_DIR_PATH }}
           repository: hashicorp/terraform-aws-terraform-enterprise
 
       - name: Update Terraform Backend to TFC Workspace for Utility Module
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          sed --in-place 's/name = \"aws-private-tcp-active-active\"/name = \"utility-aws-private-tcp-active-active\"/' versions.tf 
+          sed --in-place 's/aws-private-tcp-active-active/utility-aws-private-tcp-active-active/' versions.tf 
 
       - name: Set Terraform Utility Module Sources
         working-directory: ${{ env.WORK_DIR_PATH }}
         env:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
-          sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
-          sed --in-place "s/?ref=main/?ref=$SHA/" fixtures/test_proxy/main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../fixtures/test_proxy/main.tf
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
@@ -486,7 +524,7 @@ jobs:
         with:
           cli_config_credentials_hostname: 'app.terraform.io'
           cli_config_credentials_token: ${{ secrets.UTILITY_AWS_PRIVATE_TCP_ACTIVE_ACTIVE_TFC_TOKEN }}
-          terraform_version: 0.14.8
+          terraform_version: 1.1.5
           terraform_wrapper: true
 
       # Run Terraform commands between these comments vvv
@@ -650,7 +688,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@v1
+        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -678,7 +716,7 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      WORK_DIR_PATH: ./tests/aws-public-active-active
+      WORK_DIR_PATH: ./tests/public-active-active
       K6_WORK_DIR_PATH: ./tests/tfe-load-test
       AWS_DEFAULT_REGION: us-east-2
     steps:
@@ -690,21 +728,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: ${{ env.WORK_DIR_PATH }}
           repository: hashicorp/terraform-aws-terraform-enterprise
 
       - name: Update Terraform Backend to TFC Workspace for Utility Module
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          sed --in-place 's/name = "aws-public-active-active"/name = "utility-aws-public-active-active"/' versions.tf
-          cat versions.tf
+          sed --in-place 's/aws-public-active-active/utility-aws-public-active-active/' versions.tf
 
       - name: Set Terraform Utility Module Sources
         working-directory: ${{ env.WORK_DIR_PATH }}
         env:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
-          sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
@@ -728,7 +764,7 @@ jobs:
         with:
           cli_config_credentials_hostname: 'app.terraform.io'
           cli_config_credentials_token: ${{ secrets.UTILITY_AWS_PUBLIC_ACTIVE_ACTIVE_TFC_TOKEN }}
-          terraform_version: 0.14.8
+          terraform_version: 1.1.5
           terraform_wrapper: true
 
       # Run Terraform commands between these comments vvv
@@ -843,7 +879,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@v1
+        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -871,7 +907,7 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      WORK_DIR_PATH: ./tests/aws-standalone-vault
+      WORK_DIR_PATH: ./tests/standalone-vault
       K6_WORK_DIR_PATH: ./tests/tfe-load-test
       AWS_DEFAULT_REGION: us-east-2
     steps:
@@ -883,7 +919,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: ${{ env.WORK_DIR_PATH }}
           repository: hashicorp/terraform-aws-terraform-enterprise
 
       - name: Set Terraform Backend to TFC Workspace
@@ -902,8 +937,8 @@ jobs:
         env:
           SHA: ${{ github.event.client_payload.pull_request.head.sha }}
         run: |
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
           sed --in-place "s/?ref=main/?ref=$SHA/" main.tf
-          sed --in-place "s/?ref=main/?ref=$SHA/" tests/standalone-vault/main.tf
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
