@@ -11,17 +11,6 @@ tfe_settings_file="ptfe-settings.json"
 tfe_settings_path="/etc/$tfe_settings_file"
 
 # -----------------------------------------------------------------------------
-# Patching GCP Yum repo configuration (if GCP environment)
-# -----------------------------------------------------------------------------
-%{ if cloud == "google" && distribution == "rhel" ~}
-echo "[Terraform Enterprise] Patching GCP Yum repo configuration" | tee -a $log_pathname
-# workaround for GCP RHEL 7 known issue 
-# https://cloud.google.com/compute/docs/troubleshooting/known-issues#keyexpired
-sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
-yum makecache
-%{ endif ~}
-
-# -----------------------------------------------------------------------------
 # Install jq and cloud specific packages (if not an airgapped environment)
 # -----------------------------------------------------------------------------
 %{ if (airgap_url == null && airgap_pathname == null) || (airgap_url != null && airgap_pathname != null) ~}
