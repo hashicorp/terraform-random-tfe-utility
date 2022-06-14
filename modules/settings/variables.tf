@@ -497,7 +497,8 @@ variable "gcs_credentials" {
   default     = null
   type        = string
   description = <<-EOD
-  (Required when object storage is in GCP) JSON blob containing the GCP credentials document.
+  JSON blob containing the GCP credentials document. This is only required if object storage is in
+  GCP and gcs_use_instance_sa is false.
   Note: This is a string, so ensure values are properly escaped."
   EOD
 }
@@ -508,6 +509,14 @@ variable "gcs_project" {
   description = "(Required when object storage is in GCP) The GCP project where the bucket resides."
 }
 
+variable "gcs_use_instance_sa" {
+  default     = null
+  type        = bool
+  description = <<-EOD
+  Whether or not to use the service account attached to the instance for authentication to the GCP
+  object store instead of the service account's credentials json.
+  EOD
+}
 # ------------------------------------------------------
 # External Vault
 # ------------------------------------------------------

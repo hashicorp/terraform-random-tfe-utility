@@ -11,5 +11,9 @@ locals {
     gcs_project = {
       value = var.gcs_project
     }
+
+    gcs_use_instance_sa = {
+      value = var.gcs_bucket == null ? null : var.gcs_credentials == null ? "1" : "0"
+    }
   }
 }
