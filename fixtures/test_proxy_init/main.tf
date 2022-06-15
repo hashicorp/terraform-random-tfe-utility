@@ -3,8 +3,8 @@ locals {
   mitmproxy_user_data_script = templatefile(
     "${path.module}/templates/mitmproxy.sh.tpl",
     {
-      get_base64_secrets    = data.template_file.get_base64_secrets.rendered
-      install_packages      = data.template_file.install_packages.rendered
+      get_base64_secrets    = local.get_base64_secrets
+      install_packages      = local.install_packages
       ca_certificate_secret = var.mitmproxy_ca_certificate_secret != null ? var.mitmproxy_ca_certificate_secret : ""
       ca_private_key_secret = var.mitmproxy_ca_private_key_secret != null ? var.mitmproxy_ca_private_key_secret : ""
       http_port             = local.mitmproxy_http_port
@@ -17,20 +17,12 @@ locals {
     "${path.module}/templates/squid.sh.tpl",
     { http_port = local.squid_http_port }
   )
-}
 
-data "template_file" "get_base64_secrets" {
-  template = file("${path.module}/templates/get_base64_secrets.func")
-
-  vars = {
+  get_base64_secrets = templatefile("${path.module}/templates/get_base64_secrets.func", {
     cloud = var.cloud
-  }
-}
+  })
 
-data "template_file" "install_packages" {
-  template = file("${path.module}/templates/install_packages.func")
-
-  vars = {
+  install_packages = templatefile("${path.module}/templates/install_packages.func", {
     cloud = var.cloud
-  }
+  })
 }
