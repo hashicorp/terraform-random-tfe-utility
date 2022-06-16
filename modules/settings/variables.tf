@@ -497,8 +497,10 @@ variable "gcs_credentials" {
   default     = null
   type        = string
   description = <<-EOD
-  (Required when object storage is in GCP) JSON blob containing the GCP credentials document.
-  Note: This is a string, so ensure values are properly escaped."
+  JSON blob containing the GCP credentials document. This is only required if object storage is in
+  GCP and the TFE instance(s) do(es) not have the service account attached to it, in which case the
+  instance(s) may authenticate without credentials.
+  Note: This is a string, so ensure values are properly escaped.
   EOD
 }
 
