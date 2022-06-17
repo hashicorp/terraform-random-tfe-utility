@@ -6,6 +6,19 @@ on:
       - test-command
 
 jobs:
+  azure_public_active_active:
+    uses: .github/workflows/azure-tests.yml
+    name: Run tf-test on Azure Public Active/Active
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-public-active-active') }}
+    with:
+      module_repository_id: hashicorp/terraform-aws-terraform-enterprise
+      work_dir: ./tests/public-active-active
+      k6_work_dir: ./tests/tfe-load-test
+      utility_test: true
+      pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
+      TFC_token_secret_name: UTILITY_AZURE_PUBLIC_ACTIVE_ACTIVE_TFC_TOKEN
+      TFC_workspace_substitution_pattern: s/azure-public-active-active/utility-azure-public-active-active/
+
   aws_active_active_rhel7_proxy:
     name: Run tf-test on AWS Active-Active RHEL7 Proxy
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-active-active-rhel7-proxy') }}

@@ -5,9 +5,9 @@ locals {
     "${path.module}/templates/tfe.sh.tpl",
     {
       # Functions
-      get_base64_secrets        = data.template_file.get_base64_secrets.rendered
-      install_packages          = data.template_file.install_packages.rendered
-      install_monitoring_agents = data.template_file.install_monitoring_agents.rendered
+      get_base64_secrets        = local.get_base64_secrets
+      install_packages          = local.install_packages
+      install_monitoring_agents = local.install_monitoring_agents
 
       # Configuration data
       active_active               = var.tfe_configuration.enable_active_active.value == "1" ? true : false
@@ -38,30 +38,19 @@ locals {
       no_proxy   = var.tfe_configuration.extra_no_proxy.value
     }
   )
-}
 
-data "template_file" "get_base64_secrets" {
-  template = file("${path.module}/templates/get_base64_secrets.func")
-
-  vars = {
+  get_base64_secrets = templatefile("${path.module}/templates/get_base64_secrets.func", {
     cloud = var.cloud
-  }
-}
+  })
 
-data "template_file" "install_packages" {
-  template = file("${path.module}/templates/install_packages.func")
-
-  vars = {
+  install_packages = templatefile("${path.module}/templates/install_packages.func", {
     cloud        = var.cloud
     distribution = var.distribution
-  }
-}
+  })
 
-data "template_file" "install_monitoring_agents" {
-  template = file("${path.module}/templates/install_monitoring_agents.func")
-
-  vars = {
+  install_monitoring_agents = templatefile("${path.module}/templates/install_monitoring_agents.func", {
     cloud        = var.cloud
     distribution = var.distribution
-  }
+  })
+
 }
