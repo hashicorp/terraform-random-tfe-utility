@@ -12,7 +12,7 @@ jobs:
     name: Run tf-test on Azure Public Active/Active
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-public-active-active') }}
     with:
-      module_repository_id: hashicorp/terraform-aws-terraform-enterprise
+      module_repository_id: hashicorp/terraform-azure-terraform-enterprise
       work_dir: ./tests/public-active-active
       k6_work_dir: ./tests/tfe-load-test
       utility_test: true
