@@ -11,9 +11,8 @@ on:
         type: string
       pull_request_repo_name: 
         description: |-
-          The name of the initiating pull request repo. This is unnecessary for 
-          the utility module tests.
-        required: false
+          The name of the initiating pull request repo.
+        required: true
         type: string
       pull_request_ref: 
         description: |-
@@ -129,27 +128,29 @@ jobs:
           terraform_version: 1.0.9
           terraform_wrapper: true
 
-      # Run Terraform commands between these comments vvv
+      #################
+      # Run Terraform #
+      #################
 
-      # - name: Terraform Init
-      #   id: init
-      #   working-directory: ${{ env.WORK_DIR_PATH }}
-      #   run: terraform init -input=false -no-color
+      - name: Terraform Init
+        id: init
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform init -input=false -no-color
 
-      # - name: Terraform Validate
-      #   id: validate
-      #   working-directory: ${{ env.WORK_DIR_PATH }}
-      #   run: terraform validate -no-color
+      - name: Terraform Validate
+        id: validate
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform validate -no-color
 
-      # - name: Write GitHub Actions runner CIDR to Terraform Variables
-      #   working-directory: ${{ env.WORK_DIR_PATH }}
-      #   run: |
-      #     echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" > github.auto.tfvars
+      - name: Write GitHub Actions runner CIDR to Terraform Variables
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" > github.auto.tfvars
 
-      # - name: Terraform Apply
-      #   id: apply
-      #   working-directory: ${{ env.WORK_DIR_PATH }}
-      #   run: terraform apply -auto-approve -input=false -no-color
+      - name: Terraform Apply
+        id: apply
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform apply -auto-approve -input=false -no-color
 
       # - name: Retrieve Health Check URL
       #   id: retrieve-health-check-url
@@ -231,32 +232,34 @@ jobs:
       #   run: |
       #     make smoke-test
 
-      # - name: Terraform Destroy
-      #   id: destroy
-      #   if: ${{ always() && github.event.client_payload.slash_command.args.named.destroy != 'false' }}
-      #   working-directory: ${{ env.WORK_DIR_PATH }}
-      #   run: terraform destroy -auto-approve -input=false -no-color
+      - name: Terraform Destroy
+        id: destroy
+        if: ${{ always() && github.event.client_payload.slash_command.args.named.destroy != 'false' }}
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform destroy -auto-approve -input=false -no-color
 
-      # # Run Terraform commands between these comments ^^^
+      #####################
+      # Update PR Comment #
+      #####################
 
-      # - name: Update comment
-      #   if: ${{ always() }}
-      #   uses: peter-evans/create-or-update-comment@v1
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
-      #     comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
-      #     body: |
-      #       ${{ format('### {0} Terraform Public Active/Active Test Report', job.status == 'success' && ':white_check_mark:' || ':x:') }}
+      - name: Update comment
+        if: ${{ always() }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ inputs.pull_request_repo_name }}
+          comment-id: ${{ inputs.pull_request_ref }}
+          body: |
+            ${{ format('### {0} Terraform Public Active/Active Test Report', job.status == 'success' && ':white_check_mark:' || ':x:') }}
 
-      #       ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
+            ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
 
-      #       ${{ format('- {0} Terraform Init', steps.init.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+            ${{ format('- {0} Terraform Init', steps.init.outcome == 'success' && ':white_check_mark:' || ':x:') }}
 
-      #       ${{ format('- {0} Terraform Validate', steps.validate.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+            ${{ format('- {0} Terraform Validate', steps.validate.outcome == 'success' && ':white_check_mark:' || ':x:') }}
 
-      #       ${{ format('- {0} Terraform Apply', steps.apply.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+            ${{ format('- {0} Terraform Apply', steps.apply.outcome == 'success' && ':white_check_mark:' || ':x:') }}
 
-      #       ${{ format('- {0} Run k6 Smoke Test', steps.run-smoke-test.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+            ${{ format('- {0} Run k6 Smoke Test', steps.run-smoke-test.outcome == 'success' && ':white_check_mark:' || ':x:') }}
 
-      #       ${{ github.event.client_payload.slash_command.args.named.destroy != 'false' && format('- {0} Terraform Destroy', steps.destroy.outcome == 'success' && ':white_check_mark:' || ':x:') || '' }}
+            ${{ github.event.client_payload.slash_command.args.named.destroy != 'false' && format('- {0} Terraform Destroy', steps.destroy.outcome == 'success' && ':white_check_mark:' || ':x:') || '' }}
