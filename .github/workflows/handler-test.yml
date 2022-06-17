@@ -8,6 +8,7 @@ on:
 jobs:
   azure_public_active_active:
     uses: ./.github/workflows/azure-tests.yml
+    secrets: inherit
     name: Run tf-test on Azure Public Active/Active
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-public-active-active') }}
     with:
