@@ -20,6 +20,12 @@ on:
           to both utility module changes and non-utility module changes.
         required: true
         type: string
+      pull_request_comment_id: 
+        description: |-
+          The ref of the pull request comment initiating this action. This is 
+          relevent to both utility module changes and non-utility module changes.
+        required: true
+        type: string
       work_dir:
         description: "The directory in which tests are executed"
         required: true
@@ -182,7 +188,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ inputs.pull_request_repo_name }}
-          comment-id: ${{ inputs.pull_request_ref }}
+          comment-id: ${{ inputs.pull_request_comment_id }}
           body: |
             ${{ format('### {0} Terraform Public Active/Active Test Report', job.status == 'success' && ':white_check_mark:' || ':x:') }}
 
