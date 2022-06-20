@@ -160,7 +160,7 @@ jobs:
         id: run-smoke-test
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          ./run-tests.sh -k ${{ env.GITHUB_WORKSPACE }}/${{ env.K6_WORK_DIR_PATH }}/k6 -t ${{ env.GITHUB_WORKSPACE }}/${{ env.K6_WORK_DIR_PATH }}
+          ./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }}
 
       ##################
       # Clean up infra #
