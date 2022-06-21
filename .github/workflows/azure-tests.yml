@@ -197,7 +197,8 @@ jobs:
       - name: Write GitHub Actions runner CIDR to Terraform Variables
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" > github.auto.tfvars
+          echo "network_allow_range = \"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"" > github.auto.tfvars
+          echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" >> github.auto.tfvars
 
       - name: Terraform Apply
         id: apply
