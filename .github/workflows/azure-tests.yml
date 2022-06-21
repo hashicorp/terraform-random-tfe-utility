@@ -3,6 +3,23 @@ name: Azure Test Harness
 on:
   workflow_call:
     inputs:
+      #######################
+      # Configuration Flags #
+      #######################
+      test_name:
+        description: |-
+          The name for this test run. eg: 'Public Active/Active'
+        required: true
+        type: string
+      utility_test:
+        description: "Is this test run being executed from the utility repo?"
+        type: boolean
+        required: false
+        default: false
+      
+      ###################################
+      # Pull Request / Repo Identifiers #
+      ###################################
       module_repository_id:
         description: |-
           For utility module tests, what is the source module repo for this test? 
@@ -26,6 +43,10 @@ on:
           relevent to both utility module changes and non-utility module changes.
         required: true
         type: string
+      
+      #############################
+      # General Job Configuration #
+      #############################
       work_dir:
         description: "The directory in which tests are executed"
         required: true
@@ -34,6 +55,10 @@ on:
         description: "The directory in which k6 is installed"
         required: true
         type: string
+      
+      ###############################
+      # TFC Workspace Configuration #
+      ###############################
       TFC_token_secret_name:
         description: |- 
           The id of the github secret that contains the TFC token for the tfc
@@ -49,11 +74,19 @@ on:
         required: false
         type: string
         default: ""
-      utility_test:
-        description: "Is this test run being executed from the utility repo?"
-        type: boolean
+
+      ###################################
+      # Target system SSH configuration #
+      ###################################
+      bastion_ssh_private_key_secret_name:
+        description: |-
+          The github secret name for a base64 encoded private certificate used
+          to authenticate into and proxy tests from the bastion vm instance.
         required: false
-        default: false
+        default: ""
+        type: string
+
+
 
 jobs:
   execute_azure_tests:
@@ -134,6 +167,19 @@ jobs:
           terraform_version: 1.0.9
           terraform_wrapper: false
 
+      #######################
+      # Obtain Certificates #
+      #######################
+
+      - name: Write Private SSH Key
+        if: ${{ inputs.bastion_ssh_private_key_secret_name != "" }}
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        env:
+          SSH_KEY_BASE64: ${{ secrets[inputs.bastion_ssh_private_key_secret_name]  }}
+        run: |
+          echo "$SSH_KEY_BASE64" | base64 --decode > ./ssh-key.pem
+          chmod 0400 ./ssh-key.pem
+
       #################
       # Run Terraform #
       #################
@@ -166,7 +212,14 @@ jobs:
         id: run-smoke-test
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          ./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }}
+          BASTION_CERT_KEY=./ssh-key.pem
+          if [[ -f "$BASTION_CERT_KEY" ]]; then
+              echo "$FILE exists. Adding the bastion certificate command to the test runner"
+              bastion_flag="-b $BASTION_CERT_KEY"
+          fi
+          command="./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }} $bastion_flag"
+          echo $command
+          eval $command
 
       ##################
       # Clean up infra #
@@ -190,7 +243,7 @@ jobs:
           repository: ${{ inputs.pull_request_repo_name }}
           comment-id: ${{ inputs.pull_request_comment_id }}
           body: |
-            ${{ format('### {0} Terraform Public Active/Active Test Report', job.status == 'success' && ':white_check_mark:' || ':x:') }}
+            ${{ format('### {0} Terraform Azure ${{ inputs.test_name }} Test Report', job.status == 'success' && ':white_check_mark:' || ':x:') }}
 
             ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
 
