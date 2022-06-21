@@ -172,7 +172,7 @@ jobs:
       #######################
 
       - name: Write Private SSH Key
-        if: ${{ inputs.bastion_ssh_private_key_secret_name != "" }}
+        if: ${{ inputs.bastion_ssh_private_key_secret_name != '' }}
         working-directory: ${{ env.WORK_DIR_PATH }}
         env:
           SSH_KEY_BASE64: ${{ secrets[inputs.bastion_ssh_private_key_secret_name]  }}
