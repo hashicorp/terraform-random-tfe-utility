@@ -243,7 +243,7 @@ jobs:
           repository: ${{ inputs.pull_request_repo_name }}
           comment-id: ${{ inputs.pull_request_comment_id }}
           body: |
-            ${{ format('### {0} Terraform Azure ${{ inputs.test_name }} Test Report', job.status == 'success' && ':white_check_mark:' || ':x:') }}
+            ${{ format('### {0} Terraform Azure {1} Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name) }}
 
             ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
 
