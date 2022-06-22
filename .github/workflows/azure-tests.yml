@@ -216,7 +216,7 @@ jobs:
           BASTION_CERT_KEY=./ssh-key.pem
           if [[ -f "$BASTION_CERT_KEY" ]]; then
               echo "$FILE exists. Adding the bastion certificate command to the test runner"
-              bastion_flag="-b $BASTION_CERT_KEY"
+              bastion_flag="-b $BASTION_CERT_KEY -l"
           fi
           command="./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }} $bastion_flag"
           echo $command
