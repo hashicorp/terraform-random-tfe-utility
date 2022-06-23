@@ -41,6 +41,24 @@ jobs:
       TFC_workspace_substitution_pattern: s/azure-private-active-active/utility-azure-private-active-active/
       bastion_ssh_private_key_secret_name: AZURE_PRIVATE_ACTIVE_ACTIVE_BASTION_SSH_KEY_BASE64
 
+  azure_private_tcp_active_active:
+    uses: ./.github/workflows/azure-tests.yml
+    secrets: inherit
+    name: Run tf-test on Azure Private Active/Active
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-tcp-active-active') }}
+    with:
+      test_name: Private TCP Active/Active
+      utility_test: true
+      module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
+      work_dir: ./tests/private-tcp-active-active
+      k6_work_dir: ./tests/tfe-load-test
+      pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
+      pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
+      pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
+      TFC_token_secret_name: UTILITY_AZURE_PRIVATE_TCP_ACTIVE_ACTIVE_TFC_TOKEN
+      TFC_workspace_substitution_pattern: s/azure-private-tcp-active-active/utility-azure-private-tcp-active-active/
+      bastion_ssh_private_key_secret_name: AZURE_PRIVATE_TCP_ACTIVE_ACTIVE_BASTION_SSH_KEY_BASE64
+
   aws_active_active_rhel7_proxy:
     name: Run tf-test on AWS Active-Active RHEL7 Proxy
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-active-active-rhel7-proxy') }}
