@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
     name: Run tf-test on Azure Public Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-public-active-active') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'all-azure') }}
     with:
       test_name: Public Active/Active
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
@@ -27,7 +27,7 @@ jobs:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
     name: Run tf-test on Azure Private Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-active-active') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'all-azure') }}
     with:
       test_name: Private Active/Active
       utility_test: true
@@ -44,8 +44,8 @@ jobs:
   azure_private_tcp_active_active:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
-    name: Run tf-test on Azure Private Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-tcp-active-active') }}
+    name: Run tf-test on Azure Private TCP Active/Active
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'all-azure') }}
     with:
       test_name: Private TCP Active/Active
       utility_test: true
