@@ -21,7 +21,7 @@ jobs:
       work_dir: ./tests/public-active-active
       TFC_token_secret_name: UTILITY_AZURE_PUBLIC_ACTIVE_ACTIVE_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/azure-public-active-active/utility-azure-public-active-active/
-
+  
   azure_private_active_active:
     uses: ./.github/workflows/azure-destroy.yml
     secrets: inherit
@@ -37,6 +37,54 @@ jobs:
       work_dir: ./tests/private-active-active
       TFC_token_secret_name: UTILITY_AZURE_PRIVATE_ACTIVE_ACTIVE_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/azure-private-active-active/utility-azure-private-active-active/
+
+  google_private_active_active:
+    uses: ./.github/workflows/google-destroy.yml
+    secrets: inherit
+    name: Destroy resources from Google Private Active/Active
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-private-active-active') }}
+    with:
+      test_name: Google Private Active/Active
+      utility_test: true
+      module_repository_id: hashicorp/terraform-google-terraform-enterprise
+      pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
+      pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
+      pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
+      work_dir: ./tests/private-active-active
+      TFC_token_secret_name: UTILITY_GOOGLE_PRIVATE_ACTIVE_ACTIVE_TFC_TOKEN
+      TFC_workspace_substitution_pattern: s/google-private-active-active/utility-google-private-active-active/
+
+  google_private_tcp_active_active:
+    uses: ./.github/workflows/google-destroy.yml
+    secrets: inherit
+    name: Destroy resources from Google Private TCP Active/Active
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-private-tcp-active-active') }}
+    with:
+      test_name: Google Private TCP Active/Active
+      utility_test: true
+      module_repository_id: hashicorp/terraform-google-terraform-enterprise
+      pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
+      pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
+      pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
+      work_dir: ./tests/private-tcp-active-active
+      TFC_token_secret_name: UTILITY_GOOGLE_PRIVATE_TCP_ACTIVE_ACTIVE_TFC_TOKEN
+      TFC_workspace_substitution_pattern: s/google-private-active-active/utility-google-private-active-active/
+  
+  google_public_active_active:
+    uses: ./.github/workflows/google-destroy.yml
+    secrets: inherit
+    name: Destroy resources from Google Public Active/Active
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-public-active-active') }}
+    with:
+      test_name: Google Public Active/Active
+      utility_test: true
+      module_repository_id: hashicorp/terraform-google-terraform-enterprise
+      pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
+      pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
+      pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
+      work_dir: ./tests/public-active-active
+      TFC_token_secret_name: UTILITY_GOOGLE_PUBLIC_ACTIVE_ACTIVE_TFC_TOKEN
+      TFC_workspace_substitution_pattern: s/google-public-active-active/utility-google-public-active-active/
 
   aws_active_active_rhel7_proxy:
     name: Destroy resources from AWS Active-Active RHEL7 Proxy
