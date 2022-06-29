@@ -65,7 +65,7 @@ jobs:
     name: Run tf-test on Google Public Active/Active
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google') }}
     with:
-      test_name: Public Active/Active
+      test_name: Google Public Active/Active
       module_repository_id: hashicorp/terraform-google-terraform-enterprise
       work_dir: ./tests/public-active-active
       k6_work_dir: ./tests/tfe-load-test
@@ -82,7 +82,7 @@ jobs:
     name: Run tf-test on Google Private Active/Active
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google') }}
     with:
-      test_name: Private Active/Active
+      test_name: Google Private Active/Active
       utility_test: true
       module_repository_id: hashicorp/terraform-google-terraform-enterprise
       work_dir: ./tests/private-active-active
@@ -99,7 +99,7 @@ jobs:
     name: Run tf-test on Google Private TCP Active/Active
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google') }}
     with:
-      test_name: Private TCP Active/Active
+      test_name: Google Private TCP Active/Active
       utility_test: true
       module_repository_id: hashicorp/terraform-google-terraform-enterprise
       work_dir: ./tests/private-tcp-active-active

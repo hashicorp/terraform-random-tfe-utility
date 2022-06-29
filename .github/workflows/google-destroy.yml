@@ -1,0 +1,165 @@
+name: Google Test Harness
+
+on:
+  workflow_call:
+    inputs:
+      #######################
+      # Configuration Flags #
+      #######################
+      test_name:
+        description: |-
+          The name for this test run. eg: 'Public Active/Active'
+        required: true
+        type: string
+      utility_test:
+        description: "Is this test run being executed from the utility repo?"
+        type: boolean
+        required: false
+        default: false
+      
+      ###################################
+      # Pull Request / Repo Identifiers #
+      ###################################
+      module_repository_id:
+        description: |-
+          For utility module tests, what is the source module repo for this test? 
+          eg: hashicorp/terraform-google-terraform-enterprise
+        required: true
+        type: string
+      pull_request_repo_name: 
+        description: |-
+          The name of the initiating pull request repo.
+        required: true
+        type: string
+      pull_request_ref: 
+        description: |-
+          The ref of the pull request initiating this action. This is relevent
+          to both utility module changes and non-utility module changes.
+        required: true
+        type: string
+      pull_request_comment_id: 
+        description: |-
+          The ref of the pull request comment initiating this action. This is 
+          relevent to both utility module changes and non-utility module changes.
+        required: true
+        type: string
+      
+      #############################
+      # General Job Configuration #
+      #############################
+      work_dir:
+        description: "The directory in which tests are executed"
+        required: true
+        type: string
+      
+      ###############################
+      # TFC Workspace Configuration #
+      ###############################
+      TFC_token_secret_name:
+        description: |- 
+          The id of the github secret that contains the TFC token for the tfc
+          workspace for this test.
+        required: true
+        type: string
+  
+      TFC_workspace_substitution_pattern:
+        description: |- 
+          The sed supstitution pattern used to retarget this test to another TFC
+          workspace. This is used primarily in testing the utility modules.
+          eg: s/google-public-active-active/utility-google-public-active-active/
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  execute_azure_tests:
+    name: Run tf-test on some google infrastructure
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      WORK_DIR_PATH: ${{ inputs.work_dir }} 
+    steps:
+      - name: Create URL to the run output
+        id: vars
+        run: echo ::set-output name=run-url::https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+      
+      ###################
+      # Module Checkout #
+      ###################
+
+      # If this is not a utility module test, check out the pull request under
+      # test in the module repo.
+      - name: Checkout
+        if: ${{ ! inputs.utility_test }}
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.event.client_payload.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.client_payload.pull_request.head.sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
+
+      # If this is a utility test then checkout out the module source and patch
+      # the configuration to target the appropriate TFC workspace.
+      - name: Checkout
+        if: ${{ inputs.utility_test }}
+        uses: actions/checkout@v2
+        with:
+          repository: ${{inputs.module_repository_id}}
+      
+      - name: Update Terraform Backend to TFC Workspace for Utility Module
+        if: ${{ inputs.utility_test }}
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          sed --in-place '${{ inputs.TFC_workspace_substitution_pattern }}' versions.tf
+
+      - name: Set Terraform Utility Module Sources
+        if: ${{ inputs.utility_test }}
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        env:
+          SHA: ${{ inputs.pull_request_ref }}
+        run: |
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_hostname: 'app.terraform.io'
+          cli_config_credentials_token: ${{ secrets[inputs.TFC_token_secret_name] }}
+          terraform_version: 1.0.9
+          terraform_wrapper: false
+
+      #################
+      # Run Terraform #
+      #################
+
+      - name: Terraform Init
+        id: init
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform init -input=false -no-color
+
+      - name: Terraform Destroy
+        id: destroy
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: terraform destroy -auto-approve -input=false -no-color
+
+      #####################
+      # Update PR Comment #
+      #####################
+
+      - name: Update comment
+        if: ${{ always() }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ inputs.pull_request_repo_name }}
+          comment-id: ${{ inputs.pull_request_comment_id }}
+          body: |
+            ${{ format('### {0} Terraform Google {1} Destruction Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name) }}
+
+            ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
+
+            ${{ format('- {0} Terraform Init', steps.init.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+
+            ${{ format('- {0} Terraform Destroy', steps.destroy.outcome == 'success' && ':white_check_mark:' || ':x:') }}
