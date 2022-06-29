@@ -76,7 +76,7 @@ on:
         default: ""
 
 jobs:
-  execute_azure_tests:
+  execute_google_tests:
     name: Run tf-test on some google infrastructure
     runs-on: ubuntu-latest
     permissions:
