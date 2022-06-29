@@ -17,40 +17,78 @@ resource "vault_policy" "ptfe" {
   name = var.vault_policy_name
 
   policy = <<EOT
-    path "auth/approle/login" {
-      capabilities = ["create", "read"]
-    }
-    path "sys/renew/*" {
-      policy = "write"
-    }
-    path "auth/token/renew/*" {
-      policy = "write"
-    }
-    path "transit/encrypt/atlas_*" {
-      capabilities = ["create", "update"]
-    }
-    path "transit/decrypt/atlas_*" {
-      capabilities = ["update"]
-    }
-    path "transit/encrypt/archivist_*" {
-      capabilities = ["create", "update"]
-    }
-    # For decrypting datakey ciphertexts.
-    path "transit/decrypt/archivist_*" {
-      capabilities = ["update"]
-    }
-    # To upsert the transit key used for datakey generation.
-    path "transit/keys/archivist_*" {
-      capabilities = ["create", "update"]
-    }
-    # For performing key derivation.
-    path "transit/datakey/plaintext/archivist_*" {
-      capabilities = ["update"]
-    }
-    # For health checks to read the mount table.
-    path "sys/mounts" {
-      capabilities = ["read"]
-    }
+# To renew leases.
+path "sys/leases/renew" {
+  capabilities = ["create", "update"]
+}
+path "sys/renew" {
+  capabilities = ["create", "update"]
+}
+
+# To renew tokens.
+path "auth/token/renew" {
+  capabilities = ["create", "update"]
+}
+path "auth/token/renew-self" {
+  capabilities = ["create", "update"]
+}
+
+# To perform a login.
+path "auth/approle/login" {
+  capabilities = ["create", "update"]
+}
+
+# To upsert transit keys used for key generation.
+path "transit/keys/atlas_*" {
+ capabilities = ["read", "create", "update"]
+}
+path "transit/keys/archivist_*" {
+  capabilities = ["read", "create", "update"]
+}
+
+# Encryption and decryption of data.
+path "transit/encrypt/atlas_*" {
+  capabilities = ["create", "update"]
+}
+path "transit/decrypt/atlas_*" {
+  capabilities = ["create", "update"]
+}
+path "transit/encrypt/archivist_*" {
+  capabilities = ["create", "update"]
+}
+path "transit/decrypt/archivist_*" {
+  capabilities = ["create", "update"]
+}
+
+# For performing key derivation.
+path "transit/datakey/plaintext/archivist_*" {
+  capabilities = ["create", "update"]
+}
+
+# For backup/restore operations.
+path "transit/keys/atlas_*/config" {
+  capabilities = ["read", "create", "update"]
+}
+path "transit/backup/atlas_*" {
+  capabilities = ["read"]
+}
+path "transit/restore/atlas_*" {
+  capabilities = ["read", "create", "update"]
+}
+path "transit/keys/archivist_*/config" {
+  capabilities = ["read", "create", "update"]
+}
+path "transit/backup/archivist_*" {
+  capabilities = ["read"]
+}
+path "transit/restore/archivist_*" {
+  capabilities = ["read", "create", "update"]
+}
+
+# For health checks to read the mount table.
+path "sys/mounts" {
+  capabilities = ["read"]
+}
 EOT
 }
 
