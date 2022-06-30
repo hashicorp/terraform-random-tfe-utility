@@ -157,14 +157,6 @@ jobs:
       #################
       # Run Terraform #
       #################
-      - name: Write Terraform Variables
-        working-directory: ${{ env.WORK_DIR_PATH }}
-        run: |
-          ip_address=$( dig +short @resolver1.opendns.com myip.opendns.com )
-          cat <<EOF > github.auto.tfvars
-          iact_subnet_list = ["$ip_address/32"]
-          EOF
-
       - name: Terraform Init
         id: init
         working-directory: ${{ env.WORK_DIR_PATH }}
