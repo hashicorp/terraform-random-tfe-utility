@@ -185,7 +185,7 @@ jobs:
         id: run-smoke-test
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          command="./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }}"
+          command="sudo ./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }}"
           echo $command
           eval $command
 
