@@ -146,6 +146,13 @@ jobs:
           sudo apt-get install jq
           curl -L $K6_URL | tar -xz --strip-components=1
 
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.1
+        with:
+          project_id: ${{ secrets.GOOGLE_PROJECT }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
