@@ -16,6 +16,11 @@ on:
         type: boolean
         required: false
         default: false
+      enable_iact_subnet_list:
+        description: "Do you want to enable ssh from GHA agent to TFE?"
+        type: boolean
+        required: false
+        default: false
       
       ###################################
       # Pull Request / Repo Identifiers #
@@ -175,7 +180,7 @@ jobs:
         run: terraform validate -no-color
 
       - name: Write Terraform Variables
-        if: ${{ contains(inputs.test_name, 'Public') }} 
+        if: ${{ inputs.enable_iact_subnet_list }} 
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           ip_address=$( dig +short @resolver1.opendns.com myip.opendns.com )
