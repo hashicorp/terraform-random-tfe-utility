@@ -146,6 +146,13 @@ jobs:
           sudo apt-get install jq
           curl -L $K6_URL | tar -xz --strip-components=1
 
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.1
+        with:
+          project_id: ${{ secrets.GOOGLE_PROJECT }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
@@ -167,11 +174,15 @@ jobs:
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: terraform validate -no-color
 
-      - name: Write GitHub Actions runner CIDR to Terraform Variables
+      - name: Write Terraform Variables
+        if: ${{ contains(inputs.test_name, 'Public') }} 
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" >> github.auto.tfvars
-
+          ip_address=$( dig +short @resolver1.opendns.com myip.opendns.com )
+          cat <<EOF > github.auto.tfvars
+          iact_subnet_list = ["$ip_address/32"]
+          EOF
+          
       - name: Terraform Apply
         id: apply
         working-directory: ${{ env.WORK_DIR_PATH }}
