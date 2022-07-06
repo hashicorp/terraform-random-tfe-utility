@@ -139,13 +139,14 @@ jobs:
         env:
           TFC_ORGANIZATION: ${{ secrets.TFC_ORGANIZATION }}
         run: |
-          cat <<EOF > backend-config.hcl
-            organization = "$TFC_ORGANIZATION"
-            workspaces {
-              name = "${{ inputs.TFC_workspace }}"
-            }
+          cat <<EOF > backend.tf
+            terraform {
+              backend "remote" {
+                organization = "$TFC_ORGANIZATION"
+                  workspaces {
+                    name = "${{ inputs.TFC_workspace }}"
+                             }}}
           EOF
-
       - name: Set Terraform Utility Module Sources
         if: ${{ inputs.utility_test }}
         working-directory: ${{ env.WORK_DIR_PATH }}
