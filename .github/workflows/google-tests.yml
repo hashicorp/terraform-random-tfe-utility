@@ -21,6 +21,12 @@ on:
         type: boolean
         required: false
         default: false
+        
+      create_backend:
+        description: "Do you want to create a backend for TFC workspace?"
+        type: boolean
+        required: false
+        default: false
       
       ###################################
       # Pull Request / Repo Identifiers #
