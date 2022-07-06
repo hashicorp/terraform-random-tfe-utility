@@ -21,7 +21,6 @@ on:
         type: boolean
         required: false
         default: false
-        
       create_backend:
         description: "Do you want to create a backend for TFC workspace?"
         type: boolean
@@ -85,6 +84,10 @@ on:
         required: false
         type: string
         default: ""
+      TFC_workspace:
+        description: "TFC workspace"
+        type: string
+        required: false
 
 jobs:
   execute_google_tests:
