@@ -16,6 +16,11 @@ on:
         type: boolean
         required: false
         default: false
+      create_backend:
+        description: "Do you want to create a backend for TFC workspace?"
+        type: boolean
+        required: false
+        default: false
       
       ###################################
       # Pull Request / Repo Identifiers #
@@ -70,6 +75,10 @@ on:
         required: false
         type: string
         default: ""
+      TFC_workspace:
+        description: "TFC workspace"
+        type: string
+        required: false
 
 jobs:
   execute_google_tests:
@@ -109,10 +118,25 @@ jobs:
           repository: ${{inputs.module_repository_id}}
       
       - name: Update Terraform Backend to TFC Workspace for Utility Module
-        if: ${{ inputs.utility_test }}
+        if: ${{ ! inputs.create_backend }}
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           sed --in-place '${{ inputs.TFC_workspace_substitution_pattern }}' versions.tf
+
+      - name: Create Terraform Backend to TFC Workspace for Utility Module
+        if: ${{ inputs.create_backend }}
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        env:
+          TFC_ORGANIZATION: ${{ secrets.TFC_ORGANIZATION }}
+        run: |
+          cat <<EOF > backend.tf
+            terraform {
+              backend "remote" {
+                organization = "$TFC_ORGANIZATION"
+                  workspaces {
+                    name = "${{ inputs.TFC_workspace }}"
+                             }}}
+          EOF
 
       - name: Set Terraform Utility Module Sources
         if: ${{ inputs.utility_test }}
