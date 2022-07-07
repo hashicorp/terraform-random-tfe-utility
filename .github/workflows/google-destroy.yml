@@ -135,7 +135,9 @@ jobs:
                 organization = "$TFC_ORGANIZATION"
                   workspaces {
                     name = "${{ inputs.TFC_workspace }}"
-                             }}}
+                             }
+                             }
+                             }
           EOF
 
       - name: Set Terraform Utility Module Sources
