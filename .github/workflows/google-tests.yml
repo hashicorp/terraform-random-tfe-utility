@@ -16,6 +16,16 @@ on:
         type: boolean
         required: false
         default: false
+      enable_iact_subnet_list:
+        description: "Do you want to enable ssh from GHA agent to TFE?"
+        type: boolean
+        required: false
+        default: false
+      create_backend:
+        description: "Do you want to create a backend for TFC workspace?"
+        type: boolean
+        required: false
+        default: false
       
       ###################################
       # Pull Request / Repo Identifiers #
@@ -74,6 +84,10 @@ on:
         required: false
         type: string
         default: ""
+      TFC_workspace:
+        description: "TFC workspace"
+        type: string
+        required: false
 
 jobs:
   execute_google_tests:
@@ -114,11 +128,27 @@ jobs:
           repository: ${{inputs.module_repository_id}}
       
       - name: Update Terraform Backend to TFC Workspace for Utility Module
-        if: ${{ inputs.utility_test }}
+        if: ${{ ! inputs.create_backend }}
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           sed --in-place '${{ inputs.TFC_workspace_substitution_pattern }}' versions.tf
 
+      - name: Create Terraform Backend to TFC Workspace for Utility Module
+        if: ${{ inputs.create_backend }}
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        env:
+          TFC_ORGANIZATION: ${{ secrets.TFC_ORGANIZATION }}
+        run: |
+          cat <<EOF > backend.tf
+            terraform {
+              backend "remote" {
+                organization = "$TFC_ORGANIZATION"
+                  workspaces {
+                    name = "${{ inputs.TFC_workspace }}"
+                             }
+                             }
+                             }
+          EOF
       - name: Set Terraform Utility Module Sources
         if: ${{ inputs.utility_test }}
         working-directory: ${{ env.WORK_DIR_PATH }}
@@ -146,6 +176,13 @@ jobs:
           sudo apt-get install jq
           curl -L $K6_URL | tar -xz --strip-components=1
 
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.1
+        with:
+          project_id: ${{ secrets.GOOGLE_PROJECT }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
@@ -167,11 +204,15 @@ jobs:
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: terraform validate -no-color
 
-      - name: Write GitHub Actions runner CIDR to Terraform Variables
+      - name: Write Terraform Variables
+        if: ${{ inputs.enable_iact_subnet_list }} 
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" >> github.auto.tfvars
-
+          ip_address=$( dig +short @resolver1.opendns.com myip.opendns.com )
+          cat <<EOF > github.auto.tfvars
+          iact_subnet_list = ["$ip_address/32"]
+          EOF
+          
       - name: Terraform Apply
         id: apply
         working-directory: ${{ env.WORK_DIR_PATH }}
@@ -185,7 +226,7 @@ jobs:
         id: run-smoke-test
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          command="sudo bash ./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }}"
+          command="bash ./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }}"
           echo $command
           eval $command
 
