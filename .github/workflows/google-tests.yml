@@ -189,7 +189,7 @@ jobs:
           cli_config_credentials_hostname: 'app.terraform.io'
           cli_config_credentials_token: ${{ secrets[inputs.TFC_token_secret_name] }}
           terraform_version: 1.0.9
-          terraform_wrapper: false
+          terraform_wrapper: true
 
       #################
       # Run Terraform #
