@@ -59,6 +59,106 @@ jobs:
       TFC_workspace_substitution_pattern: s/azure-private-tcp-active-active/utility-azure-private-tcp-active-active/
       bastion_ssh_private_key_secret_name: AZURE_PRIVATE_TCP_ACTIVE_ACTIVE_BASTION_SSH_KEY_BASE64
 
+  google_public_active_active:
+    uses: ./.github/workflows/google-tests.yml
+    secrets: inherit
+    name: Run tf-test on Google Public Active/Active
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google') }}
+    with:
+      test_name: Google Public Active/Active
+      module_repository_id: hashicorp/terraform-google-terraform-enterprise
+      work_dir: ./tests/public-active-active
+      k6_work_dir: ./tests/tfe-load-test
+      utility_test: true
+      enable_iact_subnet_list: true
+      create_backend: false
+      pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
+      pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
+      pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
+      TFC_token_secret_name: UTILITY_GOOGLE_PUBLIC_ACTIVE_ACTIVE_TFC_TOKEN
+      TFC_workspace_substitution_pattern: s/google-public-active-active/utility-google-public-active-active/
+      TFC_workspace: utility-google-public-active-active
+  
+  google_private_active_active:
+    uses: ./.github/workflows/google-tests.yml
+    secrets: inherit
+    name: Run tf-test on Google Private Active/Active
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google') }}
+    with:
+      test_name: Google Private Active/Active
+      utility_test: true
+      create_backend: false
+      enable_iact_subnet_list: false
+      module_repository_id: hashicorp/terraform-google-terraform-enterprise
+      work_dir: ./tests/private-active-active
+      k6_work_dir: ./tests/tfe-load-test
+      pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
+      pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
+      pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
+      TFC_token_secret_name: UTILITY_GOOGLE_PRIVATE_ACTIVE_ACTIVE_TFC_TOKEN
+      TFC_workspace_substitution_pattern: s/google-private-active-active/utility-google-private-active-active/
+      TFC_workspace: utility-google-private-active-active
+
+  google_private_tcp_active_active:
+    uses: ./.github/workflows/google-tests.yml
+    secrets: inherit
+    name: Run tf-test on Google Private TCP Active/Active
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google') }}
+    with:
+      test_name: Google Private TCP Active/Active
+      utility_test: true
+      create_backend: false
+      enable_iact_subnet_list: false
+      module_repository_id: hashicorp/terraform-google-terraform-enterprise
+      work_dir: ./tests/private-tcp-active-active
+      k6_work_dir: ./tests/tfe-load-test
+      pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
+      pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
+      pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
+      TFC_token_secret_name: UTILITY_GOOGLE_PRIVATE_TCP_ACTIVE_ACTIVE_TFC_TOKEN
+      TFC_workspace_substitution_pattern: s/google-private-tcp-active-active/utility-google-private-tcp-active-active/
+      TFC_workspace: utility-google-private-tcp-active-active
+
+  google_standalone_external_rhel8_worker:
+    uses: ./.github/workflows/google-tests.yml
+    secrets: inherit
+    name: Run tf-test on Google Standalone External Rhel8 Worker
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'standalone-external-rhel8-worker') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google') }}
+    with:
+      test_name: Google Standalone External Rhel8 Worker
+      module_repository_id: hashicorp/terraform-google-terraform-enterprise
+      work_dir: ./tests/standalone-external-rhel8-worker
+      k6_work_dir: ./tests/tfe-load-test
+      utility_test: true
+      create_backend: true
+      enable_iact_subnet_list: false
+      pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
+      pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
+      pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
+      TFC_token_secret_name: UTILITY_STANDALONE_EXTERNAL_RHEL8_WORKER_TFC_TOKEN
+      TFC_workspace_substitution_pattern: s/google-standalone-external-rhel8-worker/utility-google-standalone-external-rhel8-worker/
+      TFC_workspace: utility-google-standalone-external-rhel8-worker
+
+  google_standalone_mounted_disk:
+    uses: ./.github/workflows/google-tests.yml
+    secrets: inherit
+    name: Run tf-test on Google Standalone Mounted Disk
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-standalone-mounted-disk') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google') }}
+    with:
+      test_name: Google Standalone Mounted Disk
+      module_repository_id: hashicorp/terraform-google-terraform-enterprise
+      work_dir: ./tests/standalone-mounted-disk
+      k6_work_dir: ./tests/tfe-load-test
+      utility_test: true
+      create_backend: true
+      enable_iact_subnet_list: false
+      pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
+      pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
+      pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
+      TFC_token_secret_name: UTILITY_GOOGLE_STANDALONE_MOUNTED_DISK_TFC_TOKEN
+      TFC_workspace_substitution_pattern: s/google-standalone-mounted-disk/utility-google-standalone-mounted-disk/
+      TFC_workspace: utility-google-standalone-mounted-disk
+
   aws_active_active_rhel7_proxy:
     name: Run tf-test on AWS Active-Active RHEL7 Proxy
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-active-active-rhel7-proxy') }}
