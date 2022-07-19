@@ -211,6 +211,7 @@ jobs:
 
       - name: Run k6 Smoke Test
         id: run-smoke-test
+        timeout-minutes: 90
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           BASTION_CERT_KEY=./ssh-key.pem
