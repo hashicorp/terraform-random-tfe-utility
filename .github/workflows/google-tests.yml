@@ -273,7 +273,7 @@ jobs:
 
       - name: Wait For TFE
         if: ${{ inputs.private_test }}
-        id: wait-for-tfe
+        id: wait-for-tfe-private
         timeout-minutes: 25
         env:
           HEALTH_CHECK_URL: ${{ steps.retrieve-health-check-url.outputs.stdout }}
@@ -307,7 +307,7 @@ jobs:
 
       - name: Retrieve IACT token
         if: ${{ inputs.private_test }}
-        id: retrieve-iact
+        id: retrieve-iact-private
         env:
           IACT_URL: ${{ steps.retrieve-iact-url.outputs.stdout }}
         run: |
@@ -342,12 +342,12 @@ jobs:
           echo "::set-output name=response::$response"
 
       - name: Create Admin in TFE
-        id: create-admin
+        id: create-admin-private
         if: ${{ inputs.private_test }}
         env:
           TFE_PASSWORD: ${{ secrets.TFE_PASSWORD }}
           IAU_URL: ${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}
-          IACT_TOKEN: ${{ steps.retrieve-iact.outputs.token }}
+          IACT_TOKEN: ${{ steps.retrieve-iact-private.outputs.token }}
         run: |
           echo \
             '{"username": "test", "email": "tf-onprem-team@hashicorp.com", "password": "$TFE_PASSWORD"}' \
