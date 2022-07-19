@@ -273,7 +273,7 @@ jobs:
 
       - name: Wait For TFE
         if: ${{ inputs.private_test }}
-        id: wait-for-tfe
+        id: wait-for-tfe-health-check
         timeout-minutes: 25
         env:
           HEALTH_CHECK_URL: ${{ steps.retrieve-health-check-url.outputs.stdout }}
