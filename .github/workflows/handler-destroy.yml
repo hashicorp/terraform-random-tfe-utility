@@ -25,7 +25,7 @@ jobs:
   azure_private_active_active:
     uses: ./.github/workflows/azure-destroy.yml
     secrets: inherit
-    name: Destroy resources from Private Active/Active
+    name: Destroy resources from Azure Private Active/Active
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-active-active') }}
     with:
       test_name: Private Active/Active
