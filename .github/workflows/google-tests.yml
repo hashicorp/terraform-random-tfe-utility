@@ -233,21 +233,21 @@ jobs:
         run: |
           terraform output -no-color -raw health_check_url
 
-      - name: Retrieve Instance Name
+      - name: Retrieve Instance Name - Private
         id: retrieve-instance-name
         if: ${{ inputs.private_test }} 
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           terraform output -no-color -raw proxy_instance_name
 
-      - name: Retrieve Instance Zone
+      - name: Retrieve Instance Zone - Private
         if: ${{ inputs.private_test }}
         id: retrieve-instance-zone
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           terraform output -no-color -raw proxy_instance_zone
 
-      - name: Start SOCKS5 Proxy
+      - name: Start SOCKS5 Proxy - Private
         if: ${{ inputs.private_test }}
         env:
           INSTANCE_NAME: ${{ steps.retrieve-instance-name.outputs.stdout }}
@@ -261,7 +261,7 @@ jobs:
           "$INSTANCE_NAME" \
           -- -f -N -p 22 -D localhost:5000
 
-      - name: Wait For Successful HealthCheck
+      - name: Wait For TFE
         id: wait-for-tfe
         if: ${{ ! inputs.private_test }}
         timeout-minutes: 25
@@ -271,7 +271,7 @@ jobs:
           echo "Curling \`health_check_url\` for a return status of 200..."
           while ! curl -sfS --max-time 5 "$HEALTH_CHECK_URL"; do sleep 5; done
 
-      - name: Wait For TFE
+      - name: Wait For TFE - Private
         if: ${{ inputs.private_test }}
         id: wait-for-tfe-private
         timeout-minutes: 25
@@ -302,16 +302,16 @@ jobs:
         env:
           IACT_URL: ${{ steps.retrieve-iact-url.outputs.stdout }}
         run: |
-          token=$(curl --fail --retry 5 --verbose "$IACT_URL")
+          token=$(curl --fail --retry 10 --verbose "$IACT_URL")
           echo "::set-output name=token::$token"
 
-      - name: Retrieve IACT token
+      - name: Retrieve IACT - Private
         if: ${{ inputs.private_test }}
         id: retrieve-iact-private
         env:
           IACT_URL: ${{ steps.retrieve-iact-url.outputs.stdout }}
         run: |
-          token=$(curl --fail --retry 5 --verbose --proxy socks5://localhost:5000 "$IACT_URL")
+          token=$(curl --fail --retry 10 --verbose --proxy socks5://localhost:5000 "$IACT_URL")
           echo "::set-output name=token::$token"
 
       - name: Retrieve Initial Admin User URL
@@ -341,7 +341,7 @@ jobs:
             "$IAU_URL"?token="$IACT")
           echo "::set-output name=response::$response"
 
-      - name: Create Admin in TFE
+      - name: Create Admin - Private
         id: create-admin-private
         if: ${{ inputs.private_test }}
         env:
