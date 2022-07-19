@@ -142,6 +142,7 @@ jobs:
       TFC_token_secret_name: UTILITY_GOOGLE_PRIVATE_ACTIVE_ACTIVE_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/google-private-active-active/utility-google-private-active-active/
       TFC_workspace: utility-google-private-active-active
+      private_test: true
 
   google_private_tcp_active_active:
     uses: ./.github/workflows/google-tests.yml
@@ -162,6 +163,7 @@ jobs:
       TFC_token_secret_name: UTILITY_GOOGLE_PRIVATE_TCP_ACTIVE_ACTIVE_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/google-private-tcp-active-active/utility-google-private-tcp-active-active/
       TFC_workspace: utility-google-private-tcp-active-active
+      private_test: true
 
   google_standalone_external_rhel8_worker:
     uses: ./.github/workflows/google-tests.yml
