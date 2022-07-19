@@ -260,7 +260,7 @@ jobs:
           "$INSTANCE_NAME" \
           -- -f -N -p 22 -D localhost:5000
 
-      - name: Wait for TFE
+      - name: Wait For Successful HealthCheck
         id: wait-for-tfe
         if: ${{ ! inputs.private_test }}
         timeout-minutes: 25
