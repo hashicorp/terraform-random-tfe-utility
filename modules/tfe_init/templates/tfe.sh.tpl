@@ -105,7 +105,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configu
 #------------------------------------------------------------------------------
 ca_certificate_directory="/dev/null"
 
-%{ if distribution == "rhel" ~}
+%{ if distribution == "rhel" || distribution == "rhel8"~}
 ca_certificate_directory=/usr/share/pki/ca-trust-source/anchors
 %{ else ~}
 ca_certificate_directory=/usr/local/share/ca-certificates/extra
@@ -124,7 +124,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configur
 
 if [ -f "$ca_cert_filepath" ]
 then
-	%{ if distribution == "rhel" ~}
+	%{ if distribution == "rhel" || distribution == "rhel8"~}
 	update-ca-trust
 
 	%{ else ~}
@@ -138,14 +138,22 @@ fi
 # -----------------------------------------------------------------------------
 # Resize RHEL logical volume (if Azure environment)
 # -----------------------------------------------------------------------------
-%{ if cloud == "azurerm" && distribution == "rhel" ~}
+%{ if cloud == "azurerm" && (distribution == "rhel" || distribution == "rhel8")~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Resize RHEL logical volume" | tee -a $log_pathname
 
+# RHEL 8 disks in azure have a different partition mapping. Determine the release and change the partition ID appropriately.
+%{ if distribution == "rhel" ~}
+  partition_number=5
+  partition_link=root-part4-l
+%{ else ~}
+  partition_number=2
+  partition_link=root-part2
+%{ endif ~}
 # Because Microsoft is publishing only LVM-partitioned images, it is necessary to partition it to the specs that TFE requires.
 # First, extend the partition to fill available space
-growpart /dev/disk/azure/root 4
+growpart /dev/disk/azure/root $partition_number
 # Resize the physical volume
-pvresize /dev/disk/azure/root-part4
+pvresize /dev/disk/azure/$partition_link
 # Then resize the logical volumes to meet TFE specs
 lvresize -r -L 10G /dev/mapper/rootvg-rootlv
 lvresize -r -L 40G /dev/mapper/rootvg-varlv
@@ -204,7 +212,7 @@ replicated_directory="/etc/replicated"
 # Bootstrap airgapped environment with prerequisites (for dev/test environments)
 echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootstrapping an Airgapped Installation" | tee -a $log_pathname
 
-	%{ if distribution == "rhel" ~}
+	%{ if distribution == "rhel" || distribution == "rhel8"~}
 	yum install --assumeyes yum-utils
 	yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
 	yum install --assumeyes docker-ce docker-ce-cli containerd.io
@@ -276,7 +284,7 @@ $install_pathname \
 # -----------------------------------------------------------------------------
 # Add docker0 to firewalld (for Red Hat instances only)
 # -----------------------------------------------------------------------------
-%{ if distribution == "rhel" && cloud != "google" ~}
+%{ if (distribution == "rhel" || distribution == "rhel8")&& cloud != "google" ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
 setenforce 0
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a $log_pathname

@@ -4,7 +4,7 @@ function install_packages {
 	# OS: Agnostic
 	# Description: Install AWS packages
 
-	%{ if distribution == "rhel" ~}
+	%{ if distribution == "rhel" || distribution == "rhel8" ~}
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip and SSMAgent with yum" | tee -a $log_pathname
 	yum install -y \
 		firewalld \
