@@ -373,7 +373,7 @@ jobs:
 
       - name: Run k6 Smoke Test - Private
         if: ${{ inputs.private_test }}
-        id: run-smoke-test
+        id: run-smoke-test-private
         working-directory: ${{ env.K6_WORK_DIR_PATH }}
         env:
           K6_PATHNAME: "./k6"
