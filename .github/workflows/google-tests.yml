@@ -247,43 +247,6 @@ jobs:
         run: |
           terraform output -no-color -raw proxy_instance_zone
 
-      - name: Start SOCKS5 Proxy - Private
-        if: ${{ inputs.private_test }}
-        env:
-          INSTANCE_NAME: ${{ steps.retrieve-instance-name.outputs.stdout }}
-          INSTANCE_ZONE: ${{ steps.retrieve-instance-zone.outputs.stdout }}
-        run: |
-          gcloud compute ssh \
-          --quiet \
-          --ssh-key-expire-after="1440m" \
-          --tunnel-through-iap \
-          --zone="$INSTANCE_ZONE" \
-          "$INSTANCE_NAME" \
-          -- -f -N -p 22 -D localhost:5000
-
-      - name: Wait For TFE
-        id: wait-for-tfe
-        if: ${{ ! inputs.private_test }}
-        timeout-minutes: 25
-        env:
-          HEALTH_CHECK_URL: ${{ steps.retrieve-health-check-url.outputs.stdout }}
-        run: |
-          echo "Curling \`health_check_url\` for a return status of 200..."
-          while ! curl -sfS --max-time 5 "$HEALTH_CHECK_URL"; do sleep 5; done
-
-      - name: Wait For TFE - Private
-        if: ${{ inputs.private_test }}
-        id: wait-for-tfe-private
-        timeout-minutes: 30
-        env:
-          HEALTH_CHECK_URL: ${{ steps.retrieve-health-check-url.outputs.stdout }}
-        run: |
-          echo "Curling \`health_check_url\` for a return status of 200..."
-          while ! curl \
-            -sfS --max-time 5 --proxy socks5://localhost:5000 \
-            $HEALTH_CHECK_URL; \
-            do sleep 5; done
-
       - name: Retrieve TFE URL
         id: retrieve-tfe-url
         working-directory: ${{ env.WORK_DIR_PATH }}
@@ -296,106 +259,43 @@ jobs:
         run: |
           terraform output -no-color -raw iact_url
 
-      - name: Retrieve IACT
-        id: retrieve-iact
-        if: ${{ ! inputs.private_test }}
-        env:
-          IACT_URL: ${{ steps.retrieve-iact-url.outputs.stdout }}
-        run: |
-          token=$(curl --fail --retry 10 --verbose "$IACT_URL")
-          echo "::set-output name=token::$token"
-
-      - name: Retrieve IACT - Private
-        if: ${{ inputs.private_test }}
-        id: retrieve-iact-private
-        env:
-          IACT_URL: ${{ steps.retrieve-iact-url.outputs.stdout }}
-        run: |
-          token=$(curl --fail --retry 10 --verbose --proxy socks5://localhost:5000 "$IACT_URL")
-          echo "::set-output name=token::$token"
-
       - name: Retrieve Initial Admin User URL
         id: retrieve-initial-admin-user-url
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           terraform output -no-color -raw initial_admin_user_url
 
-      - name: Create Admin
-        if: ${{ ! inputs.private_test }}
-        id: create-admin
-        env:
-          TFE_PASSWORD: ${{ secrets.TFE_PASSWORD }}
-          IAU_URL: ${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}
-          IACT: ${{ steps.retrieve-iact.outputs.token }}
-        run: |
-          echo \
-            '{"username": "test", "email": "tf-onprem-team@hashicorp.com", "password": "$TFE_PASSWORD"}' \
-            > ./payload.json
-          response=$( \
-            curl \
-            --fail \
-            --retry 5 \
-            --verbose \
-            --header 'Content-Type: application/json' \
-            --data @./payload.json \
-            "$IAU_URL"?token="$IACT")
-          echo "::set-output name=response::$response"
-
-      - name: Create Admin - Private
-        id: create-admin-private
-        if: ${{ inputs.private_test }}
-        env:
-          TFE_PASSWORD: ${{ secrets.TFE_PASSWORD }}
-          IAU_URL: ${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}
-          IACT_TOKEN: ${{ steps.retrieve-iact-private.outputs.token }}
-        run: |
-          echo \
-            '{"username": "test", "email": "tf-onprem-team@hashicorp.com", "password": "$TFE_PASSWORD"}' \
-            > ./payload.json
-          response=$( \
-            curl \
-            --fail \
-            --retry 5 \
-            --verbose \
-            --header 'Content-Type: application/json' \
-            --data @./payload.json \
-            --proxy socks5://localhost:5000 \
-            "$IAU_URL"?token="$IACT_TOKEN")
-          echo "::set-output name=response::$response"
-
-      - name: Retrieve Admin Token
-        id: retrieve-admin-token
-        env:
-          RESPONSE: ${{ steps.create-admin.outputs.response }}
-        run: |
-          token=$(echo "$RESPONSE" | jq --raw-output '.token')
-          echo "::set-output name=token::$token"
-
       - name: Run k6 Smoke Test - Private
         if: ${{ inputs.private_test }}
         id: run-smoke-test-private
-        working-directory: ${{ env.K6_WORK_DIR_PATH }}
+        working-directory: ${{ env.WORK_DIR_PATH }}
         env:
           K6_PATHNAME: "./k6"
           TFE_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}"
-          TFE_API_TOKEN: "${{ steps.retrieve-admin-token.outputs.token }}"
-          TFE_EMAIL: tf-onprem-team@hashicorp.com
-          http_proxy: socks5://localhost:5000/
-          https_proxy: socks5://localhost:5000/
+          HEALTHCHECK_URL: "${{ steps.retrieve-health-check-url.outputs.stdout }}"
+          PROXY_ZONE: "${{ steps.retrieve-instance-zone.outputs.stdout }}"
+          PROXY_INSTANCE: "${{ steps.retrieve-instance-name.outputs.stdout }}"
+          IACT_URL: "${{ steps.retrieve-iact-url.outputs.stdout }}"
+          IAU_URL: "${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}"
         run: |
-          make smoke-test
+          command="bash ./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }}"
+          echo $command
+          eval $command
 
       - name: Run k6 Smoke Test
         if: ${{ ! inputs.private_test }}
         id: run-smoke-test
-        working-directory: ${{ env.K6_WORK_DIR_PATH }}
+        working-directory: ${{ env.WORK_DIR_PATH }}
         env:
           K6_PATHNAME: "./k6"
           TFE_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}"
-          TFE_API_TOKEN: "${{ steps.retrieve-admin-token.outputs.token }}"
-          TFE_EMAIL: tf-onprem-team@hashicorp.com
+          HEALTHCHECK_URL: "${{ steps.retrieve-health-check-url.outputs.stdout }}"
+          IACT_URL: "${{ steps.retrieve-iact-url.outputs.stdout }}"
+          IAU_URL: "${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}"
         run: |
-          make smoke-test
+          command="bash ./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }}"
+          echo $command
+          eval $command
 
       ##################
       # Clean up infra #
