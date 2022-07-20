@@ -102,7 +102,7 @@ jobs:
       contents: read
       pull-requests: write
          branches:
-           - "test-all"
+           - "proxy-ssh"
     env:
       WORK_DIR_PATH: ${{ inputs.work_dir }} 
       K6_WORK_DIR_PATH: ${{ inputs.k6_work_dir }}
