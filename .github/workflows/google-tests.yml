@@ -274,7 +274,7 @@ jobs:
       - name: Wait For TFE - Private
         if: ${{ inputs.private_test }}
         id: wait-for-tfe-private
-        timeout-minutes: 25
+        timeout-minutes: 30
         env:
           HEALTH_CHECK_URL: ${{ steps.retrieve-health-check-url.outputs.stdout }}
         run: |
@@ -371,7 +371,22 @@ jobs:
           token=$(echo "$RESPONSE" | jq --raw-output '.token')
           echo "::set-output name=token::$token"
 
+      - name: Run k6 Smoke Test - Private
+        if: ${{ inputs.private_test }}
+        id: run-smoke-test
+        working-directory: ${{ env.K6_WORK_DIR_PATH }}
+        env:
+          K6_PATHNAME: "./k6"
+          TFE_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}"
+          TFE_API_TOKEN: "${{ steps.retrieve-admin-token.outputs.token }}"
+          TFE_EMAIL: tf-onprem-team@hashicorp.com
+          http_proxy: socks5://localhost:5000/
+          https_proxy: socks5://localhost:5000/
+        run: |
+          make smoke-test
+
       - name: Run k6 Smoke Test
+        if: ${{ ! inputs.private_test }}
         id: run-smoke-test
         working-directory: ${{ env.K6_WORK_DIR_PATH }}
         env:
