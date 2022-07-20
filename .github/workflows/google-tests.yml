@@ -182,11 +182,18 @@ jobs:
           curl -L $K6_URL | tar -xz --strip-components=1
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0.2.1
+        uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ secrets.GOOGLE_PROJECT }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
+      
+      - name: increasing_the_tcp_upload_bandwidth
+        id: increasing_the_tcp_upload_bandwidth
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          $(gcloud info --format="value(basic.python_location)") -m pip install numpy
+          export CLOUDSDK_PYTHON_SITEPACKAGES=1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
