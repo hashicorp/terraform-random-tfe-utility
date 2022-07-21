@@ -319,7 +319,7 @@ jobs:
       #####################
 
       - name: Update comment
-        if: ${{ always() && inputs.private_test == 'true' }}
+        if: ${{ always() && inputs.private_test != 'false' }}
         uses: peter-evans/create-or-update-comment@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
