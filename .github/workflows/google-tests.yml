@@ -319,7 +319,7 @@ jobs:
       #####################
 
       - name: Update comment
-        if: ${{ inputs.private_test }}
+        if: ${{ always() && inputs.private_test == 'true' }}
         uses: peter-evans/create-or-update-comment@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -341,7 +341,7 @@ jobs:
             ${{ github.event.client_payload.slash_command.args.named.destroy != 'false' && format('- {0} Terraform Destroy', steps.destroy.outcome == 'success' && ':white_check_mark:' || ':x:') || '' }}
 
       - name: Update comment
-        if: ${{ ! inputs.private_test }}
+        if: ${{ always() && inputs.private_test != 'true' }}
         uses: peter-evans/create-or-update-comment@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
