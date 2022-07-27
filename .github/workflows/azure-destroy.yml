@@ -133,6 +133,10 @@ jobs:
       #################
       # Run Terraform #
       #################
+      - name: Write Potential Terraform Variables
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          echo "key_vault_id = \"\"" > github.auto.tfvars
 
       - name: Terraform Init
         id: init
