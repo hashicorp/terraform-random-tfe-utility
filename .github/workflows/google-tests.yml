@@ -26,7 +26,12 @@ on:
         type: boolean
         required: false
         default: false
-      
+      private_test:
+        description: "Is this a private or public test?"
+        type: boolean
+        required: true
+        default: false
+        
       ###################################
       # Pull Request / Repo Identifiers #
       ###################################
@@ -177,11 +182,18 @@ jobs:
           curl -L $K6_URL | tar -xz --strip-components=1
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0.2.1
+        uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ secrets.GOOGLE_PROJECT }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
+      
+      - name: increasing_the_tcp_upload_bandwidth
+        id: increasing_the_tcp_upload_bandwidth
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          $(gcloud info --format="value(basic.python_location)") -m pip install numpy
+          export CLOUDSDK_PYTHON_SITEPACKAGES=1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
@@ -228,14 +240,19 @@ jobs:
         run: |
           terraform output -no-color -raw health_check_url
 
-      - name: Wait For TFE
-        id: wait-for-tfe
-        timeout-minutes: 25
-        env:
-          HEALTH_CHECK_URL: ${{ steps.retrieve-health-check-url.outputs.stdout }}
+      - name: Retrieve Instance Name - Private
+        id: retrieve-instance-name
+        if: ${{ inputs.private_test }} 
+        working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          echo "Curling \`health_check_url\` for a return status of 200..."
-          while ! curl -sfS --max-time 5 "$HEALTH_CHECK_URL"; do sleep 5; done
+          terraform output -no-color -raw proxy_instance_name
+
+      - name: Retrieve Instance Zone - Private
+        if: ${{ inputs.private_test }}
+        id: retrieve-instance-zone
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          terraform output -no-color -raw proxy_instance_zone
 
       - name: Retrieve TFE URL
         id: retrieve-tfe-url
@@ -249,58 +266,43 @@ jobs:
         run: |
           terraform output -no-color -raw iact_url
 
-      - name: Retrieve IACT
-        id: retrieve-iact
-        env:
-          IACT_URL: ${{ steps.retrieve-iact-url.outputs.stdout }}
-        run: |
-          token=$(curl --fail --retry 5 --verbose "$IACT_URL")
-          echo "::set-output name=token::$token"
-
       - name: Retrieve Initial Admin User URL
         id: retrieve-initial-admin-user-url
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           terraform output -no-color -raw initial_admin_user_url
 
-      - name: Create Admin in TFE
-        id: create-admin
-        env:
-          TFE_PASSWORD: ${{ secrets.TFE_PASSWORD }}
-          IAU_URL: ${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}
-          IACT: ${{ steps.retrieve-iact.outputs.token }}
-        run: |
-          echo \
-            '{"username": "test", "email": "tf-onprem-team@hashicorp.com", "password": "$TFE_PASSWORD"}' \
-            > ./payload.json
-          response=$( \
-            curl \
-            --fail \
-            --retry 5 \
-            --verbose \
-            --header 'Content-Type: application/json' \
-            --data @./payload.json \
-            "$IAU_URL"?token="$IACT")
-          echo "::set-output name=response::$response"
-
-      - name: Retrieve Admin Token
-        id: retrieve-admin-token
-        env:
-          RESPONSE: ${{ steps.create-admin.outputs.response }}
-        run: |
-          token=$(echo "$RESPONSE" | jq --raw-output '.token')
-          echo "::set-output name=token::$token"
-
-      - name: Run k6 Smoke Test
-        id: run-smoke-test
-        working-directory: ${{ env.K6_WORK_DIR_PATH }}
+      - name: Run k6 Smoke Test - Private
+        if: ${{ inputs.private_test }}
+        id: run-smoke-test-private
+        working-directory: ${{ env.WORK_DIR_PATH }}
         env:
           K6_PATHNAME: "./k6"
           TFE_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}"
-          TFE_API_TOKEN: "${{ steps.retrieve-admin-token.outputs.token }}"
-          TFE_EMAIL: tf-onprem-team@hashicorp.com
+          HEALTHCHECK_URL: "${{ steps.retrieve-health-check-url.outputs.stdout }}"
+          PROXY_ZONE: "${{ steps.retrieve-instance-zone.outputs.stdout }}"
+          PROXY_INSTANCE: "${{ steps.retrieve-instance-name.outputs.stdout }}"
+          IACT_URL: "${{ steps.retrieve-iact-url.outputs.stdout }}"
+          IAU_URL: "${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}"
         run: |
-          make smoke-test
+          command="bash ./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }}"
+          echo $command
+          eval $command
+
+      - name: Run k6 Smoke Test
+        if: ${{ ! inputs.private_test }}
+        id: run-smoke-test
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        env:
+          K6_PATHNAME: "./k6"
+          TFE_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}"
+          HEALTHCHECK_URL: "${{ steps.retrieve-health-check-url.outputs.stdout }}"
+          IACT_URL: "${{ steps.retrieve-iact-url.outputs.stdout }}"
+          IAU_URL: "${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}"
+        run: |
+          command="bash ./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }}"
+          echo $command
+          eval $command
 
       ##################
       # Clean up infra #
@@ -317,7 +319,29 @@ jobs:
       #####################
 
       - name: Update comment
-        if: ${{ always() }}
+        if: ${{ always() && inputs.private_test != 'false' }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ inputs.pull_request_repo_name }}
+          comment-id: ${{ inputs.pull_request_comment_id }}
+          body: |
+            ${{ format('### {0} Terraform Google {1} Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name) }}
+
+            ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
+
+            ${{ format('- {0} Terraform Init', steps.init.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+
+            ${{ format('- {0} Terraform Validate', steps.validate.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+
+            ${{ format('- {0} Terraform Apply', steps.apply.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+
+            ${{ format('- {0} Run k6 Smoke Test', steps.run-smoke-test-private.outcome == 'success' && ':white_check_mark:' || ':x:') }}
+
+            ${{ github.event.client_payload.slash_command.args.named.destroy != 'false' && format('- {0} Terraform Destroy', steps.destroy.outcome == 'success' && ':white_check_mark:' || ':x:') || '' }}
+
+      - name: Update comment
+        if: ${{ always() && inputs.private_test != 'true' }}
         uses: peter-evans/create-or-update-comment@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
