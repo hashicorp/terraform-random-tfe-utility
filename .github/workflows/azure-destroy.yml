@@ -133,7 +133,6 @@ jobs:
       #################
       # Run Terraform #
       #################
-
       - name: Terraform Init
         id: init
         working-directory: ${{ env.WORK_DIR_PATH }}
