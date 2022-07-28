@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/azure-destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Public Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-public-active-active') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
       test_name: Public Active/Active
       utility_test: true
@@ -25,7 +25,7 @@ jobs:
     uses: ./.github/workflows/azure-destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Private Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-active-active') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
       test_name: Private Active/Active
       utility_test: true
@@ -40,7 +40,7 @@ jobs:
     uses: ./.github/workflows/azure-destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Private TCP Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-tcp-active-active') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
       test_name: Private TCP Active/Active
       utility_test: true
@@ -55,7 +55,7 @@ jobs:
     uses: ./.github/workflows/azure-destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Standalone External
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-external') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-external') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
       test_name: Standalone External
       utility_test: true
@@ -64,7 +64,7 @@ jobs:
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/standalone-external
-      TFC_token_secret_name: UTILITY_AZURE_STANDALONE_MOUNTED_DISK_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_AZURE_STANDALONE_EXTERNAL_TFC_TOKEN
       TFC_workspace_substitution_pattern: 's/terraform {/terraform {\n\
         backend "remote" {\n\
           organization = "terraform-enterprise-modules-test"\n\
@@ -75,17 +75,17 @@ jobs:
   azure_standalone_mounted_disk:
     uses: ./.github/workflows/azure-destroy.yml
     secrets: inherit
-    name: Destroy resources from Azure Standalone External
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-mounted-disk') }}
+    name: Destroy resources from Azure Standalone Mounted Disk
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-mounted-disk') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
-      test_name: Standalone External
+      test_name: Standalone Mounted Disk
       utility_test: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/standalone-mounted-disk
-      TFC_token_secret_name: UTILITY_AZURE_STANDALONE_EXTERNAL_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_AZURE_STANDALONE_MOUNTED_DISK_TFC_TOKEN
       TFC_workspace_substitution_pattern: 's/terraform {/terraform {\n\
         backend "remote" {\n\
           organization = "terraform-enterprise-modules-test"\n\
@@ -116,7 +116,7 @@ jobs:
     uses: ./.github/workflows/google-destroy.yml
     secrets: inherit
     name: Destroy resources from Google Private Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-private-active-active') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google')}}
     with:
       test_name: Google Private Active/Active
       utility_test: true
@@ -134,7 +134,7 @@ jobs:
     uses: ./.github/workflows/google-destroy.yml
     secrets: inherit
     name: Destroy resources from Google Private TCP Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-private-tcp-active-active') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google')}}
     with:
       test_name: Google Private TCP Active/Active
       utility_test: true
@@ -152,7 +152,7 @@ jobs:
     uses: ./.github/workflows/google-destroy.yml
     secrets: inherit
     name: Destroy resources from Google Standalone External Rhel8 Worker
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'standalone-external-rhel8-worker') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'standalone-external-rhel8-worker') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google')}}
     with:
       test_name: Google Standalone External Rhel8 Worker
       module_repository_id: hashicorp/terraform-google-terraform-enterprise
@@ -170,7 +170,7 @@ jobs:
     uses: ./.github/workflows/google-destroy.yml
     secrets: inherit
     name: Destroy resources from Google Standalone Mounted Disk
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-standalone-mounted-disk') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-standalone-mounted-disk') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google')}}
     with:
       test_name: Google Standalone Mounted Disk
       module_repository_id: hashicorp/terraform-google-terraform-enterprise
@@ -186,7 +186,7 @@ jobs:
 
   aws_active_active_rhel7_proxy:
     name: Destroy resources from AWS Active-Active RHEL7 Proxy
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-active-active-rhel7-proxy') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-active-active-rhel7-proxy') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -260,7 +260,7 @@ jobs:
 
   aws_private_active_active:
     name: Destroy resources from AWS Private Active-Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-active-active') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -328,7 +328,7 @@ jobs:
 
   aws_private_tcp_active_active:
     name: Destroy resources from AWS Private TCP Active-Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-tcp-active-active') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -396,7 +396,7 @@ jobs:
 
   aws_public_active_active:
     name: Destroy resources from AWS Public Active-Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-public-active-active') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -463,7 +463,7 @@ jobs:
 
   aws_standalone_vault:
     name: Destroy resources from AWS Standalone Vault
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-standalone-vault') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-standalone-vault') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
     runs-on: ubuntu-latest
     permissions:
       contents: read
