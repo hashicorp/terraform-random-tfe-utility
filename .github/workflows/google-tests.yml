@@ -29,7 +29,7 @@ on:
       private_test:
         description: "Is this a private or public test?"
         type: boolean
-        required: true
+        required: false
         default: false
         
       ###################################
@@ -290,7 +290,7 @@ jobs:
           eval $command
 
       - name: Run k6 Smoke Test
-        if: ${{ ! inputs.private_test }}
+        if: ${{ !(inputs.private_test) }}
         id: run-smoke-test
         working-directory: ${{ env.WORK_DIR_PATH }}
         env:
@@ -319,7 +319,7 @@ jobs:
       #####################
 
       - name: Update comment
-        if: ${{ always() && inputs.private_test != 'false' }}
+        if: ${{ always() && inputs.private_test == 'true' }}
         uses: peter-evans/create-or-update-comment@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
