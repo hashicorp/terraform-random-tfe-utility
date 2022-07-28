@@ -21,7 +21,7 @@ jobs:
           body: |
             > | Command | Description |
             > | ------- | ----------- |
-            > | /test <all\|test case name...> [destroy=false] | Run the Terraform test workflow on the modules in the tests/ directory. Unnamed arguments can be "all" to run all test cases or specific test case names to only run selected cases. The named argument "destroy=false" will disable the destruction of test infrastructure for debugging purposes. |
-            > | /destroy <all\|test case name...> | Destroy any resources that may still be in Terraform state from previous tests. Unnamed arguments can be "all" to destroy all resources from all test cases or specific test case names to only destroy selected test case resources. |
+            > | /test <all\|full-aws\|full-azure\|full-google\|test case name...> [destroy=false] | Run the Terraform test workflow on the modules in the tests/ directory in each of the terraform-aws-terraform-enterprise, terraform-azurerm-terraform-enterprise, and terraform-google-terraform-enterprise module repositories. Unnamed arguments can be "all" to run all test cases, full-[aws\|azure\|google] to run all cloud specific cases, or specific test case names to only run selected cases. The named argument "destroy=false" will disable the destruction of test infrastructure for debugging purposes. |
+            > | /destroy <all\|full-aws\|full-azure\|full-google\|test case name...> | Destroy any resources that may still be in Terraform state from previous tests. Unnamed arguments can be "all" to destroy all resources from all test cases, full-[aws\|azure\|google] to destroy all resources from cloud specific cases, or specific test case names to only destroy selected test case resources. |
             > | /help | Shows this help message |
           reaction-type: confused

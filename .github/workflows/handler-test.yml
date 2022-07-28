@@ -210,7 +210,7 @@ jobs:
 
   aws_active_active_rhel7_proxy:
     name: Run tf-test on AWS Active-Active RHEL7 Proxy
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-active-active-rhel7-proxy') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-active-active-rhel7-proxy') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -438,7 +438,7 @@ jobs:
 
   aws_private_active_active:
     name: Run tf-test on AWS Private Active-Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-active-active') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -671,7 +671,7 @@ jobs:
 
   aws_private_tcp_active_active:
     name: Run tf-test on AWS Private TCP Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-tcp-active-active') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -912,7 +912,7 @@ jobs:
 
   aws_public_active_active:
     name: Run tf-test on AWS Public Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-public-active-active') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -1103,7 +1103,7 @@ jobs:
 
   aws_standalone_vault:
     name: Run tf-test on AWS Standalone Vault
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-standalone-vault') }}
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-standalone-vault') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
     runs-on: ubuntu-latest
     permissions:
       contents: read
