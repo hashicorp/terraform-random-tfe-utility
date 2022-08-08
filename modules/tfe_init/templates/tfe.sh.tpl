@@ -164,7 +164,7 @@ then
 else
   echo "[Terraform Enterprise] Creating EXT4 filesystem on disk at '$device'" | tee -a $log_pathname
 
-  mkfs.ext4 -m 0 -E -F lazy_itable_init=0,lazy_journal_init=0,discard $device
+  mkfs.ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard $device -F
 fi
 
 echo "[Terraform Enterprise] Creating mounted disk directory at '${disk_path}'" | tee -a $log_pathname
