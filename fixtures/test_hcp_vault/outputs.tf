@@ -12,3 +12,9 @@ output "app_role_secret_id" {
   value       = vault_approle_auth_backend_role_secret_id.approle.secret_id
   description = "The secret ID of the Vault's app role."
 }
+
+output "token" {
+  value       = hcp_vault_cluster_admin_token.test.token
+  sensitive   = true
+  description = "The Vault token"
+}
