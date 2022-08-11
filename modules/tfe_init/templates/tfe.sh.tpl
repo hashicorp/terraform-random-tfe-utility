@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-exit 1
 set -euo pipefail
 
 ${get_base64_secrets}
@@ -286,13 +285,16 @@ $install_pathname \
 # Add docker0 to firewalld (for Red Hat instances only)
 # -----------------------------------------------------------------------------
 %{ if distribution == "rhel" && cloud != "google" ~}
-echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
-setenforce 0
-echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a $log_pathname
-firewall-cmd --permanent --zone=trusted --change-interface=docker0
-firewall-cmd --reload
-echo "[$(date +"%FT%T")] [Terraform Enterprise] Enable SELinux" | tee -a $log_pathname
-setenforce 1
+os_release=$(cat /etc/os-release | grep VERSION_ID | sed "s/VERSION_ID=\"\(.*\)\"/\1/g")
+if (( $(echo "$os_release < 8.0" | bc -l ) )); then
+  echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
+  setenforce 0
+  echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a $log_pathname
+  firewall-cmd --permanent --zone=trusted --change-interface=docker0
+  firewall-cmd --reload
+  echo "[$(date +"%FT%T")] [Terraform Enterprise] Enable SELinux" | tee -a $log_pathname
+  setenforce 1
+fi
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
