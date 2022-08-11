@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+exit 1
 set -euo pipefail
 
 ${get_base64_secrets}
