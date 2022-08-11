@@ -141,7 +141,7 @@ fi
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Resize RHEL logical volume" | tee -a $log_pathname
 
 terminal_partition=$(parted --script /dev/disk/cloud/azure_root u s p | tail -2 | head -n 1)
-terminal_partition_number=$(echo ${terminal_partition:0:3} | xargs)
+terminal_partition_number=$(echo $${terminal_partition:0:3} | xargs)
 terminal_partition_link=/dev/disk/cloud/azure_root-part$terminal_partition_number
 # Because Microsoft is publishing only LVM-partitioned images, it is necessary to partition it to the specs that TFE requires.
 # First, extend the partition to fill available space
