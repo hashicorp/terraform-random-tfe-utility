@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
 
 ${get_base64_secrets}
@@ -141,11 +140,14 @@ fi
 %{ if cloud == "azurerm" && distribution == "rhel" ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Resize RHEL logical volume" | tee -a $log_pathname
 
+terminal_partition=$(parted --script /dev/disk/cloud/azure_root u s p | tail -2 | head -n 1)
+terminal_partition_number=$(echo $${terminal_partition:0:3} | xargs)
+terminal_partition_link=/dev/disk/cloud/azure_root-part$terminal_partition_number
 # Because Microsoft is publishing only LVM-partitioned images, it is necessary to partition it to the specs that TFE requires.
 # First, extend the partition to fill available space
-growpart /dev/disk/azure/root 4
+growpart /dev/disk/cloud/azure_root $terminal_partition_number
 # Resize the physical volume
-pvresize /dev/disk/azure/root-part4
+pvresize $terminal_partition_link
 # Then resize the logical volumes to meet TFE specs
 lvresize -r -L 10G /dev/mapper/rootvg-rootlv
 lvresize -r -L 40G /dev/mapper/rootvg-varlv
@@ -164,7 +166,7 @@ then
 else
   echo "[Terraform Enterprise] Creating EXT4 filesystem on disk at '$device'" | tee -a $log_pathname
 
-  mkfs.ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard $device
+  mkfs.ext4 -m 0 -E lazy_itable_init=0,lazy_journal_init=0,discard $device -F
 fi
 
 echo "[Terraform Enterprise] Creating mounted disk directory at '${disk_path}'" | tee -a $log_pathname
@@ -277,13 +279,16 @@ $install_pathname \
 # Add docker0 to firewalld (for Red Hat instances only)
 # -----------------------------------------------------------------------------
 %{ if distribution == "rhel" && cloud != "google" ~}
-echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
-setenforce 0
-echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a $log_pathname
-firewall-cmd --permanent --zone=trusted --change-interface=docker0
-firewall-cmd --reload
-echo "[$(date +"%FT%T")] [Terraform Enterprise] Enable SELinux" | tee -a $log_pathname
-setenforce 1
+os_release=$(cat /etc/os-release | grep VERSION_ID | sed "s/VERSION_ID=\"\(.*\)\"/\1/g")
+if (( $(echo "$os_release < 8.0" | bc -l ) )); then
+  echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
+  setenforce 0
+  echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a $log_pathname
+  firewall-cmd --permanent --zone=trusted --change-interface=docker0
+  firewall-cmd --reload
+  echo "[$(date +"%FT%T")] [Terraform Enterprise] Enable SELinux" | tee -a $log_pathname
+  setenforce 1
+fi
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
