@@ -1,19 +1,20 @@
 name: Create Jira Issue
 
 on:
-  issues:
-    types: [opened, closed, deleted, reopened]
-  pull_request_target:
-    types: [opened, closed, reopened]
-  issue_comment:
-    types: [created]
   workflow_call:
-
+    inputs:
+      github-team:
+        required: true
+        type: string
+      project:
+        required: true
+        type: string
 jobs:
   sync:
     runs-on: ubuntu-latest
     name: Jira sync
-    steps:    
+    with:
+    steps:
       - name: Login
         uses: atlassian/gajira-login@v2.0.0
         env:
@@ -41,12 +42,12 @@ jobs:
           if [[ "${{ contains(github.event.issue.labels.*.name, 'enhancement') }}" == "true" ]]; then LABELS+="\"enhancement\", "; fi
           if [[ ${#LABELS} != 1 ]]; then LABELS=${LABELS::-2}"]"; else LABELS+="]"; fi
           echo "::set-output name=labels::${LABELS}"
-          
+
       - name: Check if team member
         if: github.event.action == 'opened' && steps.set-ticket-type.outputs.type == 'Task'
         id: is-team-member
         run: |
-          TEAM=Terraform-Enterprise
+          TEAM="${{ inputs.github-team }}"
           ROLE="$(hub api orgs/hashicorp/teams/${TEAM}/memberships/${{ github.actor }} | jq -r '.role | select(.!=null)')"
           if [[ -n ${ROLE} ]]; then
             echo "Actor ${{ github.actor }} is a ${TEAM} team member"
@@ -62,13 +63,13 @@ jobs:
         if: ( github.event.action == 'opened' && steps.set-ticket-type.outputs.type != 'Task' ) || ( github.event.action == 'opened' && steps.set-ticket-type.outputs.type == 'Task' && steps.is-team-member.outputs.message == 'false' )
         uses: tomhjp/gh-action-jira-create@v0.1.3
         with:
-          project: TFE
+          project: "${{ inputs.project }}"
           issuetype: "${{ steps.set-ticket-type.outputs.type }}"
           summary: "${{ github.event.repository.name }} [${{ steps.set-ticket-type.outputs.type }} #${{ github.event.issue.number || github.event.pull_request.number }}]: ${{ github.event.issue.title || github.event.pull_request.title }}"
           description: "${{ github.event.issue.body || github.event.pull_request.body }}\n\n_Created in GitHub by ${{ github.actor }}._"
           # customfield_10089 is "Issue Link", customfield_10371 is "Source" (use JIRA API to retrieve)
           extraFields: '{ "customfield_10089": "${{ github.event.issue.html_url || github.event.pull_request.html_url }}",
-                          "customfield_10371": { "value": "GitHub" },            
+                          "customfield_10371": { "value": "GitHub" },
                           "components": [{ "name": "${{ github.event.repository.name }}" }],
                           "labels": ${{ steps.set-ticket-labels.outputs.labels }}}'
 
