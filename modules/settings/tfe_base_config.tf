@@ -34,7 +34,11 @@ locals {
     }
 
     custom_image_tag = {
-      value = var.custom_image_tag
+      value = var.custom_agent_image_tag != null ? null : var.custom_image_tag
+    }
+
+    custom_agent_image_tag = {
+      value = var.custom_agent_image_tag
     }
 
     disk_path = {
@@ -107,8 +111,12 @@ locals {
       value = random_id.root_secret.hex
     }
 
+    run_pipeline_mode = {
+      value = var.custom_image_tag != null ? "legacy" : "agent"
+    }
+
     tbw_image = {
-      value = var.tbw_image
+      value = var.custom_image_tag != null ? "custom_image" : null
     }
 
     tls_ciphers = {

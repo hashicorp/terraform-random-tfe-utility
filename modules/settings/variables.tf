@@ -52,6 +52,15 @@ variable "custom_image_tag" {
   EOD
 }
 
+variable "custom_agent_image_tag" {
+  type        = string
+  description = <<-EOD
+  Configure the docker image for handling job execution within TFE. This can either be the
+  standard image that ships with TFE or a custom image that includes extra tools not present
+  in the default one. Should be in the format <name>:<tag>.
+  EOD
+}
+
 variable "production_type" {
   default     = null
   type        = string
@@ -82,24 +91,6 @@ variable "release_sequence" {
   license's channel, but is overridden by pins made in the vendor console. This setting is optional
   and has to be omitted when tfe_license_bootstrap_airgap_package_path is set.
   EOD
-}
-
-variable "tbw_image" {
-  type        = string
-  description = <<-EOD
-  Set this to 'custom_image' if you want to use an alternative Terraform build worker image,
-  and use the 'custom_image_tag' variable to define its name and tag.
-  Default is 'default_image'. 
-  EOD
-
-  validation {
-    condition = (
-      var.tbw_image == "default_image" ||
-      var.tbw_image == "custom_image" ||
-      var.tbw_image == null
-    )
-    error_message = "The tbw_image must be 'default_image', 'custom_image', or null. If left unset, TFE will default to 'default_image'."
-  }
 }
 
 # ------------------------------------------------------
