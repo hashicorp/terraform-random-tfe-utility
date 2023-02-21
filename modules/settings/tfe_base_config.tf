@@ -116,7 +116,7 @@ locals {
     }
 
     tbw_image = {
-      value = var.tbw_image
+      value = var.custom_image_tag != null ? "custom_image" : null
     }
 
     tls_ciphers = {
