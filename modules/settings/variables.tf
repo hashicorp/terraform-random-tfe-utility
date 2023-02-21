@@ -57,7 +57,7 @@ variable "custom_agent_image_tag" {
   description = <<-EOD
   Configure the docker image for handling job execution within TFE. This can either be the
   standard image that ships with TFE or a custom image that includes extra tools not present
-  in the default one.
+  in the default one. Should be in the format <name>:<tag>.
   EOD
 }
 
