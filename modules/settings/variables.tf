@@ -44,7 +44,7 @@ variable "capacity_memory" {
 }
 
 variable "consolidated_services" {
-  default     = false
+  default     = null
   type        = bool
   description = "(Required) True if TFE uses consolidated services."
 }
