@@ -6,6 +6,11 @@ cloud-init scripts. The script will:
 - add the TFE private key to the bastion virtual machine
 - add `ssh-config` files for the IP addresses that are passed in
 
+*NOTE: THIS IS NOT RECOMMENDED FOR PRODUCTION.*
+Our TFE modules already provide cloud specific ways of connecting to the
+TFE instances, therefore this configuration is only necessary when you are
+creating a bastion _virtual machine_ for testing purposes.
+
 ## Example Usage
 
 ```tf
