@@ -43,6 +43,12 @@ variable "capacity_memory" {
   EOD
 }
 
+variable "consolidated_services" {
+  default     = null
+  type        = bool
+  description = "(Required) True if TFE uses consolidated services."
+}
+
 variable "custom_image_tag" {
   type        = string
   description = <<-EOD
