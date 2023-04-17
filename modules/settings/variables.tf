@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 # --------------------------------------------------------------------------------------------
 # NOTE: In the descriptions, there are many variables that state that they default to certain
 # values, but the variable default is set to null. This is because this module will only add

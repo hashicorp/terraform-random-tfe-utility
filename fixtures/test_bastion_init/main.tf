@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 locals {
   tfe_ssh_config = [for addr in toset(var.tfe_instance_ip_addresses) : templatefile("${path.module}/templates/ssh-config.tpl", {
     instance_ip_address = addr
