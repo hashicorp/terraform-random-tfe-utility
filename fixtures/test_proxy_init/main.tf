@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 locals {
   mitmproxy_http_port = 3128
   mitmproxy_user_data_script = templatefile(

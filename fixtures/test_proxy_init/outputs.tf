@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 output "mitmproxy" {
   value = {
     http_port        = local.mitmproxy_http_port

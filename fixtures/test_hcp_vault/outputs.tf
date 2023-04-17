@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 output "url" {
   value       = hcp_vault_cluster.test.vault_public_endpoint_url
   description = "The public endpoint of the HCP Vault Cluster."

@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 # SSH Config
 # ----------
 variable "tfe_instance_ip_addresses" {

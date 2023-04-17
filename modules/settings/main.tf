@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 locals {
   replicated_configuration = { for k, v in local.replicated_base_config : k => v if v != tostring(null) }
 

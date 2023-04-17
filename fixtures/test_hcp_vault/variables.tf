@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 variable "hcp_vault_cluster_id" {
   type        = string
   description = "The ID of the HCP Vault cluster."
