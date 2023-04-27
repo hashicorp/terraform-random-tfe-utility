@@ -226,7 +226,7 @@ jobs:
 
       # Checkout the branch of the AWS TFE module to be used to test changes
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           repository: hashicorp/terraform-aws-terraform-enterprise
 
@@ -251,7 +251,7 @@ jobs:
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           path: ${{ env.K6_WORK_DIR_PATH }}
           repository: hashicorp/tfe-load-test
@@ -311,7 +311,7 @@ jobs:
           chmod 0400 ./ssh-key.pem
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@e1e17a757e536f70e52b5a12b2e8d1d1c60e04ef # v2.0.0
         with:
           aws-access-key-id: ${{ secrets.AWS_ACTIVE_ACTIVE_RHEL7_PROXY_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_ACTIVE_ACTIVE_RHEL7_PROXY_AWS_SECRET_ACCESS_KEY }}
@@ -416,7 +416,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        uses: peter-evans/create-or-update-comment@3383acd359705b10cb1eeef05c0e88c056ea4666 # v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -454,7 +454,7 @@ jobs:
 
       # Checkout the branch of the AWS TFE module to be used to test changes
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           repository: hashicorp/terraform-aws-terraform-enterprise
 
@@ -473,7 +473,7 @@ jobs:
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           path: ${{ env.K6_WORK_DIR_PATH }}
           repository: hashicorp/tfe-load-test
@@ -533,7 +533,7 @@ jobs:
           chmod 0400 ./ssh-key.pem
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@e1e17a757e536f70e52b5a12b2e8d1d1c60e04ef # v2.0.0
         with:
           aws-access-key-id: ${{ secrets.AWS_PRIVATE_ACTIVE_ACTIVE_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_PRIVATE_ACTIVE_ACTIVE_AWS_SECRET_ACCESS_KEY }}
@@ -649,7 +649,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        uses: peter-evans/create-or-update-comment@3383acd359705b10cb1eeef05c0e88c056ea4666 # v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -687,7 +687,7 @@ jobs:
 
       # Checkout the branch of the AWS TFE module to be used to test changes
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           repository: hashicorp/terraform-aws-terraform-enterprise
 
@@ -706,7 +706,7 @@ jobs:
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           path: ${{ env.K6_WORK_DIR_PATH }}
           repository: hashicorp/tfe-load-test
@@ -766,7 +766,7 @@ jobs:
           chmod 0400 ./ssh-key.pem
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@e1e17a757e536f70e52b5a12b2e8d1d1c60e04ef # v2.0.0
         with:
           aws-access-key-id: ${{ secrets.AWS_PRIVATE_TCP_ACTIVE_ACTIVE_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_PRIVATE_TCP_ACTIVE_ACTIVE_AWS_SECRET_ACCESS_KEY }}
@@ -890,7 +890,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        uses: peter-evans/create-or-update-comment@3383acd359705b10cb1eeef05c0e88c056ea4666 # v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -928,7 +928,7 @@ jobs:
 
       # Checkout the branch of the AWS TFE module to be used to test changes
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           repository: hashicorp/terraform-aws-terraform-enterprise
 
@@ -946,7 +946,7 @@ jobs:
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           path: ${{ env.K6_WORK_DIR_PATH }}
           repository: hashicorp/tfe-load-test
@@ -1081,7 +1081,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        uses: peter-evans/create-or-update-comment@3383acd359705b10cb1eeef05c0e88c056ea4666 # v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -1119,7 +1119,7 @@ jobs:
 
       # Checkout the branch of the AWS TFE module to be used to test changes
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           repository: hashicorp/terraform-aws-terraform-enterprise
 
@@ -1144,7 +1144,7 @@ jobs:
 
       # Checkout the hashicorp/tfe-load-test repository
       - name: Checkout TFE Load Test
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           path: ${{ env.K6_WORK_DIR_PATH }}
           repository: hashicorp/tfe-load-test
@@ -1272,7 +1272,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        uses: peter-evans/create-or-update-comment@3383acd359705b10cb1eeef05c0e88c056ea4666 # v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}

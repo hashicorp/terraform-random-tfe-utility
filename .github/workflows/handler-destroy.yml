@@ -201,7 +201,7 @@ jobs:
 
       # Checkout the branch of the AWS TFE module to be used to test changes
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           repository: hashicorp/terraform-aws-terraform-enterprise
 
@@ -244,7 +244,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        uses: peter-evans/create-or-update-comment@3383acd359705b10cb1eeef05c0e88c056ea4666 # v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -275,7 +275,7 @@ jobs:
 
       # Checkout the branch of the AWS TFE module to be used to test changes
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           repository: hashicorp/terraform-aws-terraform-enterprise
 
@@ -312,7 +312,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        uses: peter-evans/create-or-update-comment@3383acd359705b10cb1eeef05c0e88c056ea4666 # v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -343,7 +343,7 @@ jobs:
 
       # Checkout the branch of the AWS TFE module to be used to test changes
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           repository: hashicorp/terraform-aws-terraform-enterprise
 
@@ -380,7 +380,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        uses: peter-evans/create-or-update-comment@3383acd359705b10cb1eeef05c0e88c056ea4666 # v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -411,7 +411,7 @@ jobs:
 
       # Checkout the branch of the AWS TFE module to be used to test changes
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           repository: hashicorp/terraform-aws-terraform-enterprise
 
@@ -447,7 +447,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        uses: peter-evans/create-or-update-comment@3383acd359705b10cb1eeef05c0e88c056ea4666 # v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -478,7 +478,7 @@ jobs:
 
       # Checkout the branch of the AWS TFE module to be used to test changes
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           repository: hashicorp/terraform-aws-terraform-enterprise
 
@@ -521,7 +521,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@c9fcb64660bc90ec1cc535646af190c992007c32
+        uses: peter-evans/create-or-update-comment@3383acd359705b10cb1eeef05c0e88c056ea4666 # v3.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ github.event.client_payload.github.payload.repository.full_name }}
