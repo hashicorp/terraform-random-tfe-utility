@@ -27,16 +27,20 @@ acl localnet src fe80::/10      # RFC 4291 link-local (directly plugged) machine
 
 acl SSL_ports port 443
 
-acl Safe_ports port 80          # http
-acl Safe_ports port 21          # ftp
-acl Safe_ports port 443         # https
-acl Safe_ports port 70          # gopher
-acl Safe_ports port 210         # wais
-acl Safe_ports port 280         # http-mgmt
-acl Safe_ports port 488         # gss-http
-acl Safe_ports port 591         # filemaker
-acl Safe_ports port 777         # multiling http
-acl Safe_ports port 1025-65535  # unregistered ports
+acl Safe_ports port 80                    # http
+acl Safe_ports port 21                    # ftp
+acl Safe_ports port 443                   # https
+acl Safe_ports port 70                    # gopher
+acl Safe_ports port 210                   # wais
+acl Safe_ports port 280                   # http-mgmt
+acl Safe_ports port 488                   # gss-http
+acl Safe_ports port 591                   # filemaker
+acl Safe_ports port 777                   # multiling http
+acl Safe_ports port 1025-65535            # unregistered ports
+%{ if metrics_endpoint_enabled ~}
+acl Safe_ports port ${metrics_http_port}  # metrics-http
+acl Safe_ports port ${metrics_https_port} # metrics-https
+%{ endif ~}
 
 acl CONNECT method CONNECT
 
