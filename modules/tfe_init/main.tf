@@ -38,12 +38,13 @@ locals {
       # Proxy information
       proxy_ip   = var.proxy_ip
       proxy_port = var.proxy_port
-      no_proxy   = var.tfe_configuration.extra_no_proxy.value
+      no_proxy   = try(var.tfe_configuration.extra_no_proxy.value, null)
     }
   )
 
   get_base64_secrets = templatefile("${path.module}/templates/get_base64_secrets.func", {
-    cloud = var.cloud
+    cloud        = var.cloud
+    distribution = var.distribution
   })
 
   install_packages = templatefile("${path.module}/templates/install_packages.func", {
