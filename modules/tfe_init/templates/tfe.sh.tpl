@@ -14,7 +14,7 @@ tfe_settings_path="/etc/$tfe_settings_file"
 # -----------------------------------------------------------------------------
 %{ if cloud == "google" && distribution == "rhel" ~}
 echo "[Terraform Enterprise] Patching GCP Yum repo configuration" | tee -a $log_pathname
-# workaround for GCP RHEL 7 known issue 
+# workaround for GCP RHEL 7 known issue
 # https://cloud.google.com/compute/docs/troubleshooting/known-issues#keyexpired
 sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
 %{ endif ~}
@@ -123,7 +123,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configur
 
 if [ -f "$ca_cert_filepath" ]
 then
-	%{ if distribution == "rhel" ~}
+	%{ if distribution == "rhel" || distribution == "amzn2" ~}
 	update-ca-trust
 
 	%{ else ~}
@@ -303,3 +303,8 @@ gcloud auth configure-docker --quiet ${split("/", custom_image_tag)[0]}
 echo "[Terraform Enterprise] Pulling custom worker image '${custom_image_tag}'" | tee -a
 docker pull ${custom_image_tag}
 %{ endif ~}
+
+# -----------------------------------------------------------------------------
+# Enable docker on reboot
+# -----------------------------------------------------------------------------
+systemctl enable docker
