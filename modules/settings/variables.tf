@@ -13,6 +13,15 @@
 # ------------------------------------------------------
 # TFE
 # ------------------------------------------------------
+variable "daemonauthpassword" {
+  default     = null
+  type        = string
+  description = <<-EOD
+  (Optional) This Password allows access to the daemon authentication - may be set if going between installations.
+  If unset, it will default to the random .
+  EOD
+}
+
 variable "backup_token" {
   default     = null
   type        = string
