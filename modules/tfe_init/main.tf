@@ -11,6 +11,7 @@ locals {
       get_base64_secrets        = local.get_base64_secrets
       install_packages          = local.install_packages
       install_monitoring_agents = local.install_monitoring_agents
+      setup_log_forwarding      = local.setup_log_forwarding
 
       # Configuration data
       active_active               = var.tfe_configuration.enable_active_active.value == "1" ? true : false
@@ -23,10 +24,13 @@ locals {
       distribution                = var.distribution
       docker_config               = filebase64("${path.module}/files/daemon.json")
       enable_monitoring           = var.enable_monitoring != null ? var.enable_monitoring : false
+      log_destination             = try(var.log_settings.log_destination,null)
+      log_settings                = try(var.log_settings,null)
+      region                      = try(var.region,null)
       replicated                  = base64encode(jsonencode(var.replicated_configuration))
       settings                    = base64encode(jsonencode(var.tfe_configuration))
-      tls_bootstrap_cert_pathname = try(var.replicated_configuration.TlsBootstrapCert, null)
-      tls_bootstrap_key_pathname  = try(var.replicated_configuration.TlsBootstrapKey, null)
+      tls_bootstrap_cert_pathname = try(var.replicated_configuration.TlsBootstrapCert, "null")
+      tls_bootstrap_key_pathname  = try(var.replicated_configuration.TlsBootstrapKey, "null")
 
       # Secrets
       ca_certificate_secret_id  = var.ca_certificate_secret_id
@@ -56,4 +60,12 @@ locals {
     distribution = var.distribution
   })
 
+  setup_log_forwarding = templatefile("${path.module}/templates/setup_log_forwarding.func", {
+    cloud         = var.cloud
+    active_active = var.tfe_configuration.enable_active_active.value == "1" ? true : false
+    region        = var.region != null ? var.region : "none"
+    log_settings  = var.log_settings != null ? var.log_settings : {
+      log_destination = null
+    }
+  })
 }

@@ -4,6 +4,7 @@ set -euo pipefail
 ${get_base64_secrets}
 ${install_packages}
 ${install_monitoring_agents}
+${setup_log_forwarding}
 
 log_pathname="/var/log/ptfe.log"
 tfe_settings_file="ptfe-settings.json"
@@ -186,6 +187,13 @@ echo "UUID=$(lsblk --noheadings --output uuid $device) ${disk_path} ext4 discard
 # -----------------------------------------------------------------------------
 %{ if enable_monitoring ~}
 install_monitoring_agents $log_pathname
+%{ endif ~}
+
+# -----------------------------------------------------------------------------
+# Install Monitoring Agents
+# -----------------------------------------------------------------------------
+%{ if log_settings != null && log_destination != null && region != null ~}
+setup_log_forwarding
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
