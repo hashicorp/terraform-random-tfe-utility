@@ -29,8 +29,8 @@ locals {
       region                      = try(var.region,null)
       replicated                  = base64encode(jsonencode(var.replicated_configuration))
       settings                    = base64encode(jsonencode(var.tfe_configuration))
-      tls_bootstrap_cert_pathname = try(var.replicated_configuration.TlsBootstrapCert, "null")
-      tls_bootstrap_key_pathname  = try(var.replicated_configuration.TlsBootstrapKey, "null")
+      tls_bootstrap_cert_pathname = try(var.replicated_configuration.TlsBootstrapCert, null)
+      tls_bootstrap_key_pathname  = try(var.replicated_configuration.TlsBootstrapKey, null)
 
       # Secrets
       ca_certificate_secret_id  = var.ca_certificate_secret_id
