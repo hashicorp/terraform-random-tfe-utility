@@ -6,19 +6,18 @@
 # values, but the variable default is set to null. This is because this module will only add
 # values to the final configuration that are set, and if they are left unset and null, then
 # the TFE installation will use defaults set by the Replicated configuration for the TFE
-# installation. You can find this documented here: 
+# installation. You can find this documented here:
 # https://www.terraform.io/enterprise/install/automated/automating-the-installer
 # --------------------------------------------------------------------------------------------
 
 # ------------------------------------------------------
 # TFE
 # ------------------------------------------------------
-variable "daemonauthpassword" {
+variable "daemon_auth_password" {
   default     = null
   type        = string
   description = <<-EOD
-  (Optional) This Password allows access to the daemon authentication - may be set if going between installations.
-  If unset, it will default to the random .
+  (Optional) This Password allows access to the daemon authentication - may be set if going between installations. If unset, it will create a new one.
   EOD
 }
 
@@ -425,7 +424,7 @@ variable "s3_bucket" {
   type        = string
   description = <<-EOD
   (Required when object storage is in AWS) The S3 bucket where resources will be stored.
-  
+
   EOD
 }
 
