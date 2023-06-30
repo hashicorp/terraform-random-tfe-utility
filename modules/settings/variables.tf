@@ -227,7 +227,7 @@ variable "daemon_auth_password" {
   default     = null
   type        = string
   description = <<-EOD
-  (Optional) This Password allows access to the daemon authentication - may be set if going between installations. If unset, it will create a new oneg.
+  (Optional) This Password allows access to the daemon authentication - may be set if going between installations. If unset, it will create a new one.
   EOD
 }
 
