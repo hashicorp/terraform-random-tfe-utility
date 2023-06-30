@@ -13,13 +13,6 @@
 # ------------------------------------------------------
 # TFE
 # ------------------------------------------------------
-variable "daemon_auth_password" {
-  default     = null
-  type        = string
-  description = <<-EOD
-  (Optional) This Password allows access to the daemon authentication - may be set if going between installations. If unset, it will create a new one.
-  EOD
-}
 
 variable "backup_token" {
   default     = null
@@ -228,6 +221,14 @@ variable "bypass_preflight_checks" {
   default     = null
   type        = bool
   description = "Allow the TFE application to start without preflight checks; defaults to false."
+}
+
+variable "daemon_auth_password" {
+  default     = null
+  type        = string
+  description = <<-EOD
+  (Optional) This Password allows access to the daemon authentication - may be set if going between installations. If unset, it will create a new oneg.
+  EOD
 }
 
 variable "enable_active_active" {
