@@ -1,119 +1,141 @@
-%{ if cloud == "aws" ~}
-function setup_log_forwarding {
+%{ if log_forwarding_cloud_config != null ~}
+    %{ if cloud == "aws" ~}
+    function setup_log_forwarding {
 
-    %{ if log_settings.log_destination == "cloudwatch_logs" ~}
-    cat <<EOF > fluent-bit.conf
-[OUTPUT]
-    Name               cloudwatch_logs
-    Match              *
-    region             ${ region }
-    log_group_name     ${ log_settings.cloudwatch_log_group_name }
-    log_stream_name    ${ log_settings.cloudwatch_log_stream_name }
-    auto_create_group  On
-EOF
-    %{ endif ~}
-
-    %{ if log_settings.log_destination == "s3" ~}
-    cat <<EOF > fluent-bit.conf
-[OUTPUT]
-    Name                          s3
-    Match                         *
-    bucket                        ${ log_settings.s3_bucket_name }
-    region                        ${ region }
-    total_file_size               250M
-    s3_key_format                 /$TAG/%Y/%m/%d/%H/%M/%S/$UUID.gz
-    s3_key_format_tag_delimiters  .-
-EOF
-   %{ endif ~}
-
-    %{ if log_settings.log_destination != null ~}
-        %{ if active_active ~}
-        echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with tfe-admin"
-        tfe-admin app-config set log_forwarding_enabled --value 1
-        tfe-admin app-config -k log_forwarding_config -v "$(cat fluent-bit.conf)"
-
-        %{ else ~}
-        echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with replicatedctl"
-        replicatedctl app-config set log_forwarding_enabled --value 1
-        replicatedctl app-config set log_forwarding_config --value "$(cat fluent-bit.conf)"
+        %{ if log_forwarding_cloud_config.log_destination == "cloudwatch_logs" ~}
+        cat <<EOF > fluent-bit.conf
+    [OUTPUT]
+        Name               cloudwatch_logs
+        Match              *
+        region             ${ region }
+        log_group_name     ${ log_forwarding_cloud_config.cloudwatch_log_group_name }
+        log_stream_name    ${ log_forwarding_cloud_config.cloudwatch_log_stream_name }
+        auto_create_group  On
+    EOF
         %{ endif ~}
-    %{ else ~}
-    echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding skipped"
+
+        %{ if log_forwarding_cloud_config.log_destination == "s3" ~}
+        cat <<EOF > fluent-bit.conf
+    [OUTPUT]
+        Name                          s3
+        Match                         *
+        bucket                        ${ log_forwarding_cloud_config.s3_bucket_name }
+        region                        ${ region }
+        total_file_size               250M
+        s3_key_format                 /$TAG/%Y/%m/%d/%H/%M/%S/$UUID.gz
+        s3_key_format_tag_delimiters  .-
+    EOF
     %{ endif ~}
-}
+
+        %{ if log_forwarding_cloud_config.log_destination != null ~}
+            %{ if active_active ~}
+            echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with tfe-admin"
+            tfe-admin app-config set log_forwarding_enabled --value 1
+            tfe-admin app-config -k log_forwarding_config -v "$(cat fluent-bit.conf)"
+
+            %{ else ~}
+            echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with replicatedctl"
+            replicatedctl app-config set log_forwarding_enabled --value 1
+            replicatedctl app-config set log_forwarding_config --value "$(cat fluent-bit.conf)"
+            %{ endif ~}
+        %{ else ~}
+        echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding skipped"
+        %{ endif ~}
+    }
+    %{ endif ~}
+
+    %{ if cloud == "azurerm" ~}
+    function setup_log_forwarding {
+
+        %{ if log_forwarding_cloud_config.log_destination == "azure" ~}
+        cat <<EOF > fluent-bit.conf
+    [OUTPUT]
+        name         azure
+        match        *
+        Customer_ID  log_forwarding_cloud_config.log_analytics_workspace_id
+        Shared_Key   log_forwarding_cloud_config.log_analytics_workspace_access_key
+    EOF
+        %{ endif ~}
+
+        %{ if log_forwarding_cloud_config.log_destination == "azure_blob" ~}
+        cat <<EOF > fluent-bit.conf
+    [OUTPUT]
+        name                   azure_blob
+        match                  *
+        account_name           log_forwarding_cloud_config.blob_storage_account_name
+        shared_key             log_forwarding_cloud_config.blob_storage_account_access_key
+        path                   logs
+        container_name         terraform_enterprise
+        auto_create_container  on
+        tls                    on
+    EOF
+    %{ endif ~}
+
+        %{ if log_forwarding_cloud_config.log_destination != null ~}
+            %{ if active_active ~}
+            echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with tfe-admin"
+            tfe-admin app-config set log_forwarding_enabled --value 1
+            tfe-admin app-config -k log_forwarding_config -v "$(cat fluent-bit.conf)"
+
+            %{ else ~}
+            echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with replicatedctl"
+            replicatedctl app-config set log_forwarding_enabled --value 1
+            replicatedctl app-config set log_forwarding_config --value "$(cat fluent-bit.conf)"
+            %{ endif ~}
+        %{ else ~}
+        echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding skipped"
+        %{ endif ~}
+    }
+    %{ endif ~}
+
+    %{ if cloud == "google" ~}
+    function setup_log_forwarding {
+
+        %{ if log_forwarding_cloud_config.log_destination == "stackdriver" ~}
+        cat <<EOF > fluent-bit.conf
+    [OUTPUT]
+        Name       stackdriver
+        Match      *
+        location   ${region}
+        namespace  terraform_enterprise
+        node_id    ${log_forwarding_cloud_config.stackdriver_hostname}
+        resource   generic_node
+    %{ endif ~}
+
+        %{ if log_forwarding_cloud_config.log_destination != null ~}
+            %{ if active_active ~}
+            echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with tfe-admin"
+            tfe-admin app-config set log_forwarding_enabled --value 1
+            tfe-admin app-config -k log_forwarding_config -v "$(cat fluent-bit.conf)"
+
+            %{ else ~}
+            echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with replicatedctl"
+            replicatedctl app-config set log_forwarding_enabled --value 1
+            replicatedctl app-config set log_forwarding_config --value "$(cat fluent-bit.conf)"
+            %{ endif ~}
+        %{ else ~}
+        echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding skipped"
+        %{ endif ~}
+    }
+    %{ endif ~}
+%{ else ~}
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding skipped"
 %{ endif ~}
 
-%{ if cloud == "azurerm" ~}
-function setup_log_forwarding {
+%{ if log_forwarding_config != null ~}
+function append_log_forwarding {
 
-    %{ if log_settings.log_destination == "azure" ~}
-    cat <<EOF > fluent-bit.conf
-[OUTPUT]
-    name         azure
-    match        *
-    Customer_ID  log_settings.log_analytics_workspace_id
-    Shared_Key   log_settings.log_analytics_workspace_access_key
-EOF
-    %{ endif ~}
+    echo ${log_forwarding_config} | tee fluent-bit.conf
 
-    %{ if log_settings.log_destination == "azure_blob" ~}
-    cat <<EOF > fluent-bit.conf
-[OUTPUT]
-    name                   azure_blob
-    match                  *
-    account_name           log_settings.blob_storage_account_name
-    shared_key             log_settings.blob_storage_account_access_key
-    path                   logs
-    container_name         terraform_enterprise
-    auto_create_container  on
-    tls                    on
-EOF
-   %{ endif ~}
+    %{ if active_active ~}
+    echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with tfe-admin"
+    tfe-admin app-config set log_forwarding_enabled --value 1
+    tfe-admin app-config -k log_forwarding_config -v "$(cat fluent-bit.conf)"
 
-	%{ if log_settings.log_destination != null ~}
-        %{ if active_active ~}
-        echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with tfe-admin"
-        tfe-admin app-config set log_forwarding_enabled --value 1
-        tfe-admin app-config -k log_forwarding_config -v "$(cat fluent-bit.conf)"
-
-        %{ else ~}
-        echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with replicatedctl"
-        replicatedctl app-config set log_forwarding_enabled --value 1
-        replicatedctl app-config set log_forwarding_config --value "$(cat fluent-bit.conf)"
-        %{ endif ~}
     %{ else ~}
-    echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding skipped"
-    %{ endif ~}
-}
-%{ endif ~}
-
-%{ if cloud == "google" ~}
-function setup_log_forwarding {
-
-    %{ if log_settings.log_destination == "stackdriver" ~}
-    cat <<EOF > fluent-bit.conf
-[OUTPUT]
-    Name       stackdriver
-    Match      *
-    location   ${region}
-    namespace  terraform_enterprise
-    node_id    ${log_settings.stackdriver_hostname}
-    resource   generic_node
-   %{ endif ~}
-
-    %{ if log_settings.log_destination != null ~}
-        %{ if active_active ~}
-        echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with tfe-admin"
-        tfe-admin app-config set log_forwarding_enabled --value 1
-        tfe-admin app-config -k log_forwarding_config -v "$(cat fluent-bit.conf)"
-
-        %{ else ~}
-        echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with replicatedctl"
-        replicatedctl app-config set log_forwarding_enabled --value 1
-        replicatedctl app-config set log_forwarding_config --value "$(cat fluent-bit.conf)"
-        %{ endif ~}
-    %{ else ~}
-    echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding skipped"
+    echo "[$(date +"%FT%T")] [Terraform Enterprise] Setup log forwarding with replicatedctl"
+    replicatedctl app-config set log_forwarding_enabled --value 1
+    replicatedctl app-config set log_forwarding_config --value "$(cat fluent-bit.conf)"
     %{ endif ~}
 }
 %{ endif ~}

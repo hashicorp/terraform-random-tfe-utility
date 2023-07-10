@@ -190,9 +190,9 @@ install_monitoring_agents $log_pathname
 %{ endif ~}
 
 # -----------------------------------------------------------------------------
-# Install Monitoring Agents
+# Setup Log Forwarding with Fluent Bit
 # -----------------------------------------------------------------------------
-%{ if log_settings != null && log_destination != null && region != null ~}
+%{ if log_forwarding_enabled ~}
 setup_log_forwarding
 %{ endif ~}
 
