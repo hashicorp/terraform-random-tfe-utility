@@ -21,11 +21,6 @@ on:
         type: boolean
         required: false
         default: false
-      create_backend:
-        description: "Do you want to create a backend for TFC workspace?"
-        type: boolean
-        required: false
-        default: false
       private_test:
         description: "Is this a private or public test?"
         type: boolean
@@ -139,7 +134,6 @@ jobs:
           repository: ${{inputs.module_repository_id}}
       
       - name: Update Terraform Backend to TFC Workspace for Utility Module
-        if: ${{ ! inputs.create_backend }}
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           sed --in-place '${{ inputs.TFC_workspace_substitution_pattern }}' versions.tf
