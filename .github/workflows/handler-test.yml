@@ -116,7 +116,6 @@ jobs:
       utility_test: true
       enable_iact_subnet_list: true
       private_test: false
-      create_backend: true
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
@@ -132,7 +131,6 @@ jobs:
     with:
       test_name: Google Private Active/Active
       utility_test: true
-      create_backend: true
       enable_iact_subnet_list: false
       module_repository_id: hashicorp/terraform-google-terraform-enterprise
       work_dir: ./tests/private-active-active
@@ -153,7 +151,6 @@ jobs:
     with:
       test_name: Google Private TCP Active/Active
       utility_test: true
-      create_backend: true
       enable_iact_subnet_list: false
       module_repository_id: hashicorp/terraform-google-terraform-enterprise
       work_dir: ./tests/private-tcp-active-active
@@ -178,7 +175,6 @@ jobs:
       k6_work_dir: ./tests/tfe-load-test
       private_test: false
       utility_test: true
-      create_backend: true
       enable_iact_subnet_list: false
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
@@ -204,7 +200,6 @@ jobs:
       work_dir: ./tests/standalone-mounted-disk
       k6_work_dir: ./tests/tfe-load-test
       utility_test: true
-      create_backend: true
       private_test: false
       enable_iact_subnet_list: false
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
