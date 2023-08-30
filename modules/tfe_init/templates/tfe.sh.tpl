@@ -268,8 +268,8 @@ $install_pathname \
 	%{if active_active ~}
 	disable-replicated-ui \
 	%{ endif ~}
-	private-address=$instance_ip \
-	public-address=$instance_ip \
+	private-address="$instance_ip" \
+	public-address="$instance_ip" \
 	%{ if airgap_pathname != null ~}
 	airgap \
 	%{ endif ~}
