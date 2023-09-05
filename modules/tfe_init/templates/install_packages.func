@@ -36,7 +36,7 @@ function install_packages {
 %{ endif ~}
 
 %{ if cloud == "google" ~}
-function install_packages {
+install_packages () {
 	:
 }
 %{ endif ~}

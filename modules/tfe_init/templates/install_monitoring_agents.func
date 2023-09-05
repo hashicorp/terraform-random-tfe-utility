@@ -1,18 +1,18 @@
-%{ if cloud == "azurerm" ~}
+%{ if enable_monitoring && cloud == "azurerm" ~}
 function install_monitoring_agents {
 	local log_pathname=$1
 	:
 }
 %{ endif ~}
 
-%{ if cloud == "aws" ~}
+%{ if enable_monitoring && cloud == "aws" ~}
 function install_monitoring_agents {
 	local log_pathname=$1
 	:
 }
 %{ endif ~}
 
-%{ if cloud == "google" ~}
+%{ if enable_monitoring && cloud == "google" ~}
 function install_monitoring_agents {
 	local log_pathname=$1
 
