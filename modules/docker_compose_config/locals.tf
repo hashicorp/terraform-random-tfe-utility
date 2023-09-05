@@ -25,7 +25,7 @@ locals {
             TFE_LICENSE                   = var.tfe_license
             TFE_TLS_CA_BUNDLE_FILE        = var.tls_ca_bundle_file
             TFE_TLS_CIPHERS               = var.tls_ciphers
-            TFE_TLS_VERSION               = var.tls_version
+            TFE_TLS_VERSION               = var.tls_version != null ? var.tls_version : ""
             TFE_RUN_PIPELINE_IMAGE        = var.run_pipeline_image
             TFE_CAPACITY_CONCURRENCY      = var.capacity_concurrency
             TFE_CAPACITY_CPU              = var.capacity_cpu
