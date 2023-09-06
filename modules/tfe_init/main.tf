@@ -11,6 +11,7 @@ locals {
       get_base64_secrets        = local.get_base64_secrets
       install_packages          = local.install_packages
       install_monitoring_agents = local.install_monitoring_agents
+      setup_log_forwarding      = local.setup_log_forwarding
 
       # Configuration data
       active_active               = var.tfe_configuration.enable_active_active.value == "1" ? true : false
@@ -27,6 +28,12 @@ locals {
       settings                    = base64encode(jsonencode(var.tfe_configuration))
       tls_bootstrap_cert_pathname = try(var.replicated_configuration.TlsBootstrapCert, null)
       tls_bootstrap_key_pathname  = try(var.replicated_configuration.TlsBootstrapKey, null)
+
+      # Log Forwarding
+      log_forwarding_enabled      = try(var.tfe_configuration.log_forwarding_enabled.value, false)
+      log_forwarding_cloud_config = try(var.tfe_configuration.log_forwarding_cloud_config.value, null)
+      log_forwarding_config       = try(var.tfe_configuration.log_forwarding_config.value, null)
+      region                      = try(var.region, null)
 
       # Secrets
       ca_certificate_secret_id  = var.ca_certificate_secret_id
@@ -54,6 +61,14 @@ locals {
   install_monitoring_agents = templatefile("${path.module}/templates/install_monitoring_agents.func", {
     cloud        = var.cloud
     distribution = var.distribution
+  })
+
+  setup_log_forwarding = templatefile("${path.module}/templates/setup_log_forwarding.func", {
+    cloud                       = var.cloud
+    active_active               = var.tfe_configuration.enable_active_active.value == "1" ? true : false
+    region                      = var.region != null ? var.region : "none"
+    log_forwarding_cloud_config = try(var.tfe_configuration.log_forwarding_cloud_config.value, { log_destination = null })
+    log_forwarding_config       = try(var.tfe_configuration.log_forwarding_config.value, null)
   })
 
 }

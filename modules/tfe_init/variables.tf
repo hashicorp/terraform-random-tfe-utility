@@ -65,6 +65,13 @@ variable "key_secret_id" {
   EOD
 }
 
+variable "region" {
+  type = string
+  nullable = true
+  default = null
+  description = "Enable this setting to enable log forwarding. This should be the region where your instaces will be deployed for log forwarding."
+}
+
 # Proxy
 # -----
 variable "proxy_ip" {

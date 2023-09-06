@@ -27,6 +27,10 @@ locals {
       value = var.log_forwarding_config
     }
 
+    log_forwarding_cloud_config = {
+      value = var.log_forwarding_cloud_config
+    }
+
     log_forwarding_enabled = {
       value = var.log_forwarding_enabled != null ? var.log_forwarding_enabled ? "1" : "0" : null
     }
@@ -39,5 +43,9 @@ locals {
     }
   }
 
-  base_external_configs = local.pg_optional_configs != null && (var.enable_active_active || var.production_type == "external") ? (merge(local.pg_configs, local.pg_optional_configs)) : local.pg_configs
+  base_external_configs = local.pg_optional_configs != null && (var.enable_active_active || var.production_type == "external") ? (merge(local.pg_configs, local.pg_optional_configs)) : (merge(local.pg_configs, {
+    pg_extra_params = {
+      value = null
+    }
+  }))
 }
