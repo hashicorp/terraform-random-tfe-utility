@@ -28,6 +28,7 @@ jobs:
             name = "utility-azure-standalone-external"\n\
           }\n\
         }\n/'
+
   azure_standalone_mounted_disk:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
@@ -50,6 +51,7 @@ jobs:
             name = "utility-azure-standalone-mounted-disk"\n\
           }\n\
         }\n/'
+
   azure_public_active_active:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
