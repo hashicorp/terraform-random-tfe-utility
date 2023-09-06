@@ -13,7 +13,7 @@ locals {
       install_monitoring_agents = local.install_monitoring_agents
 
       # Configuration data
-      active_active               = var.tfe_configuration.enable_active_active.value == "1" ? true : false
+      active_active               = var.tfe_configuration != null ? var.tfe_configuration.enable_active_active.value == "1" ? true : false : null
       airgap_url                  = var.airgap_url
       airgap_pathname             = try(var.replicated_configuration.LicenseBootstrapAirgapPackagePath, null)
       cloud                       = var.cloud
@@ -32,13 +32,13 @@ locals {
       ca_certificate_secret_id  = var.ca_certificate_secret_id
       certificate_secret_id     = var.certificate_secret_id
       key_secret_id             = var.key_secret_id
-      tfe_license_file_location = var.replicated_configuration.LicenseFileLocation
+      tfe_license_file_location = var.replicated_configuration != null ? var.replicated_configuration.LicenseFileLocation : null
       tfe_license_secret_id     = var.tfe_license_secret_id
 
       # Proxy information
       proxy_ip   = var.proxy_ip
       proxy_port = var.proxy_port
-      no_proxy   = var.tfe_configuration.extra_no_proxy.value
+      no_proxy   = var.tfe_configuration != null ? var.tfe_configuration.extra_no_proxy.value : null
     }
   )
 }
