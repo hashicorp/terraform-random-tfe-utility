@@ -21,7 +21,13 @@ jobs:
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       TFC_token_secret_name: UTILITY_AZURE_STANDALONE_EXTERNAL_TFC_TOKEN
-      TFC_workspace_substitution_pattern: s/azure-standalone-external/utility-azure-standalone-external/
+      TFC_workspace_substitution_pattern: 's/terraform {/terraform {\n\
+        backend "remote" {\n\
+          organization = "terraform-enterprise-modules-test"\n\
+          workspaces {\n\
+            name = "utility-azure-standalone-external"\n\
+          }\n\
+        }\n/'
 
   azure_standalone_mounted_disk:
     uses: ./.github/workflows/azure-tests.yml
@@ -38,7 +44,13 @@ jobs:
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       TFC_token_secret_name: UTILITY_AZURE_STANDALONE_MOUNTED_DISK_TFC_TOKEN
-      TFC_workspace_substitution_pattern: s/azure-standalone-mounted-disk/utility-azure-standalone-mounted-disk/
+      TFC_workspace_substitution_pattern: 's/terraform {/terraform {\n\
+        backend "remote" {\n\
+          organization = "terraform-enterprise-modules-test"\n\
+          workspaces {\n\
+            name = "utility-azure-standalone-mounted-disk"\n\
+          }\n\
+        }\n/'
 
   azure_public_active_active:
     uses: ./.github/workflows/azure-tests.yml
