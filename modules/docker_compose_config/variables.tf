@@ -14,10 +14,15 @@ variable "tls_ciphers" {
 }
 
 variable "tls_version" {
+  default     = null
   type        = string
-  description = "TLS version to use. Leave blank to use both TLS v1.2 and TLS v1.3. Defaults to `\"\"` if no value is given."
+  description = "(Not needed if is_legacy_deployment is true) TLS version to use. Leave blank to use both TLS v1.2 and TLS v1.3. Defaults to `\"\"` if no value is given."
   validation {
-    condition     = contains(["tls_1_2", "tls_1_3", null], var.tls_version)
+    condition     = (
+      var.tls_version == null ||
+      var.tls_version == "tls_1_2" ||
+      var.tls_version == "tls_1_3"
+    )
     error_message = "The tls_version value must be 'tls_1_2', 'tls_1_3', or null."
   }
 }
