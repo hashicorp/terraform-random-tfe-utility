@@ -4,7 +4,7 @@
 locals {
 
   # Build TFE user data / custom data / cloud init
-  tfe_legacy_user_data = !var.is_legacy_deployment ? null : templatefile(
+  tfe_legacy_user_data = templatefile(
     "${path.module}/templates/tfe_legacy.sh.tpl",
     {
       # Functions
