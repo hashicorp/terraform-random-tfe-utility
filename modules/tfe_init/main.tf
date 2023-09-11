@@ -19,7 +19,6 @@ locals {
       distribution                = var.distribution
       docker_config               = filebase64("${path.module}/files/daemon.json")
       enable_monitoring           = var.enable_monitoring != null ? var.enable_monitoring : false
-      haproxy_config              = filebase64("${path.module}/files/haproxy.cfg")
       tls_bootstrap_cert_pathname = local.tls_bootstrap_cert_pathname
       tls_bootstrap_key_pathname  = local.tls_bootstrap_key_pathname
       compose                     = var.docker_compose_yaml
