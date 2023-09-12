@@ -1,6 +1,6 @@
-# TFE Init Module
+# TFE Init Module (Legacy)
 
-This module is used to create the script that will install Terraform Enterprise (TFE) on a virtual machine.
+This module is used to create the script that will install Terraform Enterprise (TFE) via Replicated on a virtual machine.
 
 ## Required variables
 
@@ -13,11 +13,11 @@ This module is used to create the script that will install Terraform Enterprise 
 This example illustrates how it may be used by a Terraform Enterprise module, consuming outputs from other submodules.
 
 ```hcl
-module "tfe_init" {
+module "tfe_init_legacy" {
   source = "git::https://github.com/hashicorp/terraform-random-tfe-utility//modules/tfe_init?ref=main"
 
   # Replicated Configuration data
-  enable_active_active = local.active_active
+  enable_active_active = true
 
   tfe_configuration           = module.settings.tfe_configuration
   replicated_configuration    = module.settings.replicated_configuration
@@ -27,10 +27,6 @@ module "tfe_init" {
   certificate_secret_id    = var.vm_certificate_secret_id
   key_secret_id            = var.vm_key_secret_id
   tfe_license_secret_id    = var.tfe_license_secret_id
-
-  # Proxy information
-  proxy_ip   = var.proxy_ip
-  proxy_port = var.proxy_port
 }
 ```
 

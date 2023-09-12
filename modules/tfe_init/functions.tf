@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 locals {
   get_base64_secrets = templatefile("${path.module}/templates/get_base64_secrets.func", {
     cloud = var.cloud
