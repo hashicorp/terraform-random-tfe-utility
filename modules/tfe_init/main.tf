@@ -32,7 +32,7 @@ locals {
 
       proxy_ip   = var.proxy_ip
       proxy_port = var.proxy_port
-      no_proxy   = var.extra_no_proxy
+      no_proxy   = var.extra_no_proxy != null ? join(",", var.extra_no_proxy) : null
 
       registry_username              = var.registry_username
       registry_password              = var.registry_password
