@@ -139,9 +139,9 @@ install_monitoring_agents $log_pathname
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing Docker Engine from Repository" | tee -a $log_pathname
 %{ if distribution == "rhel" ~}
 yum install --assumeyes yum-utils
-yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-yum install --assumeyes docker-ce docker-ce-cli containerd.io
-sudo systemctl start docker
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install --assumeyes docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+systemctl start docker
 %{ else ~}
 curl --noproxy '*' --fail --silent --show-error --location https://download.docker.com/linux/ubuntu/gpg \
 	| gpg --dearmor --output /usr/share/keyrings/docker-archive-keyring.gpg
