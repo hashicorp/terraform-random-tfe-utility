@@ -54,7 +54,6 @@ variable "distribution" {
 variable "docker_compose_yaml" {
   default     = null
   description = "The yaml encoded contents of what make up a docker compose file, to be run with docker compose in the user data script"
-  type        = string
 }
 
 variable "enable_monitoring" {
