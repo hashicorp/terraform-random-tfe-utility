@@ -158,9 +158,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing TFE FDO" | tee -a $lo
 hostname > /var/log/tfe-fdo.log
 docker login -u="${registry_username}" -p="${registry_password}" quay.io
 
-%{ if active_active ~}
 export HOST_IP=$(hostname -i)
-%{ endif ~}
 
 cat > /etc/tfe/compose.yaml <<EOF
 ${compose}
