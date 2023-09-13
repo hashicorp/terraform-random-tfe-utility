@@ -136,11 +136,26 @@ echo "UUID=$(lsblk --noheadings --output uuid $device) ${disk_path} ext4 discard
 install_monitoring_agents $log_pathname
 %{ endif ~}
 
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing Docker Engine from Repository" | tee -a $log_pathname
+%{ if distribution == "rhel" ~}
+yum install --assumeyes yum-utils
+yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+yum install --assumeyes docker-ce docker-ce-cli containerd.io
+sudo systemctl start docker
+%{ else ~}
+curl --noproxy '*' --fail --silent --show-error --location https://download.docker.com/linux/ubuntu/gpg \
+	| gpg --dearmor --output /usr/share/keyrings/docker-archive-keyring.gpg
+echo \
+	"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+	https://download.docker.com/linux/ubuntu $(lsb_release --codename --short) stable" \
+	| sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get --assume-yes update
+apt-get --assume-yes install docker-ce docker-ce-cli containerd.io
+apt-get --assume-yes autoremove
+%{ endif ~}
+
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing TFE FDO" | tee -a $log_pathname
 hostname > /var/log/tfe-fdo.log
-curl -fsSL https://get.docker.com -o get-docker.sh
-chmod +x get-docker.sh
-sh get-docker.sh
 docker login -u="${registry_username}" -p="${registry_password}" quay.io
 
 %{ if active_active ~}
@@ -152,3 +167,26 @@ ${compose}
 EOF
 
 docker compose -f /etc/tfe/compose.yaml up -d
+
+%{ if distribution == "rhel" && cloud != "google" ~}
+os_release=$(cat /etc/os-release | grep VERSION_ID | sed "s/VERSION_ID=\"\(.*\)\"/\1/g")
+if (( $(echo "$os_release < 8.0" | bc -l ) )); then
+  echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
+  setenforce 0
+  echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a $log_pathname
+  firewall-cmd --permanent --zone=trusted --change-interface=docker0
+  firewall-cmd --reload
+  echo "[$(date +"%FT%T")] [Terraform Enterprise] Enable SELinux" | tee -a $log_pathname
+  setenforce 1
+fi
+%{ endif ~}
+
+%{ if custom_image_tag != null && cloud == "google" ~}
+%{ if length(regexall("^.+-docker\\.pkg\\.dev|^.*\\.?gcr\\.io", custom_image_tag)) > 0 ~}
+echo "[Terraform Enterprise] Registering gcloud as a Docker credential helper" | tee -a
+gcloud auth configure-docker --quiet ${split("/", custom_image_tag)[0]}
+
+%{ endif ~}
+echo "[Terraform Enterprise] Pulling custom worker image '${custom_image_tag}'" | tee -a
+docker pull ${custom_image_tag}
+%{ endif ~}
