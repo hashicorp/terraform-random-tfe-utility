@@ -15,7 +15,7 @@ locals {
   }
 
   vault_cluster_address = {
-    TFE_VAULT_CLUSTER_ADDRESS = join("", ["https://", "\\$HOST_IP", ":8201"])
+    TFE_VAULT_CLUSTER_ADDRESS = join("", ["https://", "/$HOST_IP", ":8201"])
   }
 
   vault_configuration = local.vault_enable_external ? local.external_vault_config : local.active_active && !local.vault_enable_external ? local.vault_cluster_address : {}
