@@ -16,6 +16,11 @@ on:
         type: boolean
         required: false
         default: false
+      is_legacy_deployment:
+        description: "Is this test scenario using Replicated to deploy TFE?"
+        type: boolean
+        required: true
+        default: false
       
       ###################################
       # Pull Request / Repo Identifiers #
@@ -198,6 +203,7 @@ jobs:
         run: |
           echo "network_allow_range = \"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"" > github.auto.tfvars
           echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" >> github.auto.tfvars
+          echo "is_legacy_deployment = ${{ inputs.is_legacy_deployment }} >> github.auto.tfvars
 
       - name: Terraform Apply
         id: apply
@@ -244,7 +250,7 @@ jobs:
           repository: ${{ inputs.pull_request_repo_name }}
           comment-id: ${{ inputs.pull_request_comment_id }}
           body: |
-            ${{ format('### {0} Terraform Azure {1} Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name) }}
+            ${{ format('### {0} Terraform Azure {1} ({2}) - Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name, inputs.is_legacy_deployment && 'Legacy' || 'FDO') }}
 
             ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
 
