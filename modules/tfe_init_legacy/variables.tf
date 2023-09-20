@@ -28,7 +28,7 @@ variable "tfe_license_secret_id" {
 
 variable "airgap_url" {
   default     = null
-  description = "The URL of a Replicated airgap package for Terraform Enterprise. NOTE: If this value is given, then this script will install the airgap installation prerequisites. The airgap bundle should already be on the virtual machine image, and you would not use this variable if this were a truly airgapped environment." 
+  description = "The URL of a Replicated airgap package for Terraform Enterprise. NOTE: If this value is given, then this script will install the airgap installation prerequisites. The airgap bundle should already be on the virtual machine image, and you would not use this variable if this were a truly airgapped environment."
   type        = string
 }
 
