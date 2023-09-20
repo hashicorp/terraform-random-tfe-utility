@@ -21,6 +21,7 @@ on:
         default: false
       first_apply_args:
         description: "Terraform arguments for the first apply operation."
+        required: false
         type: string
         default: ''
 
