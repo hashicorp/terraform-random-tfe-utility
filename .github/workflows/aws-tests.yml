@@ -19,8 +19,12 @@ on:
         type: boolean
         required: true
         default: false
+      first_apply_args:
+        description: "Terraform arguments for the first apply operation."
+        type: string
+        default: ''
 
-      # Pull Request / Repo Identifiers #
+        # Pull Request / Repo Identifiers #
       module_repository_id:
         description: |-
           For utility module tests, what is the source module repo for this test? 
@@ -178,6 +182,14 @@ jobs:
         run: |
           echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" >> github.auto.tfvars
           echo "is_legacy_deployment = ${{ inputs.is_legacy_deployment }} >> github.auto.tfvars
+
+      - name: Terraform Targeted Pre-Apply
+        if: ${{ inputs.first_apply_args != '' }}
+        id: pre-apply
+        working-directory: ${{ env.WORK_DIR_PATH}}
+        run: |
+          tfrun apply ${{ inputs.first_apply_args }}} --auto-approve
+          sleep 180
 
       - name: Terraform Apply
         id: apply
