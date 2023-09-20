@@ -7,11 +7,12 @@ on:
 
 jobs:
   azure_public_active_active:
-    uses: ./.github/workflows/azure-destroy.yml
+    uses: ./.github/workflows/destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Public Active/Active
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
+      cloud: Azure
       test_name: Public Active/Active
       is_legacy_deployment: false
       utility_test: true
@@ -23,11 +24,12 @@ jobs:
       TFC_token_secret_name: UTILITY_AZURE_PUBLIC_ACTIVE_ACTIVE_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/azure-public-active-active/utility-azure-public-active-active/
   azure_private_active_active:
-    uses: ./.github/workflows/azure-destroy.yml
+    uses: ./.github/workflows/destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Private Active/Active
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
+      cloud: Azure
       test_name: Private Active/Active
       is_legacy_deployment: false
       utility_test: true
@@ -39,11 +41,12 @@ jobs:
       TFC_token_secret_name: UTILITY_AZURE_PRIVATE_ACTIVE_ACTIVE_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/azure-private-active-active/utility-azure-private-active-active/
   azure_private_tcp_active_active:
-    uses: ./.github/workflows/azure-destroy.yml
+    uses: ./.github/workflows/destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Private TCP Active/Active
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
+      cloud: Azure
       test_name: Private TCP Active/Active
       is_legacy_deployment: false
       utility_test: true
@@ -55,11 +58,12 @@ jobs:
       TFC_token_secret_name: UTILITY_AZURE_PRIVATE_TCP_ACTIVE_ACTIVE_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/azure-private-tcp-active-active/utility-azure-private-tcp-active-active/
   azure_standalone_external:
-    uses: ./.github/workflows/azure-destroy.yml
+    uses: ./.github/workflows/destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Standalone External
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-external') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
+      cloud: Azure
       test_name: Standalone External
       is_legacy_deployment: false
       utility_test: true
@@ -77,11 +81,12 @@ jobs:
           }\n\
         }\n/'
   azure_standalone_mounted_disk:
-    uses: ./.github/workflows/azure-destroy.yml
+    uses: ./.github/workflows/destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Standalone Mounted Disk
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-mounted-disk') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
+      cloud: Azure
       test_name: Standalone Mounted Disk
       is_legacy_deployment: false
       utility_test: true
@@ -100,11 +105,12 @@ jobs:
         }\n/'
 
   azure_public_active_active_legacy:
-    uses: ./.github/workflows/azure-destroy.yml
+    uses: ./.github/workflows/destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Public Active/Active (Legacy)
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
+      cloud: Azure
       test_name: Public Active/Active
       is_legacy_deployment: true
       utility_test: true
@@ -116,11 +122,12 @@ jobs:
       TFC_token_secret_name: UTILITY_AZURE_PUBLIC_ACTIVE_ACTIVE_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/azure-public-active-active/utility-azure-public-active-active-legacy/
   azure_private_active_active_legacy:
-    uses: ./.github/workflows/azure-destroy.yml
+    uses: ./.github/workflows/destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Private Active/Active (Legacy)
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
+      cloud: Azure
       test_name: Private Active/Active
       is_legacy_deployment: true
       utility_test: true
@@ -132,11 +139,12 @@ jobs:
       TFC_token_secret_name: UTILITY_AZURE_PRIVATE_ACTIVE_ACTIVE_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/azure-private-active-active/utility-azure-private-active-active-legacy/
   azure_private_tcp_active_active_legacy:
-    uses: ./.github/workflows/azure-destroy.yml
+    uses: ./.github/workflows/destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Private TCP Active/Active (Legacy)
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
+      cloud: Azure
       test_name: Private TCP Active/Active
       is_legacy_deployment: true
       utility_test: true
@@ -148,11 +156,12 @@ jobs:
       TFC_token_secret_name: UTILITY_AZURE_PRIVATE_TCP_ACTIVE_ACTIVE_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/azure-private-tcp-active-active/utility-azure-private-tcp-active-active-legacy/
   azure_standalone_external_legacy:
-    uses: ./.github/workflows/azure-destroy.yml
+    uses: ./.github/workflows/destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Standalone External (Legacy)
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-external') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
+      cloud: Azure
       test_name: Standalone External
       is_legacy_deployment: true
       utility_test: true
@@ -170,11 +179,12 @@ jobs:
           }\n\
         }\n/'
   azure_standalone_mounted_disk_legacy:
-    uses: ./.github/workflows/azure-destroy.yml
+    uses: ./.github/workflows/destroy.yml
     secrets: inherit
     name: Destroy resources from Azure Standalone Mounted Disk (Legacy)
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-mounted-disk') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
+      cloud: Azure
       test_name: Standalone Mounted Disk
       is_legacy_deployment: true
       utility_test: true

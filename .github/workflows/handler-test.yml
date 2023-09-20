@@ -140,7 +140,7 @@ jobs:
     name: Run tf-test on Azure Standalone Mounted Disk (Legacy)
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-mounted-disk') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure') }}
     with:
-      test_name: Standalone Mounted Disk
+      test_name: Standalone Mounted Disk (Legacy)
       is_legacy_deployment: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
       work_dir: ./tests/standalone-mounted-disk
@@ -164,7 +164,7 @@ jobs:
     name: Run tf-test on Azure Public Active/Active (Legacy)
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure') }}
     with:
-      test_name: Public Active/Active
+      test_name: Public Active/Active (Legacy)
       is_legacy_deployment: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
       work_dir: ./tests/public-active-active
@@ -182,7 +182,7 @@ jobs:
     name: Run tf-test on Azure Private Active/Active (Legacy)
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure') }}
     with:
-      test_name: Private Active/Active
+      test_name: Private Active/Active (Legacy)
       is_legacy_deployment: true
       utility_test: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
