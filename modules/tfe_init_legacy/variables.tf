@@ -89,45 +89,6 @@ variable "disk_path" {
   type        = string
 }
 
-# Flexible Deployment Options Settings
-# ------------------------------------
-variable "registry_username" {
-  default     = null
-  description = "The username for the docker registry to source terraform_enterprise_next container images from"
-  type        = string
-}
-
-variable "registry_password" {
-  default     = null
-  description = "The password for the docker registry to source terraform_enterprise_next container images from"
-  type        = string
-}
-
-variable "docker_compose_yaml" {
-  default     = null
-  description = "The yaml encoded contents of what make up a docker compose file, to be run with docker compose in the user data script"
-  type        = string
-}
-
-variable "operational_mode" {
-  default     = null
-  description = "A special string to control the operational mode of Terraform Enterprise. Valid values are: 'external' for External Services mode; 'disk' for Mounted Disk mode; 'active-active' for Active/Active mode."
-}
-
-variable "custom_image_tag" {
-  default     = null
-  type        = string
-  description = "(Required if tbw_image is 'custom_image'.) The name and tag for your alternative Terraform build worker image in the format <name>:<tag>. Default is 'hashicorp/build-worker:now'. If this variable is used, the 'tbw_image' variable must be 'custom_image'."
-}
-
-variable "extra_no_proxy" {
-  default     = null
-  type        = list(string)
-  description = "When configured to use a proxy, a list of hosts to exclude from proxying. Please note that this list does not support whitespace characters."
-}
-
-# Legacy Settings
-# ---------------
 variable "replicated_configuration" {
   default     = null
   description = "The settings that will be used to configure Replicated."
