@@ -3,4 +3,5 @@
 
 output "docker_compose_yaml" {
   value = yamlencode(local.compose)
+  description = "A yaml object that will be used as the Docker Compose file for TFE deployment."
 }
