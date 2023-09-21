@@ -178,7 +178,7 @@ jobs:
         run: |
           echo "network_allow_range = \"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"" > github.auto.tfvars
           echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" >> github.auto.tfvars
-          echo "is_replicated_deployment = ${{ inputs.is_replicated_deployment }} >> github.auto.tfvars
+          echo "is_replicated_deployment = ${{ inputs.is_replicated_deployment }}" >> github.auto.tfvars
 
       - name: Terraform Apply
         id: apply
