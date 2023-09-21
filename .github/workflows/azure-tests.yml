@@ -3,9 +3,7 @@ name: Azure Test Harness
 on:
   workflow_call:
     inputs:
-      #######################
-      # Configuration Flags #
-      #######################
+      # Configuration Flags
       test_name:
         description: |-
           The name for this test run. eg: 'Public Active/Active'
@@ -16,10 +14,13 @@ on:
         type: boolean
         required: false
         default: false
+      is_replicated_deployment:
+        description: "Is this test scenario using Replicated to deploy TFE?"
+        type: boolean
+        required: true
+        default: false
       
-      ###################################
-      # Pull Request / Repo Identifiers #
-      ###################################
+      # Pull Request / Repo Identifiers
       module_repository_id:
         description: |-
           For utility module tests, what is the source module repo for this test? 
@@ -44,9 +45,7 @@ on:
         required: true
         type: string
       
-      #############################
-      # General Job Configuration #
-      #############################
+      # General Job Configuration
       work_dir:
         description: "The directory in which tests are executed"
         required: true
@@ -56,9 +55,7 @@ on:
         required: true
         type: string
       
-      ###############################
-      # TFC Workspace Configuration #
-      ###############################
+      # TFC Workspace Configuration
       TFC_token_secret_name:
         description: |- 
           The id of the github secret that contains the TFC token for the tfc
@@ -75,22 +72,18 @@ on:
         type: string
         default: ""
 
-      ###################################
-      # Target system SSH configuration #
-      ###################################
+      # Target system SSH configuration
       bastion_ssh_private_key_secret_name:
         description: |-
-          The github secret name for a base64 encoded private certificate used
+          The github secret name for a Base64 encoded private certificate used
           to authenticate into and proxy tests from the bastion vm instance.
         required: false
         default: ""
         type: string
 
-
-
 jobs:
   execute_azure_tests:
-    name: Run tf-test on some azure infrastructure
+    name: Run tf-test on Azure infrastructure
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -103,10 +96,7 @@ jobs:
         id: vars
         run: echo ::set-output name=run-url::https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
       
-      ###################
       # Module Checkout #
-      ###################
-
       # If this is not a utility module test, check out the pull request under
       # test in the module repo.
       - name: Checkout
@@ -138,10 +128,8 @@ jobs:
           SHA: ${{ inputs.pull_request_ref }}
         run: |
           sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
+          sed --in-place "s/?ref=main/?ref=$SHA/" ../../fixtures/test_proxy/main.tf
 
-      #################################
-      # Load Test Repository Checkout #
-      #################################
       - name: Checkout TFE Load Test
         uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
@@ -163,12 +151,8 @@ jobs:
         with:
           cli_config_credentials_hostname: 'app.terraform.io'
           cli_config_credentials_token: ${{ secrets[inputs.TFC_token_secret_name] }}
-          terraform_version: 1.0.9
+          terraform_version: 1.1.5
           terraform_wrapper: false
-
-      #######################
-      # Obtain Certificates #
-      #######################
 
       - name: Write Private SSH Key
         if: ${{ inputs.bastion_ssh_private_key_secret_name != '' }}
@@ -178,10 +162,6 @@ jobs:
         run: |
           echo "$SSH_KEY_BASE64" | base64 --decode > ./ssh-key.pem
           chmod 0400 ./ssh-key.pem
-
-      #################
-      # Run Terraform #
-      #################
 
       - name: Terraform Init
         id: init
@@ -198,15 +178,12 @@ jobs:
         run: |
           echo "network_allow_range = \"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"" > github.auto.tfvars
           echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" >> github.auto.tfvars
+          echo "is_replicated_deployment = ${{ inputs.is_replicated_deployment }} >> github.auto.tfvars
 
       - name: Terraform Apply
         id: apply
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: terraform apply -auto-approve -input=false -no-color
-
-      ################
-      # Run K6 tests #
-      ################
 
       - name: Run k6 Smoke Test
         id: run-smoke-test
@@ -222,19 +199,11 @@ jobs:
           echo $command
           eval $command
 
-      ##################
-      # Clean up infra #
-      ##################
-
       - name: Terraform Destroy
         id: destroy
         if: ${{ always() && github.event.client_payload.slash_command.args.named.destroy != 'false' }}
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: terraform destroy -auto-approve -input=false -no-color
-
-      #####################
-      # Update PR Comment #
-      #####################
 
       - name: Update comment
         if: ${{ always() }}
@@ -244,7 +213,7 @@ jobs:
           repository: ${{ inputs.pull_request_repo_name }}
           comment-id: ${{ inputs.pull_request_comment_id }}
           body: |
-            ${{ format('### {0} Terraform Azure {1} Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name) }}
+            ${{ format('### {0} Terraform Azure {1} ({2}) - Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name, inputs.is_replicated_deployment && 'Replicated' || 'FDO') }}
 
             ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
 

@@ -1,36 +1,38 @@
 # TFE Init Module
 
-This module is used to create the script that will install Terraform Enterprise (TFE) on a virtual machine.
+This module is used to create the script that will install Terraform Enterprise (TFE) with [Flexible Deployments Options](https://developer.hashicorp.com/terraform/enterprise/flexible-deployments) on a virtual machine.
 
 ## Required variables
 
-* `tfe_license_secret_id` - string value for the TFE license secret ID
-* `replicated_configuration` - output object from the [`settings` module](../settings) of the Replicated configuration
-* `tfe_configuration` - output object from the [`settings` module](../settings) of the TFE configuration
+* `cloud` - the cloud you are deploying to; `aws`, `azurerm`, or `google`
+* `distribution` - the OS distribution on which TFE will be deployed; `rhel` or `ubuntu`
+* `registry_username` - the username for the docker registry from which to pull the terraform_enterprise container images
+* `registry_password` - the password for the docker registry from which to pull the terraform_enterprise container images
+* `docker_compose_yaml` - the yaml encoded contents of what make up a docker compose file, to be run with docker compose in the user data script
+* `operational_mode` - `disk`, `external`, or `active-active`
 
 ## Example usage
 
 This example illustrates how it may be used by a Terraform Enterprise module, consuming outputs from other submodules.
 
 ```hcl
-module "tfe_init" {
+module "tfe_init_fdo" {
   source = "git::https://github.com/hashicorp/terraform-random-tfe-utility//modules/tfe_init?ref=main"
 
-  # Replicated Configuration data
-  enable_active_active = local.active_active
+  cloud             = "azurerm"
+  distribution      = "ubuntu"
+  disk_path         = "/opt/hashicorp/data"
+  disk_device_name  = "disk/azure/scsi1/lun${var.vm_data_disk_lun}"
+  operational_mode  = "disk"
+  enable_monitoring = true
 
-  tfe_configuration           = module.settings.tfe_configuration
-  replicated_configuration    = module.settings.replicated_configuration
+  ca_certificate_secret_id = var.ca_certificate_secret
+  certificate_secret_id    = var.vm_certificate_secret
+  key_secret_id            = var.vm_key_secret
 
-  # Secrets
-  ca_certificate_secret_id = var.ca_certificate_secret_id
-  certificate_secret_id    = var.vm_certificate_secret_id
-  key_secret_id            = var.vm_key_secret_id
-  tfe_license_secret_id    = var.tfe_license_secret_id
-
-  # Proxy information
-  proxy_ip   = var.proxy_ip
-  proxy_port = var.proxy_port
+  registry_username   = "myusername"
+  registry_password   = "mypassword"
+  docker_compose_yaml = module.docker_compose_config.docker_compose_yaml
 }
 ```
 

@@ -1,9 +1,20 @@
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
-# General
-# -------
+variable "ca_certificate_secret_id" {
+  default     = null
+  type        = string
+  description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate of a certificate authority (CA) to be trusted by the TFE instance(s)."
+}
+
+variable "certificate_secret_id" {
+  default     = null
+  type        = string
+  description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate for the TFE instance(s)."
+}
+
 variable "cloud" {
+  default     = null
   type        = string
   description = "(Required) On which cloud is this Terraform Enterprise installation being deployed?"
   validation {
@@ -12,7 +23,26 @@ variable "cloud" {
   }
 }
 
+variable "custom_image_tag" {
+  default     = null
+  type        = string
+  description = "(Required if tbw_image is 'custom_image'.) The name and tag for your alternative Terraform build worker image in the format <name>:<tag>. Default is 'hashicorp/build-worker:now'. If this variable is used, the 'tbw_image' variable must be 'custom_image'."
+}
+
+variable "disk_device_name" {
+  default     = null
+  description = "The name of the disk device on which Terraform Enterprise will store data in Mounted Disk mode."
+  type        = string
+}
+
+variable "disk_path" {
+  default     = null
+  description = "The pathname of the directory in which Terraform Enterprise will store data in Mounted Disk mode."
+  type        = string
+}
+
 variable "distribution" {
+  default     = null
   type        = string
   description = "(Required) What is the OS distribution of the instance on which Terraoform Enterprise will be deployed?"
   validation {
@@ -21,89 +51,55 @@ variable "distribution" {
   }
 }
 
-variable "tfe_license_secret_id" {
-  type        = string
-  description = <<-EOD
-  The secrets manager secret ID under which the Base64 encoded Terraform Enterprise license is stored.
-  NOTE: If this is an airgapped installation, then it is expected that the TFE license will be put
-  on the path defined by tfe_license_file_location prior to running this module (i.e. on the virtual machine
-  image).
-  EOD
+variable "docker_compose_yaml" {
+  default     = null
+  description = "The yaml encoded contents of what make up a docker compose file, to be run with docker compose in the user data script"
 }
 
-variable "airgap_url" {
-  description = <<-EOD
-  The URL of a Replicated airgap package for Terraform Enterprise.
-  NOTE: If this value is given, then this script will install the airgap installation prerequisites. The airgap
-  bundle should already be on the virtual machine image, and you would not use this variable if this were a truly
-  airgapped environment.
-  EOD 
-  type        = string
+variable "enable_monitoring" {
+  default     = null
+  type        = bool
+  description = "Should cloud appropriate monitoring agents be installed as a part of the TFE installation script?"
 }
 
-variable "ca_certificate_secret_id" {
-  type        = string
-  description = <<-EOD
-  A secret ID which contains the Base64 encoded version of a PEM encoded public certificate of a certificate
-  authority (CA) to be trusted by the TFE instance(s).
-  EOD
-}
-
-variable "certificate_secret_id" {
-  type        = string
-  description = <<-EOD
-  A secret ID which contains the Base64 encoded version of a PEM encoded public certificate for the TFE
-  instance(s).
-  EOD
+variable "extra_no_proxy" {
+  default     = null
+  type        = list(string)
+  description = "When configured to use a proxy, a list of hosts to exclude from proxying. Please note that this list does not support whitespace characters."
 }
 
 variable "key_secret_id" {
+  default     = null
   type        = string
-  description = <<-EOD
-  A secret ID which contains the Base64 encoded version of a PEM encoded private key for the TFE
-  instance(s).
-  EOD
+  description = "A secret ID which contains the Base64 encoded version of a PEM encoded private key for the TFE instance(s)."
 }
 
-# Proxy
-# -----
+
+variable "operational_mode" {
+  default     = null
+  description = "A special string to control the operational mode of Terraform Enterprise. Valid values are: 'external' for External Services mode; 'disk' for Mounted Disk mode; 'active-active' for Active/Active mode."
+}
+
 variable "proxy_ip" {
+  default     = null
   type        = string
   description = "IP Address of the proxy server"
 }
 
 variable "proxy_port" {
+  default     = null
   type        = string
   description = "Port that the proxy server will use"
 }
 
-# Settings
-# --------
-variable "replicated_configuration" {
-  description = "The settings that will be used to configure Replicated."
-}
-
-variable "tfe_configuration" {
-  description = "The settings that will be used to configure Terraform Enterprise."
-}
-
-variable "enable_monitoring" {
-  type        = bool
+variable "registry_username" {
   default     = null
-  description = <<-EOD
-  Should cloud appropriate monitoring agents be installed as a part of the TFE installation
-  script? 
-  EOD
-}
-
-# Mounted Disk
-# ------------
-variable "disk_device_name" {
-  description = "The name of the disk device on which Terraform Enterprise will store data in Mounted Disk mode."
+  description = "The username for the docker registry from which to pull the terraform_enterprise container images."
   type        = string
 }
 
-variable "disk_path" {
-  description = "The pathname of the directory in which Terraform Enterprise will store data in Mounted Disk mode."
+variable "registry_password" {
+  default     = null
+  description = "The password for the docker registry from which to pull the terraform_enterprise container images."
   type        = string
 }
