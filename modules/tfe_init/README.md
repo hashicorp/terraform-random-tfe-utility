@@ -1,6 +1,6 @@
 # TFE Init Module
 
-This module is used to create the script that will install Terraform Enterprise (TFE) with [Flexible Deployments Options](https://developer.hashicorp.com/terraform/enterprise/flexible-deployments-beta) on a virtual machine.
+This module is used to create the script that will install Terraform Enterprise (TFE) with [Flexible Deployments Options](https://developer.hashicorp.com/terraform/enterprise/flexible-deployments) on a virtual machine.
 
 ## Required variables
 
