@@ -14,7 +14,7 @@ jobs:
     with:
       cloud: Azure
       test_name: Public Active/Active
-      is_legacy_deployment: false
+      is_replicated_deployment: false
       utility_test: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -31,7 +31,7 @@ jobs:
     with:
       cloud: Azure
       test_name: Private Active/Active
-      is_legacy_deployment: false
+      is_replicated_deployment: false
       utility_test: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -48,7 +48,7 @@ jobs:
     with:
       cloud: Azure
       test_name: Private TCP Active/Active
-      is_legacy_deployment: false
+      is_replicated_deployment: false
       utility_test: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -65,7 +65,7 @@ jobs:
     with:
       cloud: Azure
       test_name: Standalone External
-      is_legacy_deployment: false
+      is_replicated_deployment: false
       utility_test: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -88,7 +88,7 @@ jobs:
     with:
       cloud: Azure
       test_name: Standalone Mounted Disk
-      is_legacy_deployment: false
+      is_replicated_deployment: false
       utility_test: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -104,15 +104,15 @@ jobs:
           }\n\
         }\n/'
 
-  azure_public_active_active_legacy:
+  azure_public_active_active_replicated:
     uses: ./.github/workflows/destroy.yml
     secrets: inherit
-    name: Destroy resources from Azure Public Active/Active (Legacy)
+    name: Destroy resources from Azure Public Active/Active (Replicated)
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
       cloud: Azure
       test_name: Public Active/Active
-      is_legacy_deployment: true
+      is_replicated_deployment: true
       utility_test: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -120,16 +120,16 @@ jobs:
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/public-active-active
       TFC_token_secret_name: UTILITY_AZURE_PUBLIC_ACTIVE_ACTIVE_TFC_TOKEN
-      TFC_workspace_substitution_pattern: s/azure-public-active-active/utility-azure-public-active-active-legacy/
-  azure_private_active_active_legacy:
+      TFC_workspace_substitution_pattern: s/azure-public-active-active/utility-azure-public-active-active-replicated/
+  azure_private_active_active_replicated:
     uses: ./.github/workflows/destroy.yml
     secrets: inherit
-    name: Destroy resources from Azure Private Active/Active (Legacy)
+    name: Destroy resources from Azure Private Active/Active (Replicated)
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
       cloud: Azure
       test_name: Private Active/Active
-      is_legacy_deployment: true
+      is_replicated_deployment: true
       utility_test: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -137,16 +137,16 @@ jobs:
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/private-active-active
       TFC_token_secret_name: UTILITY_AZURE_PRIVATE_ACTIVE_ACTIVE_TFC_TOKEN
-      TFC_workspace_substitution_pattern: s/azure-private-active-active/utility-azure-private-active-active-legacy/
-  azure_private_tcp_active_active_legacy:
+      TFC_workspace_substitution_pattern: s/azure-private-active-active/utility-azure-private-active-active-replicated/
+  azure_private_tcp_active_active_replicated:
     uses: ./.github/workflows/destroy.yml
     secrets: inherit
-    name: Destroy resources from Azure Private TCP Active/Active (Legacy)
+    name: Destroy resources from Azure Private TCP Active/Active (Replicated)
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
       cloud: Azure
       test_name: Private TCP Active/Active
-      is_legacy_deployment: true
+      is_replicated_deployment: true
       utility_test: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -154,16 +154,16 @@ jobs:
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/private-tcp-active-active
       TFC_token_secret_name: UTILITY_AZURE_PRIVATE_TCP_ACTIVE_ACTIVE_TFC_TOKEN
-      TFC_workspace_substitution_pattern: s/azure-private-tcp-active-active/utility-azure-private-tcp-active-active-legacy/
-  azure_standalone_external_legacy:
+      TFC_workspace_substitution_pattern: s/azure-private-tcp-active-active/utility-azure-private-tcp-active-active-replicated/
+  azure_standalone_external_replicated:
     uses: ./.github/workflows/destroy.yml
     secrets: inherit
-    name: Destroy resources from Azure Standalone External (Legacy)
+    name: Destroy resources from Azure Standalone External (Replicated)
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-external') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
       cloud: Azure
       test_name: Standalone External
-      is_legacy_deployment: true
+      is_replicated_deployment: true
       utility_test: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -175,18 +175,18 @@ jobs:
         backend "remote" {\n\
           organization = "terraform-enterprise-modules-test"\n\
           workspaces {\n\
-            name = "utility-azure-standalone-external-legacy"\n\
+            name = "utility-azure-standalone-external-replicated"\n\
           }\n\
         }\n/'
-  azure_standalone_mounted_disk_legacy:
+  azure_standalone_mounted_disk_replicated:
     uses: ./.github/workflows/destroy.yml
     secrets: inherit
-    name: Destroy resources from Azure Standalone Mounted Disk (Legacy)
+    name: Destroy resources from Azure Standalone Mounted Disk (Replicated)
     if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-mounted-disk') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure')}}
     with:
       cloud: Azure
       test_name: Standalone Mounted Disk
-      is_legacy_deployment: true
+      is_replicated_deployment: true
       utility_test: true
       module_repository_id: hashicorp/terraform-azurerm-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
@@ -198,7 +198,7 @@ jobs:
         backend "remote" {\n\
           organization = "terraform-enterprise-modules-test"\n\
           workspaces {\n\
-            name = "utility-azure-standalone-mounted-disk-legacy"\n\
+            name = "utility-azure-standalone-mounted-disk-replicated"\n\
           }\n\
         }\n/'
   
@@ -297,7 +297,7 @@ jobs:
       cloud: AWS
       test_name: Active/Active RHEL7 Proxy
       utility_test: true
-      is_legacy_deployment: false
+      is_replicated_deployment: false
       module_repository_id: hashicorp/terraform-aws-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
@@ -320,7 +320,7 @@ jobs:
       cloud: AWS
       test_name: Private Active/Active
       utility_test: true
-      is_legacy_deployment: false
+      is_replicated_deployment: false
       module_repository_id: hashicorp/terraform-aws-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
@@ -337,7 +337,7 @@ jobs:
       cloud: AWS
       test_name: Private TCP Active/Active
       utility_test: true
-      is_legacy_deployment: false
+      is_replicated_deployment: false
       module_repository_id: hashicorp/terraform-aws-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
@@ -354,7 +354,7 @@ jobs:
       cloud: AWS
       test_name: Public Active/Active
       utility_test: true
-      is_legacy_deployment: false
+      is_replicated_deployment: false
       module_repository_id: hashicorp/terraform-aws-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
@@ -371,7 +371,7 @@ jobs:
       cloud: AWS
       test_name: Standalone Vault
       utility_test: true
-      is_legacy_deployment: false
+      is_replicated_deployment: false
       module_repository_id: hashicorp/terraform-aws-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
@@ -386,100 +386,100 @@ jobs:
           }\n\
         }\n/'
 
-  aws_active_active_rhel7_proxy_legacy:
+  aws_active_active_rhel7_proxy_replicated:
     uses: ./.github/workflows/destroy.yml
     secrets: inherit
-    name: Destroy resources from AWS Active-Active RHEL7 Proxy (Legacy)
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-active-active-rhel7-proxy-legacy') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
+    name: Destroy resources from AWS Active-Active RHEL7 Proxy (Replicated)
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-active-active-rhel7-proxy-replicated') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
     with:
       cloud: AWS
-      test_name: Active/Active RHEL7 Proxy (Legacy)
+      test_name: Active/Active RHEL7 Proxy (Replicated)
       utility_test: true
-      is_legacy_deployment: true
+      is_replicated_deployment: true
       module_repository_id: hashicorp/terraform-aws-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/active-active-rhel7-proxy
-      TFC_token_secret_name: UTILITY_ACTIVE_ACTIVE_RHEL7_PROXY_LEGACY_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_ACTIVE_ACTIVE_RHEL7_PROXY_REPLICATED_TFC_TOKEN
       TFC_workspace_substitution_pattern: 's/terraform {/terraform {\n\
         backend "remote" {\n\
           organization = "terraform-enterprise-modules-test"\n\
           workspaces {\n\
-            name = "utility-aws-active-active-rhel7-proxy-legacy"\n\
+            name = "utility-aws-active-active-rhel7-proxy-replicated"\n\
           }\n\
         }\n/'
-  aws_public_active_active_legacy:
+  aws_public_active_active_replicated:
     uses: ./.github/workflows/destroy.yml
     secrets: inherit
-    name: Destroy resources from AWS Public Active/Active (Legacy)
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-public-active-active-legacy') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
+    name: Destroy resources from AWS Public Active/Active (Replicated)
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-public-active-active-replicated') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
     with:
       cloud: AWS
-      test_name: Public Active/Active (Legacy)
+      test_name: Public Active/Active (Replicated)
       utility_test: true
-      is_legacy_deployment: true
+      is_replicated_deployment: true
       module_repository_id: hashicorp/terraform-aws-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/public-active-active
-      TFC_token_secret_name: UTILITY_PUBLIC_ACTIVE_ACTIVE_LEGACY_TFC_TOKEN
-      TFC_workspace_substitution_pattern: s/aws-public-active-active/utility-aws-public-active-active-legacy/
-  aws_private_active_active_legacy:
+      TFC_token_secret_name: UTILITY_PUBLIC_ACTIVE_ACTIVE_REPLICATED_TFC_TOKEN
+      TFC_workspace_substitution_pattern: s/aws-public-active-active/utility-aws-public-active-active-replicated/
+  aws_private_active_active_replicated:
     uses: ./.github/workflows/destroy.yml
     secrets: inherit
-    name: Destroy resources from AWS Private Active/Active (Legacy)
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-active-active-legacy') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
+    name: Destroy resources from AWS Private Active/Active (Replicated)
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-active-active-replicated') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
     with:
       cloud: AWS
-      test_name: Private Active/Active (Legacy)
+      test_name: Private Active/Active (Replicated)
       utility_test: true
-      is_legacy_deployment: true
+      is_replicated_deployment: true
       module_repository_id: hashicorp/terraform-aws-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/private-active-active
-      TFC_token_secret_name: UTILITY_PRIVATE_ACTIVE_ACTIVE_LEGACY_TFC_TOKEN
-      TFC_workspace_substitution_pattern: s/aws-private-active-active/utility-aws-private-active-active-legacy/
-  aws_private_tcp_active_active_legacy:
+      TFC_token_secret_name: UTILITY_PRIVATE_ACTIVE_ACTIVE_REPLICATED_TFC_TOKEN
+      TFC_workspace_substitution_pattern: s/aws-private-active-active/utility-aws-private-active-active-replicated/
+  aws_private_tcp_active_active_replicated:
     uses: ./.github/workflows/destroy.yml
     secrets: inherit
-    name: Destroy resources from AWS Private TCP Active/Active (Legacy)
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-tcp-active-active-legacy') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
+    name: Destroy resources from AWS Private TCP Active/Active (Replicated)
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-tcp-active-active-replicated') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
     with:
       cloud: AWS
-      test_name: Private TCP Active/Active (Legacy)
+      test_name: Private TCP Active/Active (Replicated)
       utility_test: true
-      is_legacy_deployment: true
+      is_replicated_deployment: true
       module_repository_id: hashicorp/terraform-aws-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/private-tcp-active-active
-      TFC_token_secret_name: UTILITY_PRIVATE_TCP_ACTIVE_ACTIVE_LEGACY_TFC_TOKEN
-      TFC_workspace_substitution_pattern: s/aws-private-tcp-active-active/utility-aws-private-tcp-active-active-legacy/
-  aws-standalone_vault_legacy:
+      TFC_token_secret_name: UTILITY_PRIVATE_TCP_ACTIVE_ACTIVE_REPLICATED_TFC_TOKEN
+      TFC_workspace_substitution_pattern: s/aws-private-tcp-active-active/utility-aws-private-tcp-active-active-replicated/
+  aws-standalone_vault_replicated:
     uses: ./.github/workflows/destroy.yml
     secrets: inherit
-    name: Destroy resources from AWS Standalone Vault (Legacy)
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-public-active-active-legacy') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
+    name: Destroy resources from AWS Standalone Vault (Replicated)
+    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-public-active-active-replicated') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
     with:
       cloud: AWS
-      test_name: Standalone Vault (Legacy)
+      test_name: Standalone Vault (Replicated)
       utility_test: true
-      is_legacy_deployment: true
+      is_replicated_deployment: true
       module_repository_id: hashicorp/terraform-aws-terraform-enterprise
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/standalone-vault
-      TFC_token_secret_name: UTILITY_STANDALONE_VAULT_LEGACY_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_STANDALONE_VAULT_REPLICATED_TFC_TOKEN
       TFC_workspace_substitution_pattern: 's/terraform {/terraform {\n\
         backend "remote" {\n\
           organization = "terraform-enterprise-modules-test"\n\
           workspaces {\n\
-            name = "utility-aws-standalone-vault-legacy"\n\
+            name = "utility-aws-standalone-vault-replicated"\n\
           }\n\
         }\n/'

@@ -237,7 +237,7 @@ variable "tls_ciphers" {
 variable "tls_version" {
   default     = null
   type        = string
-  description = "(Not needed if is_legacy_deployment is true) TLS version to use. Leave blank to use both TLS v1.2 and TLS v1.3. Defaults to `\"\"` if no value is given."
+  description = "(Not needed if is_replicated_deployment is true) TLS version to use. Leave blank to use both TLS v1.2 and TLS v1.3. Defaults to `\"\"` if no value is given."
   validation {
     condition = (
       var.tls_version == null ||

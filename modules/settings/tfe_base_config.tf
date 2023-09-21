@@ -119,7 +119,7 @@ locals {
     }
 
     run_pipeline_mode = {
-      value = var.custom_image_tag != null ? "legacy" : "agent"
+      value = var.custom_image_tag != null ? "replicated" : "agent"
     }
 
     tbw_image = {

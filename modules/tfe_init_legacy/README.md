@@ -1,4 +1,4 @@
-# TFE Init Module (Legacy)
+# TFE Init Module (Replicated)
 
 This module is used to create the script that will install Terraform Enterprise (TFE) via Replicated on a virtual machine.
 
@@ -13,7 +13,7 @@ This module is used to create the script that will install Terraform Enterprise 
 This example illustrates how it may be used by a Terraform Enterprise module, consuming outputs from other submodules.
 
 ```hcl
-module "tfe_init_legacy" {
+module "tfe_init_replicated" {
   source = "git::https://github.com/hashicorp/terraform-random-tfe-utility//modules/tfe_init?ref=main"
 
   # Replicated Configuration data
