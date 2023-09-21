@@ -16,8 +16,8 @@ variable "distribution" {
   type        = string
   description = "(Required) What is the OS distribution of the instance on which Terraoform Enterprise will be deployed?"
   validation {
-    condition     = contains(["rhel", "ubuntu"], var.distribution)
-    error_message = "Supported values for distribution are 'rhel', or 'ubuntu'."
+    condition     = contains(["amzn2", "rhel", "ubuntu"], var.distribution)
+    error_message = "Supported values for distribution are 'amzn2', 'rhel', or 'ubuntu'."
   }
 }
 
@@ -37,7 +37,7 @@ variable "airgap_url" {
   NOTE: If this value is given, then this script will install the airgap installation prerequisites. The airgap
   bundle should already be on the virtual machine image, and you would not use this variable if this were a truly
   airgapped environment.
-  EOD 
+  EOD
   type        = string
 }
 
@@ -92,7 +92,7 @@ variable "enable_monitoring" {
   default     = null
   description = <<-EOD
   Should cloud appropriate monitoring agents be installed as a part of the TFE installation
-  script? 
+  script?
   EOD
 }
 
