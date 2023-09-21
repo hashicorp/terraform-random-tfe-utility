@@ -182,7 +182,7 @@ jobs:
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" >> github.auto.tfvars
-          echo "is_replicated_deployment = ${{ inputs.is_replicated_deployment }} >> github.auto.tfvars
+          echo "is_replicated_deployment = ${{ inputs.is_replicated_deployment }}" >> github.auto.tfvars
 
       - name: Terraform Targeted Pre-Apply
         if: ${{ inputs.first_apply_args != '' }}
