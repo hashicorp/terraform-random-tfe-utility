@@ -88,7 +88,6 @@ on:
 
 jobs:
   execute_aws_tests:
-    name: Run tf-test on AWS infrastructure
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -244,17 +243,15 @@ jobs:
       - name: Wait For TFE
         id: wait-for-tfe
         timeout-minutes: 20
-        env:
-          HEALTH_CHECK_URL: ${{ steps.retrieve-health-check-url.outputs.stdout }}
-          USE_PROXY: ${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
         run: |
+          use_proxy=${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
           echo "Curling \`health_check_url\` for a return status of 200..."
           while ! curl \
             --connect-timeout 10 \
             -sfS --max-time 5 \
-            $USE_PROXY \
+            $use_proxy \
             --verbose \
-            $HEALTH_CHECK_URL; \
+            ${{ steps.retrieve-health-check-url.outputs.stdout }}; \
             do sleep 5; done
 
       - name: Retrieve TFE URL
@@ -273,12 +270,12 @@ jobs:
         id: retrieve-iact
         env:
           IACT_URL: ${{ steps.retrieve-iact-url.outputs.stdout }}
-          USE_PROXY: ${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
         run: |
+          use_proxy=${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
           token=$( \
             curl --fail --retry 5 --verbose \
             --connect-timeout 10 \
-            $USE_PROXY "$IACT_URL")
+            $use_proxy "$IACT_URL")
           echo "::set-output name=token::$token"
 
       - name: Retrieve Initial Admin User URL
@@ -293,8 +290,8 @@ jobs:
           TFE_PASSWORD: ${{ secrets.TFE_PASSWORD }}
           IAU_URL: ${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}
           IACT_TOKEN: ${{ steps.retrieve-iact.outputs.token }}
-          USE_PROXY: ${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
         run: |
+          use_proxy=${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
           echo \
             '{"username": "test", "email": "team-tf-enterprise@hashicorp.com", "password": "$TFE_PASSWORD"}' \
             > ./payload.json
@@ -306,7 +303,7 @@ jobs:
             --verbose \
             --header 'Content-Type: application/json' \
             --data @./payload.json \
-            $USE_PROXY \
+            $use_proxy \
             "$IAU_URL"?token="$IACT_TOKEN")
           echo "::set-output name=response::$response"
 
@@ -345,7 +342,7 @@ jobs:
           repository: ${{ inputs.pull_request_repo_name }}
           comment-id: ${{ inputs.pull_request_comment_id }}
           body: |
-            ${{ format('### {0} Terraform AWS {1} ({2}) - Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name, inputs.is_replicated_deployment && 'Replicated' || 'FDO') }}
+            ${{ format('### {0} Terraform AWS {1} ({2}) - Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name, inputs.is_replicated_deployment && 'Legacy' || 'FDO') }}
 
             ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
 
