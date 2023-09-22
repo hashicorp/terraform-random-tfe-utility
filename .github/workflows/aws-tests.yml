@@ -189,7 +189,7 @@ jobs:
         id: pre-apply
         working-directory: ${{ env.WORK_DIR_PATH}}
         run: |
-          terraform apply ${{ inputs.first_apply_args }}} --auto-approve
+          terraform apply ${{ inputs.first_apply_args }} --auto-approve
           sleep 180
 
       - name: Terraform Apply
