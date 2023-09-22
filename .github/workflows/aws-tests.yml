@@ -249,7 +249,7 @@ jobs:
           while ! curl \
             --connect-timeout 10 \
             -sfS --max-time 5 \
-            $USE_PROXY \
+            $use_proxy \
             --verbose \
             ${{ steps.retrieve-health-check-url.outputs.stdout }}; \
             do sleep 5; done
@@ -270,12 +270,12 @@ jobs:
         id: retrieve-iact
         env:
           IACT_URL: ${{ steps.retrieve-iact-url.outputs.stdout }}
-          USE_PROXY: ${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
         run: |
+          use_proxy=${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
           token=$( \
             curl --fail --retry 5 --verbose \
             --connect-timeout 10 \
-            $USE_PROXY "$IACT_URL")
+            $use_proxy "$IACT_URL")
           echo "::set-output name=token::$token"
 
       - name: Retrieve Initial Admin User URL
@@ -290,8 +290,8 @@ jobs:
           TFE_PASSWORD: ${{ secrets.TFE_PASSWORD }}
           IAU_URL: ${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}
           IACT_TOKEN: ${{ steps.retrieve-iact.outputs.token }}
-          USE_PROXY: ${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
         run: |
+          use_proxy=${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
           echo \
             '{"username": "test", "email": "team-tf-enterprise@hashicorp.com", "password": "$TFE_PASSWORD"}' \
             > ./payload.json
@@ -303,7 +303,7 @@ jobs:
             --verbose \
             --header 'Content-Type: application/json' \
             --data @./payload.json \
-            $USE_PROXY \
+            $use_proxy \
             "$IAU_URL"?token="$IACT_TOKEN")
           echo "::set-output name=response::$response"
 
