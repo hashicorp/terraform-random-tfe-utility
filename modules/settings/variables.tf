@@ -92,7 +92,7 @@ variable "log_forwarding_config" {
   and does not # forward them anywhere.
   [OUTPUT]
       Name null
-      Match *"
+      Match *
   EOD
 }
 
