@@ -88,7 +88,6 @@ on:
 
 jobs:
   execute_aws_tests:
-    name: Run tf-test on AWS infrastructure
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -244,17 +243,15 @@ jobs:
       - name: Wait For TFE
         id: wait-for-tfe
         timeout-minutes: 20
-        env:
-          HEALTH_CHECK_URL: ${{ steps.retrieve-health-check-url.outputs.stdout }}
-          USE_PROXY: ${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
         run: |
+          use_proxy=${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
           echo "Curling \`health_check_url\` for a return status of 200..."
           while ! curl \
             --connect-timeout 10 \
             -sfS --max-time 5 \
             $USE_PROXY \
             --verbose \
-            $HEALTH_CHECK_URL; \
+            ${{ steps.retrieve-health-check-url.outputs.stdout }}; \
             do sleep 5; done
 
       - name: Retrieve TFE URL
@@ -345,7 +342,7 @@ jobs:
           repository: ${{ inputs.pull_request_repo_name }}
           comment-id: ${{ inputs.pull_request_comment_id }}
           body: |
-            ${{ format('### {0} Terraform AWS {1} ({2}) - Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name, inputs.is_replicated_deployment && 'Replicated' || 'FDO') }}
+            ${{ format('### {0} Terraform AWS {1} ({2}) - Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name, inputs.is_replicated_deployment && 'Legacy' || 'FDO') }}
 
             ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
 
