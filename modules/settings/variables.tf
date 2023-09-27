@@ -37,7 +37,7 @@ variable "capacity_memory" {
   description = "The maximum amount of memory (in megabytes) that a Terraform plan or apply can use on the system; defaults to 512."
 }
 
-variable "consolidated_services" {
+variable "consolidated_services_enabled" {
   default     = null
   type        = bool
   description = "(Required) True if TFE uses consolidated services."

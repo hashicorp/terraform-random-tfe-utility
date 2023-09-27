@@ -36,8 +36,8 @@ locals {
       value = random_id.cookie_hash.hex
     }
 
-    consolidated_services = {
-      value = var.consolidated_services != null ? var.consolidated_services ? "1" : "0" : null
+    consolidated_services_enabled = {
+      value = var.consolidated_services_enabled != null ? var.consolidated_services_enabled ? "1" : "0" : null
     }
 
     custom_image_tag = {
