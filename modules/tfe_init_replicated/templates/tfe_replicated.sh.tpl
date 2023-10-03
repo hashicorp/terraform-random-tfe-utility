@@ -224,7 +224,8 @@ echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootst
 		https://download.docker.com/linux/ubuntu $(lsb_release --codename --short) stable" \
 		| sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 	apt-get --assume-yes update
-	apt-get --assume-yes install docker-ce docker-ce-cli containerd.io
+	VERSION_STRING="5:20.10.20~3-0~ubuntu-focal"
+	apt-get --assume-yes install docker-ce=$VERSION_STRING docker-ce-cli=$VERSION_STRING containerd.io docker-buildx-plugin docker-compose-plugin
 	apt-get --assume-yes autoremove
 	%{ endif ~}
 
