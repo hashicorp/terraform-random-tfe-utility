@@ -10,7 +10,7 @@ jobs:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
     name: Run tf-test on Azure Standalone External
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-external') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'azure-standalone-external' || github.event.client_payload.slash_command.args.unnamed.all == 'full-azure' }}
     with:
       test_name: Standalone External
       is_replicated_deployment: false
@@ -34,7 +34,7 @@ jobs:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
     name: Run tf-test on Azure Standalone Mounted Disk
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-mounted-disk') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'azure-standalone-mounted-disk' || github.event.client_payload.slash_command.args.unnamed.all == 'full-azure' }}
     with:
       test_name: Standalone Mounted Disk
       is_replicated_deployment: false
@@ -58,7 +58,7 @@ jobs:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
     name: Run tf-test on Azure Public Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'azure-public-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-azure' }}
     with:
       test_name: Public Active/Active
       is_replicated_deployment: false
@@ -76,7 +76,7 @@ jobs:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
     name: Run tf-test on Azure Private Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'azure-private-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-azure' }}
     with:
       test_name: Private Active/Active
       is_replicated_deployment: false
@@ -95,7 +95,7 @@ jobs:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
     name: Run tf-test on Azure Private TCP Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'azure-private-tcp-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-azure' }}
     with:
       test_name: Private TCP Active/Active
       is_replicated_deployment: false
@@ -114,7 +114,7 @@ jobs:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
     name: Run tf-test on Azure Standalone External (Replicated)
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-external') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'azure-standalone-external' || github.event.client_payload.slash_command.args.unnamed.all == 'full-azure' }}
     with:
       test_name: Standalone External
       is_replicated_deployment: true
@@ -138,7 +138,7 @@ jobs:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
     name: Run tf-test on Azure Standalone Mounted Disk (Replicated)
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-standalone-mounted-disk') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'azure-standalone-mounted-disk' || github.event.client_payload.slash_command.args.unnamed.all == 'full-azure' }}
     with:
       test_name: Standalone Mounted Disk (Replicated)
       is_replicated_deployment: true
@@ -162,7 +162,7 @@ jobs:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
     name: Run tf-test on Azure Public Active/Active (Replicated)
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'azure-public-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-azure' }}
     with:
       test_name: Public Active/Active (Replicated)
       is_replicated_deployment: true
@@ -180,7 +180,7 @@ jobs:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
     name: Run tf-test on Azure Private Active/Active (Replicated)
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'azure-private-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-azure' }}
     with:
       test_name: Private Active/Active (Replicated)
       is_replicated_deployment: true
@@ -199,7 +199,7 @@ jobs:
     uses: ./.github/workflows/azure-tests.yml
     secrets: inherit
     name: Run tf-test on Azure Private TCP Active/Active (Replicated)
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'azure-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-azure') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'azure-private-tcp-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-azure' }}
     with:
       test_name: Private TCP Active/Active
       is_replicated_deployment: true
@@ -218,7 +218,7 @@ jobs:
     uses: ./.github/workflows/google-tests.yml
     secrets: inherit
     name: Run tf-test on Google Public Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'google-public-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-google' }}
     with:
       test_name: Google Public Active/Active
       module_repository_id: hashicorp/terraform-google-terraform-enterprise
@@ -238,7 +238,7 @@ jobs:
     uses: ./.github/workflows/google-tests.yml
     secrets: inherit
     name: Run tf-test on Google Private Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'google-private-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-google' }}
     with:
       test_name: Google Private Active/Active
       utility_test: true
@@ -258,7 +258,7 @@ jobs:
     uses: ./.github/workflows/google-tests.yml
     secrets: inherit
     name: Run tf-test on Google Private TCP Active/Active
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'google-private-tcp-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-google' }}
     with:
       test_name: Google Private TCP Active/Active
       utility_test: true
@@ -278,7 +278,7 @@ jobs:
     uses: ./.github/workflows/google-tests.yml
     secrets: inherit
     name: Run tf-test on Google Standalone External Rhel8 Worker
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'standalone-external-rhel8-worker') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'standalone-external-rhel8-worker' || github.event.client_payload.slash_command.args.unnamed.all == 'full-google' }}
     with:
       test_name: Google Standalone External Rhel8 Worker
       module_repository_id: hashicorp/terraform-google-terraform-enterprise
@@ -304,7 +304,7 @@ jobs:
     uses: ./.github/workflows/google-tests.yml
     secrets: inherit
     name: Run tf-test on Google Standalone Mounted Disk
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'google-standalone-mounted-disk') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-google') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'google-standalone-mounted-disk' || github.event.client_payload.slash_command.args.unnamed.all == 'full-google' }}
     with:
       test_name: Google Standalone Mounted Disk
       module_repository_id: hashicorp/terraform-google-terraform-enterprise
@@ -330,7 +330,7 @@ jobs:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
     name: Test AWS Active-Active RHEL7 Proxy Scenario
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-active-active-rhel7-proxy') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-active-active-rhel7-proxy' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Active/Active RHEL7 Proxy
       utility_test: true
@@ -353,7 +353,7 @@ jobs:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
     name: Test AWS Private Active-Active Scenario
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-private-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Private Active/Active
       utility_test: true
@@ -370,7 +370,7 @@ jobs:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
     name: Test AWS Private TCP Active-Active Scenario
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-tcp-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-private-tcp-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Private TCP Active/Active
       utility_test: true
@@ -387,7 +387,7 @@ jobs:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
     name: Test AWS Public Active-Active Scenario
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-public-active-active') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-public-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Public Active/Active
       utility_test: true
@@ -404,7 +404,7 @@ jobs:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
     name: Test AWS Standalone Vault Scenario
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-standalone-vault') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws')}}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-standalone-vault' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Standalone Vault
       utility_test: true
@@ -428,7 +428,7 @@ jobs:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
     name: Test AWS Active-Active RHEL7 Proxy (Replicated) Scenario
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-active-active-rhel7-proxy-replicated') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-active-active-rhel7-proxy-replicated' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Active/Active RHEL7 Proxy (Replicated)
       utility_test: true
@@ -451,7 +451,7 @@ jobs:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
     name: Test AWS Public Active/Active (Replicated) Scenario
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-public-active-active-replicated') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-public-active-active-replicated' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Public Active/Active (Replicated)
       utility_test: true
@@ -468,7 +468,7 @@ jobs:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
     name: Test AWS Private Active/Active (Replicated) Scenario
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-active-active-replicated') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-private-active-active-replicated' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Private Active/Active (Replicated)
       utility_test: true
@@ -485,7 +485,7 @@ jobs:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
     name: Test AWS Private TCP Active/Active (Replicated) Scenario
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-private-tcp-active-active-replicated') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-private-tcp-active-active-replicated' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Private TCP Active/Active (Replicated)
       utility_test: true
@@ -502,7 +502,7 @@ jobs:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
     name: Test AWS Standalone Vault (Replicated) Scenario
-    if: ${{ contains(github.event.client_payload.slash_command.args.unnamed.all, 'all') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'aws-public-active-active-replicated') || contains(github.event.client_payload.slash_command.args.unnamed.all, 'full-aws') }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-public-active-active-replicated' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Standalone Vault (Replicated)
       utility_test: true
