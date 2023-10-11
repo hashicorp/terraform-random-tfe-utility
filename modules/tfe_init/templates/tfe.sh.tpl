@@ -141,7 +141,7 @@ yum install --assumeyes yum-utils
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 os_release=$(cat /etc/os-release | grep VERSION_ID | sed "s/VERSION_ID=\"\(.*\)\"/\1/g")
 if (( $(echo "$os_release < 8.0" | bc -l ) )); then
-/bin/cat <<EOF >>EOF/etc/yum.repos.d/docker-ce.repo
+/bin/cat <<EOF >>/etc/yum.repos.d/docker-ce.repo
 [centos-extras]
 name=Centos extras - \$basearch
 baseurl=http://mirror.centos.org/centos/7/extras/x86_64
