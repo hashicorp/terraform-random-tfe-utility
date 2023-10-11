@@ -241,6 +241,7 @@ jobs:
 
       - name: Start SOCKS5 Proxy
         if: ${{ inputs.ssh_private_key_secret_name != '' }}
+        working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           aws ec2 wait instance-status-ok --instance-ids "$INSTANCE_ID"
           ssh \
