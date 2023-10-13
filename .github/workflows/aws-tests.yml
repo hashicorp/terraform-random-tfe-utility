@@ -279,10 +279,20 @@ jobs:
 
       - name: Retrieve IACT
         run: |
-          token=$( \
-            curl --fail --retry 5 \
+          expiration=$(( $( date '+%s' ) + 90 ))
+          sleep_duration=30
+          until token=$(curl --fail --retry 5 \
             --connect-timeout 10 \
             $USE_PROXY "$TFE_URL/admin/retrieve-iact")
+          do
+            if [ "$( date '+%s' )" -gt "${expiration}" ]
+            then
+                echo -e "\nFailed to retrieve IACT token"
+                exit 1
+            fi
+            echo "Sleeping for ${sleep_duration} seconds and retrying retrieval of IACT token."
+            sleep "${sleep_duration}"
+          done
           echo "IACT_TOKEN=$token" >> $GITHUB_ENV
 
       - name: Create Admin in TFE
