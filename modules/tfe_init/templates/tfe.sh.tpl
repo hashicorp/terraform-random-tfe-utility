@@ -150,8 +150,7 @@ gpgcheck=1
 gpgkey=http://centos.org/keys/RPM-GPG-KEY-CentOS-7
 EOF
 fi
-
-yum install --assumeyes docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+yum install --assumeyes docker-ce-${docker_version} docker-ce-cli-${docker_version} containerd.io docker-buildx-plugin docker-compose-plugin
 systemctl start docker
 %{ else ~}
 curl --noproxy '*' --fail --silent --show-error --location https://download.docker.com/linux/ubuntu/gpg \

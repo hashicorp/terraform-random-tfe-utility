@@ -21,6 +21,7 @@ locals {
       disk_device_name            = var.disk_device_name
       distribution                = var.distribution
       docker_config               = filebase64("${path.module}/files/daemon.json")
+      docker_version              = var.distribution == "rhel" ? var.docker_version_rhel : null
       enable_monitoring           = var.enable_monitoring != null ? var.enable_monitoring : false
       tls_bootstrap_cert_pathname = local.tls_bootstrap_cert_pathname
       tls_bootstrap_key_pathname  = local.tls_bootstrap_key_pathname
