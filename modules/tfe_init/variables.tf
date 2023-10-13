@@ -57,8 +57,8 @@ variable "docker_compose_yaml" {
 }
 
 variable "docker_version_rhel" {
-  default     = "3:24.0.2-1.el7"
-  description = "When you run `yum list docker-ce --showduplicates | sort -r`, the version comes from the center column."
+  default     = "24.0.2"
+  description = "When you run `yum list docker-ce --showduplicates | sort -r`, the version comes from the center column. All you need is the format major.minor.patch format."
 }
 
 variable "enable_monitoring" {
