@@ -19,6 +19,8 @@ locals {
           local.vault_configuration,
           {
             TFE_HOSTNAME                  = var.hostname
+            TFE_HTTP_PORT                 = var.http_port
+            TFE_HTTPS_PORT                = var.https_port
             TFE_OPERATIONAL_MODE          = var.operational_mode
             TFE_ENCRYPTION_PASSWORD       = random_id.enc_password.hex
             TFE_DISK_CACHE_VOLUME_NAME    = "terraform-enterprise_terraform-enterprise-cache"

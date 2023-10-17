@@ -70,6 +70,18 @@ variable "database_user" {
   description = "PostgreSQL user. Required when TFE_OPERATIONAL_MODE is external or active-active."
 }
 
+variable "http_port" {
+  default     = null
+  type        = number
+  description = "Port application listens on for HTTP. Default is 80."
+}
+
+variable "https_port" {
+  default     = null
+  type        = number
+  description = "Port application listens on for HTTPS. Default is 443."
+}
+
 variable "iact_subnets" {
   type        = string
   description = "Comma-separated list of subnets in CIDR notation that are allowed to retrieve the initial admin creation token via the API (e.g. 10.0.0.0/8,192.168.0.0/24). Leave blank to disable retrieving the initial admin creation token via the API from outside the host. Defaults to \"\" if no value is given."
