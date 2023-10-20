@@ -260,6 +260,12 @@ variable "tls_version" {
   }
 }
 
+variable "trusted_proxies" {
+  default     = []
+  description = "A list of IP address ranges which will be considered safe to ignore when evaluating the IP addresses of requests like those made to the IACT endpoint."
+  type        = list(string)
+}
+
 variable "vault_address" {
   type        = string
   description = "Address of the external Vault server (e.g. https://vault.example.com:8200). Defaults to \"\" if no value is given. Required when TFE_VAULT_USE_EXTERNAL is true."

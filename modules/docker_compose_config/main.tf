@@ -37,6 +37,7 @@ locals {
             TFE_CAPACITY_MEMORY           = var.capacity_memory
             TFE_IACT_SUBNETS              = var.iact_subnets
             TFE_IACT_TIME_LIMIT           = var.iact_time_limit
+            TFE_IACT_TRUSTED_PROXIES      = var.trusted_proxies
           }
         )
         cap_add = [
