@@ -95,6 +95,7 @@ update-ca-trust
 %{ else ~}
 update-ca-certificates
 %{ endif ~}
+cp $ca_cert_filepath $tls_bootstrap_ca_pathname
 fi
 
 %{ if cloud == "azurerm" && distribution == "rhel" ~}
