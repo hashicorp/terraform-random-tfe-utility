@@ -24,12 +24,12 @@ locals {
             TFE_OPERATIONAL_MODE          = var.operational_mode
             TFE_ENCRYPTION_PASSWORD       = random_id.enc_password.hex
             TFE_DISK_CACHE_VOLUME_NAME    = "terraform-enterprise_terraform-enterprise-cache"
-            TFE_TLS_CERT_FILE             = var.cert_file
-            TFE_TLS_KEY_FILE              = var.key_file
             TFE_LICENSE_REPORTING_OPT_OUT = var.license_reporting_opt_out
             TFE_LICENSE                   = var.tfe_license
             TFE_TLS_CA_BUNDLE_FILE        = var.tls_ca_bundle_file
+            TFE_TLS_CERT_FILE             = var.cert_file
             TFE_TLS_CIPHERS               = var.tls_ciphers
+            TFE_TLS_KEY_FILE              = var.key_file
             TFE_TLS_VERSION               = var.tls_version != null ? var.tls_version : ""
             TFE_RUN_PIPELINE_IMAGE        = var.run_pipeline_image
             TFE_CAPACITY_CONCURRENCY      = var.capacity_concurrency
