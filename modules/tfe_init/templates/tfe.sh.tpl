@@ -98,7 +98,7 @@ update-ca-certificates
 system_ca_certificate_file="/etc/ssl/certs/ca-certificates.crt"
 %{ endif ~}
 cp $ca_cert_filepath ${tls_bootstrap_ca_pathname}
-cp $ca_cert_filepath $system_ca_certificate_file
+tr -d "\\r" < "$ca_cert_filepath" >> "$system_ca_certificate_file"
 fi
 
 %{ if cloud == "azurerm" && distribution == "rhel" ~}
