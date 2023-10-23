@@ -10,7 +10,7 @@ locals {
   replicated_base_config = {
     BypassPreflightChecks             = var.bypass_preflight_checks
     DaemonAuthenticationType          = "password"
-    DaemonAuthenticationPassword      = random_string.password.result
+    DaemonAuthenticationPassword      = coalesce(var.daemon_auth_password, random_string.password.result)
     ImportSettingsFrom                = "/etc/ptfe-settings.json"
     LicenseFileLocation               = var.tfe_license_file_location
     LicenseBootstrapAirgapPackagePath = var.tfe_license_bootstrap_airgap_package_path
