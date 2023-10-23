@@ -24,7 +24,7 @@ install_packages $log_pathname
 
 echo "[$(date +"%FT%T")] Installing mitmproxy" | tee --append $log_pathname
 pushd /tmp
-curl --location --remote-name https://snapshots.mitmproxy.org/6.0.2/mitmproxy-6.0.2-linux.tar.gz
+curl --location --remote-name https://snapshots.mitmproxy.org/6.0.2/mitmproxy-10.1.1-linux.tar.gz
 tar --extract --file ./mitmproxy*.tar.gz -C /usr/local/bin/
 confdir="/etc/mitmproxy"
 mkdir --parents $confdir
