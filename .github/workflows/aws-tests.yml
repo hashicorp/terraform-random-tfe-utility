@@ -1,9 +1,9 @@
-name: Azure Test Harness
+name: AWS Test Harness
 
 on:
   workflow_call:
     inputs:
-      # Configuration Flags
+      # Configuration Flags #
       test_name:
         description: |-
           The name for this test run. eg: 'Public Active/Active'
@@ -19,8 +19,13 @@ on:
         type: boolean
         required: true
         default: false
-      
-      # Pull Request / Repo Identifiers
+      first_apply_args:
+        description: "Terraform arguments for the first apply operation."
+        required: false
+        type: string
+        default: ''
+
+        # Pull Request / Repo Identifiers #
       module_repository_id:
         description: |-
           For utility module tests, what is the source module repo for this test? 
@@ -45,7 +50,7 @@ on:
         required: true
         type: string
       
-      # General Job Configuration
+      # General Job Configuration #
       work_dir:
         description: "The directory in which tests are executed"
         required: true
@@ -55,7 +60,7 @@ on:
         required: true
         type: string
       
-      # TFC Workspace Configuration
+      # TFC Workspace Configuration #
       TFC_token_secret_name:
         description: |- 
           The id of the github secret that contains the TFC token for the tfc
@@ -72,18 +77,17 @@ on:
         type: string
         default: ""
 
-      # Target system SSH configuration
-      bastion_ssh_private_key_secret_name:
+      # Target system SSH configuration #
+      ssh_private_key_secret_name:
         description: |-
           The github secret name for a Base64 encoded private certificate used
-          to authenticate into and proxy tests from the bastion vm instance.
+          to authenticate into and proxy tests from the TFE instance.
         required: false
         default: ""
         type: string
 
 jobs:
-  execute_azure_tests:
-    name: Run tf-test on Azure infrastructure
+  execute_aws_tests:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -96,7 +100,7 @@ jobs:
         id: vars
         run: echo ::set-output name=run-url::https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
       
-      # Module Checkout #
+      # Module Checkout
       # If this is not a utility module test, check out the pull request under
       # test in the module repo.
       - name: Checkout
@@ -155,10 +159,10 @@ jobs:
           terraform_wrapper: false
 
       - name: Write Private SSH Key
-        if: ${{ inputs.bastion_ssh_private_key_secret_name != '' }}
+        if: ${{ inputs.ssh_private_key_secret_name != '' }}
         working-directory: ${{ env.WORK_DIR_PATH }}
         env:
-          SSH_KEY_BASE64: ${{ secrets[inputs.bastion_ssh_private_key_secret_name]  }}
+          SSH_KEY_BASE64: ${{ secrets[inputs.ssh_private_key_secret_name]  }}
         run: |
           echo "$SSH_KEY_BASE64" | base64 --decode > ./ssh-key.pem
           chmod 0400 ./ssh-key.pem
@@ -176,28 +180,153 @@ jobs:
       - name: Write GitHub Actions runner CIDR to Terraform Variables
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          echo "network_allow_range = \"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"" > github.auto.tfvars
           echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" >> github.auto.tfvars
           echo "is_replicated_deployment = ${{ inputs.is_replicated_deployment }}" >> github.auto.tfvars
+
+      - name: Terraform Targeted Pre-Apply
+        if: ${{ inputs.first_apply_args != '' }}
+        id: pre-apply
+        working-directory: ${{ env.WORK_DIR_PATH}}
+        run: |
+          terraform apply ${{ inputs.first_apply_args }} --auto-approve
+          sleep 180
 
       - name: Terraform Apply
         id: apply
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: terraform apply -auto-approve -input=false -no-color
 
-      - name: Run k6 Smoke Test
-        id: run-smoke-test
-        timeout-minutes: 90
+      - name: Retrieve Health Check URL
+        id: retrieve-health-check-url
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          BASTION_CERT_KEY=./ssh-key.pem
-          if [[ -f "$BASTION_CERT_KEY" ]]; then
-              echo "$FILE exists. Adding the bastion certificate command to the test runner"
-              bastion_flag="-b $BASTION_CERT_KEY -l"
-          fi
-          command="./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }} $bastion_flag"
-          echo $command
-          eval $command
+          terraform output -no-color -raw health_check_url
+
+      - name: Retrieve Instance ID
+        if: ${{ inputs.ssh_private_key_secret_name != '' }}
+        id: retrieve-instance-id
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          terraform output -no-color -raw proxy_instance_id
+
+      - name: Configure AWS Credentials
+        if: ${{ inputs.ssh_private_key_secret_name != '' }}
+        uses: aws-actions/configure-aws-credentials@8c3f20df09ac63af7b3ae3d7c91f105f857d8497 # v4.0.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_PRIVATE_TCP_ACTIVE_ACTIVE_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_PRIVATE_TCP_ACTIVE_ACTIVE_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+          role-to-assume: ${{ secrets.AWS_PRIVATE_TCP_ACTIVE_ACTIVE_AWS_ROLE_TO_ASSUME }}
+          role-duration-seconds: 2400
+          role-skip-session-tagging: true
+
+      - name: Start SOCKS5 Proxy
+        if: ${{ inputs.ssh_private_key_secret_name != '' }}
+        env:
+          INSTANCE_ID: ${{ steps.retrieve-instance-id.outputs.stdout }}
+        run: |
+          aws ec2 wait instance-status-ok --instance-ids "$INSTANCE_ID"
+          ssh \
+            -o 'BatchMode yes' \
+            -o 'StrictHostKeyChecking accept-new' \
+            -o 'ServerAliveInterval 5' \
+            -o 'ServerAliveCountMax 3' \
+            -o 'ProxyCommand sh -c \
+              "aws ssm start-session \
+                --target %h \
+                --document-name AWS-StartSSHSession \
+                --parameters \"portNumber=%p\""' \
+            -i ./ssh-key.pem \
+            -f -N -p 22 -D localhost:5000 \
+            ubuntu@"$INSTANCE_ID"
+
+      - name: Wait For TFE
+        id: wait-for-tfe
+        timeout-minutes: 20
+        run: |
+          use_proxy=${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
+          echo "Curling \`health_check_url\` for a return status of 200..."
+          while ! curl \
+            --connect-timeout 10 \
+            -sfS --max-time 5 \
+            $use_proxy \
+            --verbose \
+            ${{ steps.retrieve-health-check-url.outputs.stdout }}; \
+            do sleep 5; done
+
+      - name: Retrieve TFE URL
+        id: retrieve-tfe-url
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          terraform output -no-color -raw tfe_url
+
+      - name: Retrieve IACT URL
+        id: retrieve-iact-url
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          terraform output -no-color -raw iact_url
+
+      - name: Retrieve IACT
+        id: retrieve-iact
+        env:
+          IACT_URL: ${{ steps.retrieve-iact-url.outputs.stdout }}
+        run: |
+          use_proxy=${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
+          token=$( \
+            curl --fail --retry 5 --verbose \
+            --connect-timeout 10 \
+            $use_proxy "$IACT_URL")
+          echo "::set-output name=token::$token"
+
+      - name: Retrieve Initial Admin User URL
+        id: retrieve-initial-admin-user-url
+        working-directory: ${{ env.WORK_DIR_PATH }}
+        run: |
+          terraform output -no-color -raw initial_admin_user_url
+
+      - name: Create Admin in TFE
+        id: create-admin
+        env:
+          TFE_PASSWORD: ${{ secrets.TFE_PASSWORD }}
+          IAU_URL: ${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}
+          IACT_TOKEN: ${{ steps.retrieve-iact.outputs.token }}
+        run: |
+          use_proxy=${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
+          echo \
+            '{"username": "test", "email": "team-tf-enterprise@hashicorp.com", "password": "$TFE_PASSWORD"}' \
+            > ./payload.json
+          response=$( \
+            curl \
+            --connect-timeout 10 \
+            --fail \
+            --retry 5 \
+            --verbose \
+            --header 'Content-Type: application/json' \
+            --data @./payload.json \
+            $use_proxy \
+            "$IAU_URL"?token="$IACT_TOKEN")
+          echo "::set-output name=response::$response"
+
+      - name: Retrieve Admin Token
+        id: retrieve-admin-token
+        env:
+          RESPONSE: ${{ steps.create-admin.outputs.response }}
+        run: |
+          token=$(echo "$RESPONSE" | jq --raw-output '.token')
+          echo "::set-output name=token::$token"
+
+      - name: Run k6 Smoke Test
+        id: run-smoke-test
+        working-directory: ${{ env.K6_WORK_DIR_PATH }}
+        env:
+          K6_PATHNAME: "./k6"
+          TFE_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}"
+          TFE_API_TOKEN: "${{ steps.retrieve-admin-token.outputs.token }}"
+          TFE_EMAIL: team-tf-enterprise@hashicorp.com
+          http_proxy: ${{ inputs.ssh_private_key_secret_name != '' && 'socks5://localhost:5000/' || '' }}
+          https_proxy: ${{ inputs.ssh_private_key_secret_name != '' && 'socks5://localhost:5000/' || '' }}
+        run: |
+          make smoke-test
 
       - name: Terraform Destroy
         id: destroy
@@ -213,7 +342,7 @@ jobs:
           repository: ${{ inputs.pull_request_repo_name }}
           comment-id: ${{ inputs.pull_request_comment_id }}
           body: |
-            ${{ format('### {0} Terraform Azure {1} ({2}) - Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name, inputs.is_replicated_deployment && 'Replicated' || 'FDO') }}
+            ${{ format('### {0} Terraform AWS {1} ({2}) - Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name, inputs.is_replicated_deployment && 'Legacy' || 'FDO') }}
 
             ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
 
