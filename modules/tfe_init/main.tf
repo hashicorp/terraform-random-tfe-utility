@@ -26,7 +26,7 @@ locals {
       enable_monitoring           = var.enable_monitoring != null ? var.enable_monitoring : false
       tls_bootstrap_cert_pathname = local.tls_bootstrap_cert_pathname
       tls_bootstrap_key_pathname  = local.tls_bootstrap_key_pathname
-      tls_bootstrap_ca_pathname   = var.ca_certificate_secret_id != null ? local.tls_bootstrap_ca_pathname : null
+      tls_bootstrap_ca_pathname   = local.tls_bootstrap_ca_pathname
       compose                     = var.docker_compose_yaml
 
       ca_certificate_secret_id = var.ca_certificate_secret_id
