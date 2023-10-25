@@ -256,6 +256,7 @@ variable "tfe_license" {
 }
 
 variable "tls_ca_bundle_file" {
+  default     = null
   type        = string
   description = "Path to a file containing TLS CA certificates to be added to the OS CA certificates bundle. Leave blank to not add CA certificates to the OS CA certificates bundle. Defaults to \"\" if no value is given."
 }
