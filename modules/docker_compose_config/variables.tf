@@ -273,7 +273,8 @@ variable "tls_version" {
     condition = (
       var.tls_version == null ||
       var.tls_version == "tls_1_2" ||
-      var.tls_version == "tls_1_3"
+      var.tls_version == "tls_1_3" ||
+      var.tls_version == "tls_1_2_tls_1_3"
     )
     error_message = "The tls_version value must be 'tls_1_2', 'tls_1_3', or null."
   }

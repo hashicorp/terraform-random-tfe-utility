@@ -6,7 +6,6 @@ locals {
   tls_bootstrap_path          = "/etc/tfe/ssl"
   tls_bootstrap_cert_pathname = "${local.tls_bootstrap_path}/cert.pem"
   tls_bootstrap_key_pathname  = "${local.tls_bootstrap_path}/key.pem"
-  tls_bootstrap_ca_pathname   = "${local.tls_bootstrap_path}/bundle.pem"
 
   tfe_user_data = templatefile(
     "${path.module}/templates/tfe.sh.tpl",
@@ -26,7 +25,6 @@ locals {
       enable_monitoring           = var.enable_monitoring != null ? var.enable_monitoring : false
       tls_bootstrap_cert_pathname = local.tls_bootstrap_cert_pathname
       tls_bootstrap_key_pathname  = local.tls_bootstrap_key_pathname
-      tls_bootstrap_ca_pathname   = local.tls_bootstrap_ca_pathname
       compose                     = var.docker_compose_yaml
 
       ca_certificate_secret_id = var.ca_certificate_secret_id
