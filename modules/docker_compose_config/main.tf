@@ -56,8 +56,8 @@ locals {
           "/var/log/terraform-enterprise",
         ]
         ports = flatten([
-          "80:${http_port}",
-          "443:${https_port}",
+          "80:${var.http_port}",
+          "443:${var.https_port}",
           local.active_active ? ["8201:8201"] : []
         ])
 
