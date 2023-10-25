@@ -92,9 +92,13 @@ if [ -f "$ca_cert_filepath" ]
 then
 %{ if distribution == "rhel" ~}
 update-ca-trust
+system_ca_certificate_file="/etc/pki/tls/certs/ca-bundle.crt"
 %{ else ~}
 update-ca-certificates
+system_ca_certificate_file="/etc/ssl/certs/ca-certificates.crt"
 %{ endif ~}
+cp $ca_cert_filepath ${tls_bootstrap_ca_pathname}
+tr -d "\\r" < "$ca_cert_filepath" >> "$system_ca_certificate_file"
 fi
 
 %{ if cloud == "azurerm" && distribution == "rhel" ~}
