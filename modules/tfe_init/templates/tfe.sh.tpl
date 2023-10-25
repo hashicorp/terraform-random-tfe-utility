@@ -137,6 +137,10 @@ install_monitoring_agents $log_pathname
 
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing Docker Engine from Repository" | tee -a $log_pathname
 %{ if distribution == "rhel" ~}
+/bin/cat <<EOF > /etc/yum/pluginconf.d/subscription-manager.conf
+[main]
+enabled=0
+EOF
 yum install --assumeyes yum-utils
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 os_release=$(cat /etc/os-release | grep VERSION_ID | sed "s/VERSION_ID=\"\(.*\)\"/\1/g")
