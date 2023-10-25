@@ -115,6 +115,18 @@ variable "hostname" {
   description = "Hostname where Terraform Enterprise is accessed (e.g. terraform.example.com)."
 }
 
+variable "http_proxy" {
+  type        = string
+  description = "(Optional) The IP address and port of existing web proxy to route TFE http traffic through."
+  default     = null
+}
+
+variable "https_proxy" {
+  type        = string
+  description = "(Optional) The IP address and port of existing web proxy to route TFE https traffic through."
+  default     = null
+}
+
 variable "license_reporting_opt_out" {
   type        = bool
   description = "Whether to opt out of reporting licensing information to HashiCorp. Defaults to false if no value is given."
@@ -123,6 +135,12 @@ variable "license_reporting_opt_out" {
 variable "key_file" {
   type        = string
   description = "Path to a file containing the TLS private key Terraform Enterprise will use when serving TLS connections to clients."
+}
+
+variable "no_proxy" {
+  type        = list(string)
+  description = "(Optional) List of IP addresses to not proxy"
+  default     = []
 }
 
 variable "operational_mode" {
@@ -138,6 +156,7 @@ variable "operational_mode" {
     error_message = "Supported values for operational_mode are 'disk', 'external', and 'active-active'."
   }
 }
+
 variable "redis_host" {
   type        = string
   description = "The Redis server to connect to in the format HOST[:PORT] (e.g. redis.example.com or redis.example.com:). If only HOST is provided then the :PORT defaults to :6379 if no value is given. Required when TFE_OPERATIONAL_MODE is active-active."

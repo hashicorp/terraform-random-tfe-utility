@@ -18,6 +18,12 @@ locals {
           local.storage_configuration,
           local.vault_configuration,
           {
+            http_proxy                    = var.http_proxy
+            HTTP_PROXY                    = var.http_proxy
+            https_proxy                   = var.https_proxy
+            HTTPS_PROXY                   = var.https_proxy
+            no_proxy                      = join(",", var.no_proxy)
+            NO_PROXY                      = join(",", var.no_proxy)
             TFE_HOSTNAME                  = var.hostname
             TFE_HTTP_PORT                 = var.http_port
             TFE_HTTPS_PORT                = var.https_port
