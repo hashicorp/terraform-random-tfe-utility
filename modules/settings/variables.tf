@@ -297,7 +297,7 @@ variable "disk_path" {
 variable "aws_access_key_id" {
   default     = null
   type        = string
-  description = "(Required when object storage is in AWS unless aws_access_key_id is set) AWS access key ID for S3 bucket access. To use AWSinstance profiles for this information, set it to ''."
+  description = "AWS access key ID for S3 bucket access. To use AWSinstance profiles for this information, set it to ''."
 }
 
 variable "aws_secret_access_key" {
