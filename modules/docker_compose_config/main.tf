@@ -18,12 +18,12 @@ locals {
           local.storage_configuration,
           local.vault_configuration,
           {
-            http_proxy                    = "http://${var.http_proxy}"
-            HTTP_PROXY                    = "http://${var.http_proxy}"
-            https_proxy                   = "http://${var.https_proxy}"
-            HTTPS_PROXY                   = "http://${var.https_proxy}"
-            no_proxy                      = join(",", var.no_proxy)
-            NO_PROXY                      = join(",", var.no_proxy)
+            http_proxy                    = var.http_proxy != null ? "http://${var.http_proxy}" : null
+            HTTP_PROXY                    = var.http_proxy != null ? "http://${var.http_proxy}" : null
+            https_proxy                   = var.https_proxy != null ? "http://${var.https_proxy}" : null
+            HTTPS_PROXY                   = var.https_proxy != null ? "http://${var.https_proxy}" : null
+            no_proxy                      = var.var.no_proxy != null ? join(",", var.no_proxy) : null
+            NO_PROXY                      = var.var.no_proxy != null ? join(",", var.no_proxy) : null
             TFE_HOSTNAME                  = var.hostname
             TFE_HTTP_PORT                 = var.http_port
             TFE_HTTPS_PORT                = var.https_port
