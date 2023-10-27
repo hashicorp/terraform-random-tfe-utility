@@ -22,8 +22,8 @@ locals {
             HTTP_PROXY                    = var.http_proxy != null ? "http://${var.http_proxy}" : null
             https_proxy                   = var.https_proxy != null ? "http://${var.https_proxy}" : null
             HTTPS_PROXY                   = var.https_proxy != null ? "http://${var.https_proxy}" : null
-            no_proxy                      = var.var.no_proxy != null ? join(",", var.no_proxy) : null
-            NO_PROXY                      = var.var.no_proxy != null ? join(",", var.no_proxy) : null
+            no_proxy                      = var.no_proxy != null ? join(",", var.no_proxy) : null
+            NO_PROXY                      = var.no_proxy != null ? join(",", var.no_proxy) : null
             TFE_HOSTNAME                  = var.hostname
             TFE_HTTP_PORT                 = var.http_port
             TFE_HTTPS_PORT                = var.https_port
