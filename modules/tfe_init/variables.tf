@@ -56,6 +56,11 @@ variable "docker_compose_yaml" {
   description = "The yaml encoded contents of what make up a docker compose file, to be run with docker compose in the user data script"
 }
 
+variable "docker_version_rhel" {
+  default     = "24.0.2"
+  description = "When you run `yum list docker-ce --showduplicates | sort -r`, the version comes from the center column. All you need is the format major.minor.patch format."
+}
+
 variable "enable_monitoring" {
   default     = null
   type        = bool

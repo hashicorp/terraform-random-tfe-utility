@@ -10,7 +10,6 @@ ${install_monitoring_agents}
 log_pathname="/var/log/startup.log"
 
 %{ if cloud == "google" && distribution == "rhel" ~}
-
 echo "[Terraform Enterprise] Patching GCP Yum repo configuration" | tee -a $log_pathname
 # workaround for GCP RHEL 7 known issue 
 # https://cloud.google.com/compute/docs/troubleshooting/known-issues#keyexpired
@@ -93,9 +92,13 @@ if [ -f "$ca_cert_filepath" ]
 then
 %{ if distribution == "rhel" ~}
 update-ca-trust
+system_ca_certificate_file="/etc/pki/tls/certs/ca-bundle.crt"
 %{ else ~}
 update-ca-certificates
+system_ca_certificate_file="/etc/ssl/certs/ca-certificates.crt"
 %{ endif ~}
+cp $ca_cert_filepath ${tls_bootstrap_ca_pathname}
+tr -d "\\r" < "$ca_cert_filepath" >> "$system_ca_certificate_file"
 fi
 
 %{ if cloud == "azurerm" && distribution == "rhel" ~}
@@ -138,9 +141,24 @@ install_monitoring_agents $log_pathname
 
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing Docker Engine from Repository" | tee -a $log_pathname
 %{ if distribution == "rhel" ~}
+/bin/cat <<EOF > /etc/yum/pluginconf.d/subscription-manager.conf
+[main]
+enabled=0
+EOF
 yum install --assumeyes yum-utils
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-yum install --assumeyes docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+os_release=$(cat /etc/os-release | grep VERSION_ID | sed "s/VERSION_ID=\"\(.*\)\"/\1/g")
+if (( $(echo "$os_release < 8.0" | bc -l ) )); then
+/bin/cat <<EOF >>/etc/yum.repos.d/docker-ce.repo
+[centos-extras]
+name=Centos extras - \$basearch
+baseurl=http://mirror.centos.org/centos/7/extras/x86_64
+enabled=1
+gpgcheck=1
+gpgkey=http://centos.org/keys/RPM-GPG-KEY-CentOS-7
+EOF
+fi
+yum install --assumeyes docker-ce-${docker_version} docker-ce-cli-${docker_version} containerd.io docker-buildx-plugin docker-compose-plugin
 systemctl start docker
 %{ else ~}
 curl --noproxy '*' --fail --silent --show-error --location https://download.docker.com/linux/ubuntu/gpg \
@@ -160,14 +178,16 @@ docker login -u="${registry_username}" -p="${registry_password}" quay.io
 
 export HOST_IP=$(hostname -i)
 
-cat > /etc/tfe/compose.yaml <<EOF
+tfe_dir="/etc/tfe"
+mkdir -p $tfe_dir
+
+cat > $tfe_dir/compose.yaml <<EOF
 ${compose}
 EOF
 
 docker compose -f /etc/tfe/compose.yaml up -d
 
 %{ if distribution == "rhel" && cloud != "google" ~}
-os_release=$(cat /etc/os-release | grep VERSION_ID | sed "s/VERSION_ID=\"\(.*\)\"/\1/g")
 if (( $(echo "$os_release < 8.0" | bc -l ) )); then
   echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
   setenforce 0

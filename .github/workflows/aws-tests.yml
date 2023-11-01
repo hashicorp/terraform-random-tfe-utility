@@ -86,6 +86,27 @@ on:
         default: ""
         type: string
 
+      aws_access_key_id:
+        description: |-
+          The access key ID of the AWS credentials used to authenticate into
+          and proxy tests from the TFE instance.
+        required: false
+        type: string
+
+      aws_secret_access_key:
+        description: |-
+          The secret access key of the AWS credentials used to authenticate
+          into and proxy tests from the TFE instance.
+        required: false
+        type: string
+
+      aws_role_to_assume:
+        description: |-
+          The role to assume for the AWS credentials used to authenticate
+          into and proxy tests from the TFE instance.
+        required: false
+        type: string
+
 jobs:
   execute_aws_tests:
     runs-on: ubuntu-latest
@@ -180,7 +201,6 @@ jobs:
       - name: Write GitHub Actions runner CIDR to Terraform Variables
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
-          echo "iact_subnet_list = [\"$( dig +short @resolver1.opendns.com myip.opendns.com )/32\"]" >> github.auto.tfvars
           echo "is_replicated_deployment = ${{ inputs.is_replicated_deployment }}" >> github.auto.tfvars
 
       - name: Terraform Targeted Pre-Apply
@@ -199,31 +219,28 @@ jobs:
       - name: Retrieve Health Check URL
         id: retrieve-health-check-url
         working-directory: ${{ env.WORK_DIR_PATH }}
-        run: |
-          terraform output -no-color -raw health_check_url
+        run: echo "HEALTH_CHECK_URL=$(terraform output -no-color -raw health_check_url)" >> $GITHUB_ENV
 
       - name: Retrieve Instance ID
         if: ${{ inputs.ssh_private_key_secret_name != '' }}
         id: retrieve-instance-id
         working-directory: ${{ env.WORK_DIR_PATH }}
-        run: |
-          terraform output -no-color -raw proxy_instance_id
+        run: echo "INSTANCE_ID=$(terraform output -no-color -raw proxy_instance_id)" >> $GITHUB_ENV
 
       - name: Configure AWS Credentials
         if: ${{ inputs.ssh_private_key_secret_name != '' }}
         uses: aws-actions/configure-aws-credentials@8c3f20df09ac63af7b3ae3d7c91f105f857d8497 # v4.0.0
         with:
-          aws-access-key-id: ${{ secrets.AWS_PRIVATE_TCP_ACTIVE_ACTIVE_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_PRIVATE_TCP_ACTIVE_ACTIVE_AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets[inputs.aws_access_key_id] }}
+          aws-secret-access-key: ${{ secrets[inputs.aws_secret_access_key] }}
           aws-region: us-east-2
-          role-to-assume: ${{ secrets.AWS_PRIVATE_TCP_ACTIVE_ACTIVE_AWS_ROLE_TO_ASSUME }}
+          role-to-assume: ${{ secrets[inputs.aws_role_to_assume] }}
           role-duration-seconds: 2400
           role-skip-session-tagging: true
 
       - name: Start SOCKS5 Proxy
         if: ${{ inputs.ssh_private_key_secret_name != '' }}
-        env:
-          INSTANCE_ID: ${{ steps.retrieve-instance-id.outputs.stdout }}
+        working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           aws ec2 wait instance-status-ok --instance-ids "$INSTANCE_ID"
           ssh \
@@ -240,58 +257,47 @@ jobs:
             -f -N -p 22 -D localhost:5000 \
             ubuntu@"$INSTANCE_ID"
 
+      - name: Check for Proxy
+        run: echo "USE_PROXY=${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}" >> $GITHUB_ENV
+
       - name: Wait For TFE
-        id: wait-for-tfe
         timeout-minutes: 20
         run: |
-          use_proxy=${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
+          echo "health_check_endpoint: $HEALTH_CHECK_URL"
           echo "Curling \`health_check_url\` for a return status of 200..."
           while ! curl \
             --connect-timeout 10 \
             -sfS --max-time 5 \
-            $use_proxy \
-            --verbose \
-            ${{ steps.retrieve-health-check-url.outputs.stdout }}; \
+            $USE_PROXY \
+            $HEALTH_CHECK_URL; \
             do sleep 5; done
 
       - name: Retrieve TFE URL
-        id: retrieve-tfe-url
         working-directory: ${{ env.WORK_DIR_PATH }}
-        run: |
-          terraform output -no-color -raw tfe_url
-
-      - name: Retrieve IACT URL
-        id: retrieve-iact-url
-        working-directory: ${{ env.WORK_DIR_PATH }}
-        run: |
-          terraform output -no-color -raw iact_url
+        run: echo "TFE_URL=$(terraform output -no-color -raw tfe_url)" >> $GITHUB_ENV
 
       - name: Retrieve IACT
-        id: retrieve-iact
-        env:
-          IACT_URL: ${{ steps.retrieve-iact-url.outputs.stdout }}
         run: |
-          use_proxy=${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
-          token=$( \
-            curl --fail --retry 5 --verbose \
+          expiration=$(( $( date '+%s' ) + 90 ))
+          sleep_duration=30
+          until token=$(curl --fail --retry 5 \
             --connect-timeout 10 \
-            $use_proxy "$IACT_URL")
-          echo "::set-output name=token::$token"
-
-      - name: Retrieve Initial Admin User URL
-        id: retrieve-initial-admin-user-url
-        working-directory: ${{ env.WORK_DIR_PATH }}
-        run: |
-          terraform output -no-color -raw initial_admin_user_url
+            $USE_PROXY "$TFE_URL/admin/retrieve-iact")
+          do
+            if [ "$( date '+%s' )" -gt "${expiration}" ]
+            then
+                echo -e "\nFailed to retrieve IACT token"
+                exit 1
+            fi
+            echo "Sleeping for ${sleep_duration} seconds and retrying retrieval of IACT token."
+            sleep "${sleep_duration}"
+          done
+          echo "IACT_TOKEN=$token" >> $GITHUB_ENV
 
       - name: Create Admin in TFE
-        id: create-admin
         env:
           TFE_PASSWORD: ${{ secrets.TFE_PASSWORD }}
-          IAU_URL: ${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}
-          IACT_TOKEN: ${{ steps.retrieve-iact.outputs.token }}
         run: |
-          use_proxy=${{ inputs.ssh_private_key_secret_name != '' && '--proxy socks5://localhost:5000' || '' }}
           echo \
             '{"username": "test", "email": "team-tf-enterprise@hashicorp.com", "password": "$TFE_PASSWORD"}' \
             > ./payload.json
@@ -300,32 +306,27 @@ jobs:
             --connect-timeout 10 \
             --fail \
             --retry 5 \
-            --verbose \
             --header 'Content-Type: application/json' \
             --data @./payload.json \
-            $use_proxy \
-            "$IAU_URL"?token="$IACT_TOKEN")
-          echo "::set-output name=response::$response"
+            $USE_PROXY \
+            "$TFE_URL/admin/initial-admin-user"?token="$IACT_TOKEN")
+          echo "RESPONSE=$response" >> $GITHUB_ENV
 
       - name: Retrieve Admin Token
-        id: retrieve-admin-token
-        env:
-          RESPONSE: ${{ steps.create-admin.outputs.response }}
         run: |
           token=$(echo "$RESPONSE" | jq --raw-output '.token')
-          echo "::set-output name=token::$token"
+          echo "TFE_API_TOKEN=$token" >> $GITHUB_ENV
 
       - name: Run k6 Smoke Test
         id: run-smoke-test
         working-directory: ${{ env.K6_WORK_DIR_PATH }}
         env:
           K6_PATHNAME: "./k6"
-          TFE_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}"
-          TFE_API_TOKEN: "${{ steps.retrieve-admin-token.outputs.token }}"
           TFE_EMAIL: team-tf-enterprise@hashicorp.com
           http_proxy: ${{ inputs.ssh_private_key_secret_name != '' && 'socks5://localhost:5000/' || '' }}
           https_proxy: ${{ inputs.ssh_private_key_secret_name != '' && 'socks5://localhost:5000/' || '' }}
         run: |
+          echo "http_proxy: $http_proxy"
           make smoke-test
 
       - name: Terraform Destroy
