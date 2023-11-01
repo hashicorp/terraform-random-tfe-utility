@@ -267,7 +267,7 @@ jobs:
       pull_request_repo_name: ${{ github.event.client_payload.github.payload.repository.full_name }}
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
-      TFC_token_secret_name: UTILITY_STANDALONE_EXTERNAL_RHEL8_WORKER_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_GOOGLE_STANDALONE_EXTERNAL_RHEL8_WORKER_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/google-standalone-external-rhel8-worker/utility-google-standalone-external-rhel8-worker/
       TFC_workspace: utility-google-standalone-external-rhel8-worker
   google_standalone_mounted_disk:
@@ -303,7 +303,7 @@ jobs:
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/active-active-rhel7-proxy
-      TFC_token_secret_name: UTILITY_ACTIVE_ACTIVE_RHEL7_PROXY_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_AWS_ACTIVE_ACTIVE_RHEL7_PROXY_TFC_TOKEN
       TFC_workspace_substitution_pattern: 's/terraform {/terraform {\n\
         backend "remote" {\n\
           organization = "terraform-enterprise-modules-test"\n\
@@ -326,7 +326,7 @@ jobs:
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/private-active-active
-      TFC_token_secret_name: UTILITY_PRIVATE_ACTIVE_ACTIVE_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_AWS_PRIVATE_ACTIVE_ACTIVE_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/aws-private-active-active/utility-aws-private-active-active/
   aws_private_tcp_active_active:
     uses: ./.github/workflows/destroy.yml
@@ -343,7 +343,7 @@ jobs:
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/private-tcp-active-active
-      TFC_token_secret_name: UTILITY_PRIVATE_TCP_ACTIVE_ACTIVE_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_AWS_PRIVATE_TCP_ACTIVE_ACTIVE_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/aws-private-tcp-active-active/utility-aws-private-tcp-active-active/
   aws_public_active_active:
     uses: ./.github/workflows/destroy.yml
@@ -360,7 +360,7 @@ jobs:
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/public-active-active
-      TFC_token_secret_name: UTILITY_PUBLIC_ACTIVE_ACTIVE_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_AWS_PUBLIC_ACTIVE_ACTIVE_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/aws-public-active-active/utility-aws-public-active-active/
   aws_standalone_vault:
     uses: ./.github/workflows/destroy.yml
@@ -377,7 +377,7 @@ jobs:
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/standalone-vault
-      TFC_token_secret_name: UTILITY_STANDALONE_VAULT_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_AWS_STANDALONE_VAULT_TFC_TOKEN
       TFC_workspace_substitution_pattern: 's/terraform {/terraform {\n\
         backend "remote" {\n\
           organization = "terraform-enterprise-modules-test"\n\
@@ -401,7 +401,7 @@ jobs:
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/active-active-rhel7-proxy
-      TFC_token_secret_name: UTILITY_ACTIVE_ACTIVE_RHEL7_PROXY_REPLICATED_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_AWS_ACTIVE_ACTIVE_RHEL7_PROXY_REPLICATED_TFC_TOKEN
       TFC_workspace_substitution_pattern: 's/terraform {/terraform {\n\
         backend "remote" {\n\
           organization = "terraform-enterprise-modules-test"\n\
@@ -424,7 +424,7 @@ jobs:
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/public-active-active
-      TFC_token_secret_name: UTILITY_PUBLIC_ACTIVE_ACTIVE_REPLICATED_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_AWS_PUBLIC_ACTIVE_ACTIVE_REPLICATED_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/aws-public-active-active/utility-aws-public-active-active-replicated/
   aws_private_active_active_replicated:
     uses: ./.github/workflows/destroy.yml
@@ -441,7 +441,7 @@ jobs:
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/private-active-active
-      TFC_token_secret_name: UTILITY_PRIVATE_ACTIVE_ACTIVE_REPLICATED_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_AWS_PRIVATE_ACTIVE_ACTIVE_REPLICATED_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/aws-private-active-active/utility-aws-private-active-active-replicated/
   aws_private_tcp_active_active_replicated:
     uses: ./.github/workflows/destroy.yml
@@ -458,7 +458,7 @@ jobs:
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/private-tcp-active-active
-      TFC_token_secret_name: UTILITY_PRIVATE_TCP_ACTIVE_ACTIVE_REPLICATED_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_AWS_PRIVATE_TCP_ACTIVE_ACTIVE_REPLICATED_TFC_TOKEN
       TFC_workspace_substitution_pattern: s/aws-private-tcp-active-active/utility-aws-private-tcp-active-active-replicated/
   aws-standalone_vault_replicated:
     uses: ./.github/workflows/destroy.yml
@@ -475,7 +475,7 @@ jobs:
       pull_request_ref: ${{ github.event.client_payload.pull_request.head.sha }}
       pull_request_comment_id: ${{ github.event.client_payload.github.payload.comment.id }}
       work_dir: ./tests/standalone-vault
-      TFC_token_secret_name: UTILITY_STANDALONE_VAULT_REPLICATED_TFC_TOKEN
+      TFC_token_secret_name: UTILITY_AWS_STANDALONE_VAULT_REPLICATED_TFC_TOKEN
       TFC_workspace_substitution_pattern: 's/terraform {/terraform {\n\
         backend "remote" {\n\
           organization = "terraform-enterprise-modules-test"\n\
