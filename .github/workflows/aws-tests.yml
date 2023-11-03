@@ -3,7 +3,6 @@ name: AWS Test Harness
 on:
   workflow_call:
     inputs:
-      # Configuration Flags #
       test_name:
         description: |-
           The name for this test run. eg: 'Public Active/Active'
@@ -24,8 +23,6 @@ on:
         required: false
         type: string
         default: ''
-
-        # Pull Request / Repo Identifiers #
       module_repository_id:
         description: |-
           For utility module tests, what is the source module repo for this test? 
@@ -49,8 +46,6 @@ on:
           relevent to both utility module changes and non-utility module changes.
         required: true
         type: string
-      
-      # General Job Configuration #
       work_dir:
         description: "The directory in which tests are executed"
         required: true
@@ -59,15 +54,12 @@ on:
         description: "The directory in which k6 is installed"
         required: true
         type: string
-      
-      # TFC Workspace Configuration #
       TFC_token_secret_name:
         description: |- 
           The id of the github secret that contains the TFC token for the tfc
           workspace for this test.
         required: true
         type: string
-  
       TFC_workspace_substitution_pattern:
         description: |- 
           The sed supstitution pattern used to retarget this test to another TFC
@@ -76,8 +68,6 @@ on:
         required: false
         type: string
         default: ""
-
-      # Target system SSH configuration #
       ssh_private_key_secret_name:
         description: |-
           The github secret name for a Base64 encoded private certificate used
@@ -85,21 +75,18 @@ on:
         required: false
         default: ""
         type: string
-
       aws_access_key_id:
         description: |-
           The access key ID of the AWS credentials used to authenticate into
           and proxy tests from the TFE instance.
         required: false
         type: string
-
       aws_secret_access_key:
         description: |-
           The secret access key of the AWS credentials used to authenticate
           into and proxy tests from the TFE instance.
         required: false
         type: string
-
       aws_role_to_assume:
         description: |-
           The role to assume for the AWS credentials used to authenticate
@@ -109,6 +96,7 @@ on:
 
 jobs:
   execute_aws_tests:
+    name: Test
     runs-on: ubuntu-latest
     permissions:
       contents: read
