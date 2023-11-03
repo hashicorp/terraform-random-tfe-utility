@@ -574,7 +574,7 @@ jobs:
     uses: ./.github/workflows/destroy.yml
     secrets: inherit
     name: AWS Standalone Vault - Replicated
-    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-public-active-active-replicated' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
+    if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-standalone-vault-replicated' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       cloud: AWS
       test_name: Standalone Vault
