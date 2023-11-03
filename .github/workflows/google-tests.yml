@@ -82,7 +82,7 @@ env:
 
 jobs:
   execute_google_tests:
-    name: Test
+    name: ${{ inputs.is_replicated_deployment && 'Replicated' || 'FDO' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read

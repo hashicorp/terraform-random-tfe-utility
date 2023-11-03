@@ -83,7 +83,7 @@ on:
 
 jobs:
   execute_azure_tests:
-    name: Run tf-test on Azure infrastructure
+    name: ${{ inputs.is_replicated_deployment && 'Replicated' || 'FDO' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
