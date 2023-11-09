@@ -180,12 +180,11 @@ jobs:
         run: terraform validate -no-color
 
       - name: Write Terraform Variables
-        if: ${{ inputs.enable_iact_subnet_list }} 
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           ip_address=$( dig +short @resolver1.opendns.com myip.opendns.com )
           cat <<EOF > github.auto.tfvars
-          iact_subnet_list = ["$ip_address/32"]
+          ${{ inputs.enable_iact_subnet_list && 'iact_subnet_list = ["$ip_address/32"]' || '' }}
           is_replicated_deployment = ${{ inputs.is_replicated_deployment }}
           EOF
           
