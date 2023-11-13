@@ -3,9 +3,6 @@ name: Google Test Harness
 on:
   workflow_call:
     inputs:
-      #######################
-      # Configuration Flags #
-      #######################
       test_name:
         description: |-
           The name for this test run. eg: 'Public Active/Active'
@@ -15,6 +12,11 @@ on:
         description: "Is this test run being executed from the utility repo?"
         type: boolean
         required: false
+        default: false
+      is_replicated_deployment:
+        description: "Is this test scenario using Replicated to deploy TFE?"
+        type: boolean
+        required: true
         default: false
       enable_iact_subnet_list:
         description: "Do you want to enable ssh from GHA agent to TFE?"
@@ -26,10 +28,6 @@ on:
         type: boolean
         required: false
         default: false
-        
-      ###################################
-      # Pull Request / Repo Identifiers #
-      ###################################
       module_repository_id:
         description: |-
           For utility module tests, what is the source module repo for this test? 
@@ -53,10 +51,6 @@ on:
           relevent to both utility module changes and non-utility module changes.
         required: true
         type: string
-      
-      #############################
-      # General Job Configuration #
-      #############################
       work_dir:
         description: "The directory in which tests are executed"
         required: true
@@ -65,17 +59,12 @@ on:
         description: "The directory in which k6 is installed"
         required: true
         type: string
-      
-      ###############################
-      # TFC Workspace Configuration #
-      ###############################
       TFC_token_secret_name:
         description: |- 
           The id of the github secret that contains the TFC token for the tfc
           workspace for this test.
         required: true
         type: string
-  
       TFC_workspace_substitution_pattern:
         description: |- 
           The sed supstitution pattern used to retarget this test to another TFC
@@ -84,10 +73,6 @@ on:
         required: false
         type: string
         default: ""
-      TFC_workspace:
-        description: "TFC workspace"
-        type: string
-        required: false
 
 env:
   GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
@@ -97,7 +82,7 @@ env:
 
 jobs:
   execute_google_tests:
-    name: Run tf-test on some google infrastructure
+    name: ${{ inputs.is_replicated_deployment && 'Replicated' || 'FDO' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -110,10 +95,6 @@ jobs:
         id: vars
         run: echo ::set-output name=run-url::https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
       
-      ###################
-      # Module Checkout #
-      ###################
-
       # If this is not a utility module test, check out the pull request under
       # test in the module repo.
       - name: Checkout
@@ -146,9 +127,6 @@ jobs:
         run: |
           sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
 
-      #################################
-      # Load Test Repository Checkout #
-      #################################
       - name: Checkout TFE Load Test
         uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
         with:
@@ -176,7 +154,7 @@ jobs:
         with:
           project_id: ${{ secrets.GOOGLE_PROJECT }}
       
-      - name: increasing_the_tcp_upload_bandwidth
+      - name: Increase the TCP upload bandwidth
         id: increasing_the_tcp_upload_bandwidth
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
@@ -191,9 +169,6 @@ jobs:
           terraform_version: 1.1.5
           terraform_wrapper: true
 
-      #################
-      # Run Terraform #
-      #################
       - name: Terraform Init
         id: init
         working-directory: ${{ env.WORK_DIR_PATH }}
@@ -205,22 +180,18 @@ jobs:
         run: terraform validate -no-color
 
       - name: Write Terraform Variables
-        if: ${{ inputs.enable_iact_subnet_list }} 
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: |
           ip_address=$( dig +short @resolver1.opendns.com myip.opendns.com )
           cat <<EOF > github.auto.tfvars
-          iact_subnet_list = ["$ip_address/32"]
+          ${{ inputs.enable_iact_subnet_list && 'iact_subnet_list = ["$ip_address/32"]' || '' }}
+          is_replicated_deployment = ${{ inputs.is_replicated_deployment }}
           EOF
           
       - name: Terraform Apply
         id: apply
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: terraform apply -auto-approve -input=false -no-color
-
-      ################
-      # Run K6 tests #
-      ################
 
       - name: Retrieve Health Check URL
         id: retrieve-health-check-url
@@ -260,41 +231,21 @@ jobs:
         run: |
           terraform output -no-color -raw initial_admin_user_url
 
-      - name: Run k6 Smoke Test - Private
-        if: ${{ inputs.private_test }}
-        id: run-smoke-test-private
-        working-directory: ${{ env.WORK_DIR_PATH }}
-        env:
-          K6_PATHNAME: "./k6"
-          TFE_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}"
-          HEALTHCHECK_URL: "${{ steps.retrieve-health-check-url.outputs.stdout }}"
-          PROXY_ZONE: "${{ steps.retrieve-instance-zone.outputs.stdout }}"
-          PROXY_INSTANCE: "${{ steps.retrieve-instance-name.outputs.stdout }}"
-          IACT_URL: "${{ steps.retrieve-iact-url.outputs.stdout }}"
-          IAU_URL: "${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}"
-        run: |
-          command="bash ./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }}"
-          echo $command
-          eval $command
-
       - name: Run k6 Smoke Test
-        if: ${{ !(inputs.private_test) }}
         id: run-smoke-test
         working-directory: ${{ env.WORK_DIR_PATH }}
         env:
           K6_PATHNAME: "./k6"
           TFE_URL: "${{ steps.retrieve-tfe-url.outputs.stdout }}"
           HEALTHCHECK_URL: "${{ steps.retrieve-health-check-url.outputs.stdout }}"
+          PROXY_ZONE: ${{ inputs.private_test && steps.retrieve-instance-zone.outputs.stdout || '' }}
+          PROXY_INSTANCE: ${{ inputs.private_test && steps.retrieve-instance-name.outputs.stdout || '' }}
           IACT_URL: "${{ steps.retrieve-iact-url.outputs.stdout }}"
           IAU_URL: "${{ steps.retrieve-initial-admin-user-url.outputs.stdout }}"
         run: |
           command="bash ./run-tests.sh -k ./k6 -t ../../${{ env.K6_WORK_DIR_PATH }}"
           echo $command
           eval $command
-
-      ##################
-      # Clean up infra #
-      ##################
 
       - name: Terraform Destroy
         id: destroy
@@ -302,41 +253,15 @@ jobs:
         working-directory: ${{ env.WORK_DIR_PATH }}
         run: terraform destroy -auto-approve -input=false -no-color
 
-      #####################
-      # Update PR Comment #
-      #####################
-
       - name: Update comment
-        if: ${{ always() && inputs.private_test == 'true' }}
+        if: ${{ always() }}
         uses: peter-evans/create-or-update-comment@c6c9a1a66007646a28c153e2a8580a5bad27bcfa # v3.0.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ inputs.pull_request_repo_name }}
           comment-id: ${{ inputs.pull_request_comment_id }}
           body: |
-            ${{ format('### {0} Terraform Google {1} Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name) }}
-
-            ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
-
-            ${{ format('- {0} Terraform Init', steps.init.outcome == 'success' && ':white_check_mark:' || ':x:') }}
-
-            ${{ format('- {0} Terraform Validate', steps.validate.outcome == 'success' && ':white_check_mark:' || ':x:') }}
-
-            ${{ format('- {0} Terraform Apply', steps.apply.outcome == 'success' && ':white_check_mark:' || ':x:') }}
-
-            ${{ format('- {0} Run k6 Smoke Test', steps.run-smoke-test-private.outcome == 'success' && ':white_check_mark:' || ':x:') }}
-
-            ${{ github.event.client_payload.slash_command.args.named.destroy != 'false' && format('- {0} Terraform Destroy', steps.destroy.outcome == 'success' && ':white_check_mark:' || ':x:') || '' }}
-
-      - name: Update comment
-        if: ${{ always() && inputs.private_test != 'true' }}
-        uses: peter-evans/create-or-update-comment@c6c9a1a66007646a28c153e2a8580a5bad27bcfa # v3.0.2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ inputs.pull_request_repo_name }}
-          comment-id: ${{ inputs.pull_request_comment_id }}
-          body: |
-            ${{ format('### {0} Terraform Google {1} Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name) }}
+            ${{ format('### {0} Terraform Google {1} ({2}) - Test Report', job.status == 'success' && ':white_check_mark:' || ':x:', inputs.test_name, inputs.is_replicated_deployment && 'Legacy' || 'FDO') }}
 
             ${{ format(':link: [Action Summary Page]({0})', steps.vars.outputs.run-url) }}
 

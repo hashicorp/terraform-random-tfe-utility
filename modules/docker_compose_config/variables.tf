@@ -70,6 +70,18 @@ variable "database_user" {
   description = "PostgreSQL user. Required when TFE_OPERATIONAL_MODE is external or active-active."
 }
 
+variable "http_port" {
+  default     = null
+  type        = number
+  description = "Port application listens on for HTTP. Default is 80."
+}
+
+variable "https_port" {
+  default     = null
+  type        = number
+  description = "Port application listens on for HTTPS. Default is 443."
+}
+
 variable "iact_subnets" {
   type        = string
   description = "Comma-separated list of subnets in CIDR notation that are allowed to retrieve the initial admin creation token via the API (e.g. 10.0.0.0/8,192.168.0.0/24). Leave blank to disable retrieving the initial admin creation token via the API from outside the host. Defaults to \"\" if no value is given."
@@ -103,6 +115,18 @@ variable "hostname" {
   description = "Hostname where Terraform Enterprise is accessed (e.g. terraform.example.com)."
 }
 
+variable "http_proxy" {
+  type        = string
+  description = "(Optional) The IP address and port of existing web proxy to route TFE http traffic through."
+  default     = null
+}
+
+variable "https_proxy" {
+  type        = string
+  description = "(Optional) The IP address and port of existing web proxy to route TFE https traffic through."
+  default     = null
+}
+
 variable "license_reporting_opt_out" {
   type        = bool
   description = "Whether to opt out of reporting licensing information to HashiCorp. Defaults to false if no value is given."
@@ -111,6 +135,12 @@ variable "license_reporting_opt_out" {
 variable "key_file" {
   type        = string
   description = "Path to a file containing the TLS private key Terraform Enterprise will use when serving TLS connections to clients."
+}
+
+variable "no_proxy" {
+  type        = list(string)
+  description = "(Optional) List of IP addresses to not proxy"
+  default     = []
 }
 
 variable "operational_mode" {
@@ -126,6 +156,7 @@ variable "operational_mode" {
     error_message = "Supported values for operational_mode are 'disk', 'external', and 'active-active'."
   }
 }
+
 variable "redis_host" {
   type        = string
   description = "The Redis server to connect to in the format HOST[:PORT] (e.g. redis.example.com or redis.example.com:). If only HOST is provided then the :PORT defaults to :6379 if no value is given. Required when TFE_OPERATIONAL_MODE is active-active."
@@ -225,6 +256,7 @@ variable "tfe_license" {
 }
 
 variable "tls_ca_bundle_file" {
+  default     = null
   type        = string
   description = "Path to a file containing TLS CA certificates to be added to the OS CA certificates bundle. Leave blank to not add CA certificates to the OS CA certificates bundle. Defaults to \"\" if no value is given."
 }
@@ -242,10 +274,17 @@ variable "tls_version" {
     condition = (
       var.tls_version == null ||
       var.tls_version == "tls_1_2" ||
-      var.tls_version == "tls_1_3"
+      var.tls_version == "tls_1_3" ||
+      var.tls_version == "tls_1_2_tls_1_3"
     )
     error_message = "The tls_version value must be 'tls_1_2', 'tls_1_3', or null."
   }
+}
+
+variable "trusted_proxies" {
+  default     = []
+  description = "A list of IP address ranges which will be considered safe to ignore when evaluating the IP addresses of requests like those made to the IACT endpoint."
+  type        = list(string)
 }
 
 variable "vault_address" {
