@@ -441,7 +441,7 @@ jobs:
   aws_active_active_rhel7_proxy:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
-    name: AWS Active-Active RHEL7 Proxy
+    name: AWS Active/Active RHEL7 Proxy
     if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-active-active-rhel7-proxy' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Active/Active RHEL7 Proxy
@@ -465,7 +465,7 @@ jobs:
   aws_private_active_active:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
-    name: AWS Private Active-Active
+    name: AWS Private Active/Active
     if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-private-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Private Active/Active
@@ -483,7 +483,7 @@ jobs:
   aws_private_tcp_active_active:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
-    name: AWS Private TCP Active-Active
+    name: AWS Private TCP Active/Active
     if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-private-tcp-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Private TCP Active/Active
@@ -501,7 +501,7 @@ jobs:
   aws_public_active_active:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
-    name: AWS Public Active-Active
+    name: AWS Public Active/Active
     if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-public-active-active' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Public Active/Active
@@ -544,7 +544,7 @@ jobs:
   aws_active_active_rhel7_proxy_replicated:
     uses: ./.github/workflows/aws-tests.yml
     secrets: inherit
-    name: AWS Active-Active RHEL7 Proxy
+    name: AWS Active/Active RHEL7 Proxy
     if: ${{ github.event.client_payload.slash_command.args.unnamed.all == 'all' || github.event.client_payload.slash_command.args.unnamed.all == 'aws-active-active-rhel7-proxy-replicated' || github.event.client_payload.slash_command.args.unnamed.all == 'full-aws' }}
     with:
       test_name: Active/Active RHEL7 Proxy
