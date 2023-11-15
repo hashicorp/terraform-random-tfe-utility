@@ -79,7 +79,7 @@ locals {
             target = "/var/cache/tfe-task-worker/terraform"
           },
           local.disk ? [{
-            type   = "volume"
+            type   = "bind"
             source = var.disk_path
             target = "/var/lib/terraform-enterprise"
           }] : [],
