@@ -70,6 +70,12 @@ variable "database_user" {
   description = "PostgreSQL user. Required when TFE_OPERATIONAL_MODE is external or active-active."
 }
 
+variable "disk_path" {
+  default     = null
+  description = "The pathname of the directory in which Terraform Enterprise will store data in Mounted Disk mode."
+  type        = string
+}
+
 variable "http_port" {
   default     = null
   type        = number
