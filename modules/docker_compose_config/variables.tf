@@ -72,7 +72,7 @@ variable "database_user" {
 
 variable "disk_path" {
   default     = null
-  description = "The pathname of the directory in which Terraform Enterprise will store data in Mounted Disk mode."
+  description = "The pathname of the directory in which Terraform Enterprise will store data in Mounted Disk mode. Required when var.operational_mode is 'disk'."
   type        = string
 }
 
