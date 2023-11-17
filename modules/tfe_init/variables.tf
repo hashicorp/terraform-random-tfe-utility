@@ -97,14 +97,20 @@ variable "proxy_port" {
   description = "Port that the proxy server will use"
 }
 
-variable "registry_username" {
+variable "registry" {
   default     = null
-  description = "The username for the docker registry from which to pull the terraform_enterprise container images."
   type        = string
+  description = "The docker registry from which to source the terraform_enterprise container images."
 }
 
 variable "registry_password" {
   default     = null
   description = "The password for the docker registry from which to pull the terraform_enterprise container images."
+  type        = string
+}
+
+variable "registry_username" {
+  default     = null
+  description = "The username for the docker registry from which to pull the terraform_enterprise container images."
   type        = string
 }
