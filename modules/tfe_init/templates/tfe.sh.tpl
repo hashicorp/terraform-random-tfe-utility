@@ -174,7 +174,7 @@ apt-get --assume-yes autoremove
 
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing TFE FDO" | tee -a $log_pathname
 hostname > /var/log/tfe-fdo.log
-docker login -u="${registry_username}" -p="${registry_password}" quay.io
+docker login -u="${registry_username}" -p="${registry_password}" ${registry}
 
 export HOST_IP=$(hostname -i)
 

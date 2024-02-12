@@ -267,8 +267,8 @@ jobs:
       - name: Retrieve IACT
         run: |
           expiration=$(( $( date '+%s' ) + 90 ))
-          sleep_duration=30
-          until token=$(curl --fail --retry 5 \
+          sleep_duration=60
+          until token=$(curl --fail --retry 10 \
             --connect-timeout 10 \
             $USE_PROXY "$TFE_URL/admin/retrieve-iact")
           do
