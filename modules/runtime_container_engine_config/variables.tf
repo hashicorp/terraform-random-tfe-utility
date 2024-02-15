@@ -143,6 +143,11 @@ variable "key_file" {
   description = "Path to a file containing the TLS private key Terraform Enterprise will use when serving TLS connections to clients."
 }
 
+variable "metrics_enabled" {
+  type        = bool
+  description = "Whether to enable the metrics service and expose the port to the host."
+}
+
 variable "no_proxy" {
   type        = list(string)
   description = "(Optional) List of IP addresses to not proxy"
