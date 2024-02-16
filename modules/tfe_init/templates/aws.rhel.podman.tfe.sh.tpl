@@ -102,7 +102,17 @@ install_monitoring_agents $log_pathname
 
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing Podman" | tee -a $log_pathname
 
-dnf install -y container-tools
+if grep -q -i "release 9" /etc/redhat-release
+then
+	dnf install -y container-tools
+elif grep -q -i "release 8" /etc/redhat-release
+then
+	dnf module install -y container-tools
+  dnf install -y podman-docker
+else
+  dnf module install -y container-tools
+  dnf install -y podman-docker
+fi
 systemctl enable --now podman.socket
 
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing TFE FDO" | tee -a $log_pathname
