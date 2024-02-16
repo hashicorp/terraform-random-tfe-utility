@@ -10,12 +10,12 @@ locals {
   user_data_template = {
     aws = {
       ubuntu = {
-        docker = "${path.module}/templates/azurerm.ubuntu.docker.tfe.sh.tpl",
+        docker = "${path.module}/templates/aws.ubuntu.docker.tfe.sh.tpl",
         podman = null
       },
       rhel = {
-        docker = "${path.module}/templates/azurerm.rhel.docker.tfe.sh.tpl",
-        podman = "${path.module}/templates/azurerm.rhel.podman.tfe.sh.tpl"
+        docker = "${path.module}/templates/aws.rhel.docker.tfe.sh.tpl",
+        podman = "${path.module}/templates/aws.rhel.podman.tfe.sh.tpl"
       }
     },
     azurerm = {
