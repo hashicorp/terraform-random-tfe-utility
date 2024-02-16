@@ -121,7 +121,10 @@ locals {
             hostPort      = 443
           },
           local.active_active ? [{ containerPort = 8201, hostPort = 8201 }] : [],
-          var.metrics_enabled ? [{ containerPort = 9090, hostPort = 9090 }] : []
+          var.metrics_endpoint_enabled ? [
+            { containerPort = 9090, hostPort = var.metrics_endpoint_port_http },
+            { containerPort = 9091, hostPort = var.metrics_endpoint_port_https }
+          ] : []
         ])
         securityContext = {
           capabilities = {
