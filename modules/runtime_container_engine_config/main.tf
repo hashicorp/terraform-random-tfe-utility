@@ -60,8 +60,8 @@ locals {
           "443:${var.https_port}",
           local.active_active ? ["8201:8201"] : [],
           var.metrics_endpoint_enabled ? [
-            "${var.var.metrics_endpoint_port_http}:9090",
-            "${var.var.metrics_endpoint_port_https}:9091"
+            "${var.metrics_endpoint_port_http}:9090",
+            "${var.metrics_endpoint_port_https}:9091"
           ] : []
         ])
 
