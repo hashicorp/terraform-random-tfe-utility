@@ -120,7 +120,7 @@ tfe_dir="/etc/tfe"
 mkdir -p $tfe_dir
 
 cat > $tfe_dir/compose.yaml <<EOF
-${compose}
+${docker_compose}
 EOF
 
 docker compose -f /etc/tfe/compose.yaml up -d

@@ -122,7 +122,7 @@ tfe_dir="/etc/tfe"
 mkdir -p $tfe_dir
 
 cat > $tfe_dir/tfe.yaml <<EOF
-${kube}
+${podman_kube_config}
 EOF
 
 cat > $tfe_dir/auth.json <<EOF
