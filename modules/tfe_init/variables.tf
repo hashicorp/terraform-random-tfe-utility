@@ -23,6 +23,16 @@ variable "cloud" {
   }
 }
 
+variable "container_runtime_engine" {
+  default     = "docker"
+  type        = string
+  description = "The container runtime engine to run the FDO container on. Default is docker."
+  validation {
+    condition     = contains(["docker", "podman"], var.container_runtime_engine)
+    error_message = "Supported values for container_runtime_enginer are docker and podman."
+  }
+}
+
 variable "custom_image_tag" {
   default     = null
   type        = string
@@ -85,6 +95,11 @@ variable "operational_mode" {
   description = "A special string to control the operational mode of Terraform Enterprise. Valid values are: 'external' for External Services mode; 'disk' for Mounted Disk mode; 'active-active' for Active/Active mode."
 }
 
+variable "podman_kube_yaml" {
+  default     = null
+  description = "The yaml encoded contents of what makes up a podman kube yaml file, to be run with podman play kube in the user data script"
+}
+
 variable "proxy_ip" {
   default     = null
   type        = string
@@ -113,4 +128,9 @@ variable "registry_username" {
   default     = null
   description = "The username for the docker registry from which to pull the terraform_enterprise container images."
   type        = string
+}
+
+variable "tfe_image" {
+  type        = string
+  description = "The registry path, image name, and image version (e.g. \"quay.io/hashicorp/terraform-enterprise:1234567\")"
 }

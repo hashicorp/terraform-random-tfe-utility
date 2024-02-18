@@ -9,27 +9,11 @@ ${install_monitoring_agents}
 
 log_pathname="/var/log/startup.log"
 
-%{ if cloud == "google" && distribution == "rhel" ~}
-echo "[Terraform Enterprise] Patching GCP Yum repo configuration" | tee -a $log_pathname
-# workaround for GCP RHEL 7 known issue 
-# https://cloud.google.com/compute/docs/troubleshooting/known-issues#keyexpired
-sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
-%{ endif ~}
-
 install_packages $log_pathname
 
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
 sudo curl --noproxy '*' -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
 sudo chmod +x /bin/jq
-
-%{ if cloud == "google" ~}
-docker_directory="/etc/docker"
-echo "[Terraform Enterprise] Creating Docker directory at '$docker_directory'" | tee -a $log_pathname
-mkdir -p $docker_directory
-docker_daemon_pathname="$docker_directory/daemon.json"
-echo "[Terraform Enterprise] Writing Docker daemon to '$docker_daemon_pathname'" | tee -a $log_pathname
-echo "${docker_config}" | base64 --decode > $docker_daemon_pathname
-%{ endif ~}
 
 %{ if proxy_ip != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure proxy" | tee -a $log_pathname
@@ -73,11 +57,7 @@ chmod 0600 ${tls_bootstrap_key_pathname}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configuration" | tee -a $log_pathname
 %{ endif ~}
 ca_certificate_directory="/dev/null"
-%{ if distribution == "rhel" ~}
-ca_certificate_directory=/usr/share/pki/ca-trust-source/anchors
-%{ else ~}
 ca_certificate_directory=/usr/local/share/ca-certificates/extra
-%{ endif ~}
 ca_cert_filepath="$ca_certificate_directory/tfe-ca-certificate.crt"
 %{ if ca_certificate_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure CA cert" | tee -a $log_pathname
@@ -90,31 +70,11 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configur
 
 if [ -f "$ca_cert_filepath" ]
 then
-%{ if distribution == "rhel" ~}
-update-ca-trust
-system_ca_certificate_file="/etc/pki/tls/certs/ca-bundle.crt"
-%{ else ~}
-update-ca-certificates
-system_ca_certificate_file="/etc/ssl/certs/ca-certificates.crt"
-%{ endif ~}
-cp $ca_cert_filepath ${tls_bootstrap_ca_pathname}
-tr -d "\\r" < "$ca_cert_filepath" >> "$system_ca_certificate_file"
+	update-ca-certificates
+	system_ca_certificate_file="/etc/ssl/certs/ca-certificates.crt"
+	cp $ca_cert_filepath ${tls_bootstrap_ca_pathname}
+	tr -d "\\r" < "$ca_cert_filepath" >> "$system_ca_certificate_file"
 fi
-
-%{ if cloud == "azurerm" && distribution == "rhel" ~}
-echo "[$(date +"%FT%T")] [Terraform Enterprise] Resize RHEL logical volume" | tee -a $log_pathname
-terminal_partition=$(parted --script /dev/disk/cloud/azure_root u s p | tail -2 | head -n 1)
-terminal_partition_number=$(echo $${terminal_partition:0:3} | xargs)
-terminal_partition_link=/dev/disk/cloud/azure_root-part$terminal_partition_number
-# Because Microsoft is publishing only LVM-partitioned images, it is necessary to partition it to the specs that TFE requires.
-# First, extend the partition to fill available space
-growpart /dev/disk/cloud/azure_root $terminal_partition_number
-# Resize the physical volume
-pvresize $terminal_partition_link
-# Then resize the logical volumes to meet TFE specs
-lvresize -r -L 10G /dev/mapper/rootvg-rootlv
-lvresize -r -L 40G /dev/mapper/rootvg-varlv
-%{ endif ~}
 
 %{ if disk_path != null ~}
 device="/dev/${disk_device_name}"
@@ -140,27 +100,6 @@ install_monitoring_agents $log_pathname
 %{ endif ~}
 
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing Docker Engine from Repository" | tee -a $log_pathname
-%{ if distribution == "rhel" ~}
-/bin/cat <<EOF > /etc/yum/pluginconf.d/subscription-manager.conf
-[main]
-enabled=0
-EOF
-yum install --assumeyes yum-utils
-yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-os_release=$(cat /etc/os-release | grep VERSION_ID | sed "s/VERSION_ID=\"\(.*\)\"/\1/g")
-if (( $(echo "$os_release < 8.0" | bc -l ) )); then
-/bin/cat <<EOF >>/etc/yum.repos.d/docker-ce.repo
-[centos-extras]
-name=Centos extras - \$basearch
-baseurl=http://mirror.centos.org/centos/7/extras/x86_64
-enabled=1
-gpgcheck=1
-gpgkey=http://centos.org/keys/RPM-GPG-KEY-CentOS-7
-EOF
-fi
-yum install --assumeyes docker-ce-${docker_version} docker-ce-cli-${docker_version} containerd.io docker-buildx-plugin docker-compose-plugin
-systemctl start docker
-%{ else ~}
 curl --noproxy '*' --fail --silent --show-error --location https://download.docker.com/linux/ubuntu/gpg \
 	| gpg --dearmor --output /usr/share/keyrings/docker-archive-keyring.gpg
 echo \
@@ -170,7 +109,6 @@ echo \
 apt-get --assume-yes update
 apt-get --assume-yes install docker-ce docker-ce-cli containerd.io
 apt-get --assume-yes autoremove
-%{ endif ~}
 
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing TFE FDO" | tee -a $log_pathname
 hostname > /var/log/tfe-fdo.log
@@ -186,25 +124,3 @@ ${docker_compose}
 EOF
 
 docker compose -f /etc/tfe/compose.yaml up -d
-
-%{ if distribution == "rhel" && cloud != "google" ~}
-if (( $(echo "$os_release < 8.0" | bc -l ) )); then
-  echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
-  setenforce 0
-  echo "[$(date +"%FT%T")] [Terraform Enterprise] Add docker0 to firewalld" | tee -a $log_pathname
-  firewall-cmd --permanent --zone=trusted --change-interface=docker0
-  firewall-cmd --reload
-  echo "[$(date +"%FT%T")] [Terraform Enterprise] Enable SELinux" | tee -a $log_pathname
-  setenforce 1
-fi
-%{ endif ~}
-
-%{ if custom_image_tag != null && cloud == "google" ~}
-%{ if length(regexall("^.+-docker\\.pkg\\.dev|^.*\\.?gcr\\.io", custom_image_tag)) > 0 ~}
-echo "[Terraform Enterprise] Registering gcloud as a Docker credential helper" | tee -a
-gcloud auth configure-docker --quiet ${split("/", custom_image_tag)[0]}
-
-%{ endif ~}
-echo "[Terraform Enterprise] Pulling custom worker image '${custom_image_tag}'" | tee -a
-docker pull ${custom_image_tag}
-%{ endif ~}
