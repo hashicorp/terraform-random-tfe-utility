@@ -9,11 +9,24 @@ ${install_monitoring_agents}
 
 log_pathname="/var/log/startup.log"
 
+echo "[Terraform Enterprise] Patching GCP Yum repo configuration" | tee -a $log_pathname
+# workaround for GCP RHEL 7 known issue 
+# https://cloud.google.com/compute/docs/troubleshooting/known-issues#keyexpired
+sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
+
+
 install_packages $log_pathname
 
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
 sudo curl --noproxy '*' -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
 sudo chmod +x /bin/jq
+
+docker_directory="/etc/docker"
+echo "[Terraform Enterprise] Creating Docker directory at '$docker_directory'" | tee -a $log_pathname
+mkdir -p $docker_directory
+docker_daemon_pathname="$docker_directory/daemon.json"
+echo "[Terraform Enterprise] Writing Docker daemon to '$docker_daemon_pathname'" | tee -a $log_pathname
+echo "${docker_config}" | base64 --decode > $docker_daemon_pathname
 
 %{ if proxy_ip != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure proxy" | tee -a $log_pathname
@@ -70,10 +83,10 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configur
 
 if [ -f "$ca_cert_filepath" ]
 then
-	update-ca-trust
-	system_ca_certificate_file="/etc/pki/tls/certs/ca-bundle.crt"
-	cp $ca_cert_filepath ${tls_bootstrap_ca_pathname}
-	tr -d "\\r" < "$ca_cert_filepath" >> "$system_ca_certificate_file"
+  update-ca-trust
+  system_ca_certificate_file="/etc/pki/tls/certs/ca-bundle.crt"
+  cp $ca_cert_filepath ${tls_bootstrap_ca_pathname}
+  tr -d "\\r" < "$ca_cert_filepath" >> "$system_ca_certificate_file"
 fi
 
 %{ if disk_path != null ~}

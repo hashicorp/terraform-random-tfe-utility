@@ -15,7 +15,7 @@ locals {
       },
       rhel = {
         docker = "${path.module}/templates/aws.rhel.docker.tfe.sh.tpl",
-        podman = "${path.module}/templates/aws.rhel.podman.tfe.sh.tpl"
+        podman = "${path.module}/templates/aws.rhel.podman.tfe.sh.tpl",
       }
     },
     azurerm = {
@@ -25,7 +25,7 @@ locals {
       },
       rhel = {
         docker = "${path.module}/templates/azurerm.rhel.docker.tfe.sh.tpl",
-        podman = null
+        podman = "${path.module}/templates/azurerm.rhel.podman.tfe.sh.tpl",
       }
     }
     google = {
@@ -35,7 +35,7 @@ locals {
       },
       rhel = {
         docker = "${path.module}/templates/google.rhel.docker.tfe.sh.tpl",
-        podman = null
+        docker = "${path.module}/templates/google.rhel.podman.tfe.sh.tpl",
       }
     }
   }
