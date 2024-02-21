@@ -70,11 +70,25 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configur
 
 if [ -f "$ca_cert_filepath" ]
 then
-	update-ca-trust
-	system_ca_certificate_file="/etc/pki/tls/certs/ca-bundle.crt"
-	cp $ca_cert_filepath ${tls_bootstrap_ca_pathname}
-	tr -d "\\r" < "$ca_cert_filepath" >> "$system_ca_certificate_file"
+update-ca-trust
+system_ca_certificate_file="/etc/pki/tls/certs/ca-bundle.crt"
+cp $ca_cert_filepath ${tls_bootstrap_ca_pathname}
+tr -d "\\r" < "$ca_cert_filepath" >> "$system_ca_certificate_file"
 fi
+
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Resize RHEL logical volume" | tee -a $log_pathname
+terminal_partition=$(parted --script /dev/disk/cloud/azure_root u s p | tail -2 | head -n 1)
+terminal_partition_number=$(echo $${terminal_partition:0:3} | xargs)
+terminal_partition_link=/dev/disk/cloud/azure_root-part$terminal_partition_number
+# Because Microsoft is publishing only LVM-partitioned images, it is necessary to partition it to the specs that TFE requires.
+# First, extend the partition to fill available space
+growpart /dev/disk/cloud/azure_root $terminal_partition_number
+# Resize the physical volume
+pvresize $terminal_partition_link
+# Then resize the logical volumes to meet TFE specs
+lvresize -r -L 10G /dev/mapper/rootvg-rootlv
+lvresize -r -L 40G /dev/mapper/rootvg-varlv
+
 
 %{ if disk_path != null ~}
 device="/dev/${disk_device_name}"
