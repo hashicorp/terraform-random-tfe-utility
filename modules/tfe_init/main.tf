@@ -35,7 +35,7 @@ locals {
       },
       rhel = {
         docker = "${path.module}/templates/google.rhel.docker.tfe.sh.tpl",
-        docker = "${path.module}/templates/google.rhel.podman.tfe.sh.tpl",
+        podman = "${path.module}/templates/google.rhel.podman.tfe.sh.tpl",
       }
     }
   }
