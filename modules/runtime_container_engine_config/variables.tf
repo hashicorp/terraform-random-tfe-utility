@@ -135,7 +135,14 @@ variable "https_proxy" {
 
 variable "license_reporting_opt_out" {
   type        = bool
+  default     = false
   description = "Whether to opt out of reporting licensing information to HashiCorp. Defaults to false if no value is given."
+}
+
+variable "usage_reporting_opt_out" {
+  type        = bool
+  default     = false
+  description = "Whether to opt out of TFE usage reporting to HashiCorp. Defaults to false if no value is given."
 }
 
 variable "key_file" {

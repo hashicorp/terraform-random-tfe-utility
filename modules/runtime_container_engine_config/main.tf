@@ -24,6 +24,7 @@ locals {
       TFE_ENCRYPTION_PASSWORD       = random_id.enc_password.hex
       TFE_DISK_CACHE_VOLUME_NAME    = "terraform-enterprise_terraform-enterprise-cache"
       TFE_LICENSE_REPORTING_OPT_OUT = var.license_reporting_opt_out
+      TFE_USAGE_REPORTING_OPT_OUT   = var.usage_reporting_opt_out
       TFE_LICENSE                   = var.tfe_license
       TFE_TLS_CA_BUNDLE_FILE        = var.tls_ca_bundle_file != null ? var.tls_ca_bundle_file : null
       TFE_TLS_CERT_FILE             = var.cert_file
