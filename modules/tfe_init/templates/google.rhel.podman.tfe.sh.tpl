@@ -147,4 +147,10 @@ cat > $tfe_dir/auth.json <<EOF
 }
 EOF
 podman pull ${tfe_image} --authfile $tfe_dir/auth.json
-podman play kube $tfe_dir/tfe.yaml
+cat > $tfe_dir/terraform-enterprise.kube <<EOF
+${quadlet_unit}
+EOF
+
+cp $tfe_dir/terraform-enterprise.kube $tfe_dir/tfe.yaml /etc/containers/systemd/
+systemctl daemon-reload
+systemctl start terraform-enterprise.service
