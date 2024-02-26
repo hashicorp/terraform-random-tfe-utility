@@ -148,14 +148,7 @@ cat > $tfe_dir/auth.json <<EOF
 EOF
 podman pull ${tfe_image} --authfile $tfe_dir/auth.json
 cat > $tfe_dir/terraform-enterprise.kube <<EOF
-[Install]
-WantedBy=default.target
-
-[Service]
-Restart=always
-
-[Kube]
-Yaml=tfe.yaml
+${quadlet_unit}
 EOF
 
 cp $tfe_dir/terraform-enterprise.kube $tfe_dir/tfe.yaml /etc/containers/systemd/

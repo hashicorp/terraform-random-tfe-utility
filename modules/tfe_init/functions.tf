@@ -16,4 +16,5 @@ locals {
     distribution      = var.distribution
     enable_monitoring = var.enable_monitoring != null ? var.enable_monitoring : false
   })
+  quadlet_unit = templatefile("${path.module}/templates/terraform-enterprise.kube.tpl")
 }
