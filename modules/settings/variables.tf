@@ -62,9 +62,11 @@ variable "production_type" {
     condition = (
       var.production_type == "external" ||
       var.production_type == "disk" ||
+      var.production_type == "active-active" ||
       var.production_type == null
     )
-    error_message = "The production_type must be 'external', 'disk', or omitted."
+
+    error_message = "The production_type must be 'external', 'disk', `active-active`, or omitted."
   }
 }
 
@@ -163,12 +165,6 @@ variable "bypass_preflight_checks" {
   description = "Allow the TFE application to start without preflight checks; defaults to false."
 }
 
-variable "enable_active_active" {
-  default     = false
-  type        = bool
-  description = "True if TFE running in active-active configuration, which requires an external Redis server. Defaults to false."
-}
-
 variable "hostname" {
   default     = null
   type        = string
@@ -228,25 +224,25 @@ variable "tls_bootstrap_key_pathname" {
 variable "pg_user" {
   default     = null
   type        = string
-  description = "(Required when production_type is 'external') PostgreSQL user to connect as."
+  description = "(Required when production_type is 'external' or 'active-active') PostgreSQL user to connect as."
 }
 
 variable "pg_password" {
   default     = null
   type        = string
-  description = "(Required when production_type is 'external') The password for the PostgreSQL user."
+  description = "(Required when production_type is 'external' or 'active-active') The password for the PostgreSQL user."
 }
 
 variable "pg_netloc" {
   default     = null
   type        = string
-  description = "(Required when production_type is 'external') The hostname and port of the target PostgreSQL server, in the format hostname:port."
+  description = "(Required when production_type is 'external' or 'active-active') The hostname and port of the target PostgreSQL server, in the format hostname:port."
 }
 
 variable "pg_dbname" {
   default     = null
   type        = string
-  description = "(Required when production_type is 'external') The database name"
+  description = "(Required when production_type is 'external' or 'active-active') The database name"
 }
 
 variable "pg_extra_params" {
@@ -261,7 +257,7 @@ variable "pg_extra_params" {
 variable "redis_host" {
   default     = null
   type        = string
-  description = "(Required when enable_active_active is true) Hostname of an external Redis instance which is resolvable from the TFE instance."
+  description = "(Required when production_type is active_active) Hostname of an external Redis instance which is resolvable from the TFE instance."
 }
 
 variable "redis_pass" {

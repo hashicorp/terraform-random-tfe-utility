@@ -97,9 +97,9 @@ locals {
     }
 
     placement = {
-      value = (var.production_type == "external" && var.s3_bucket != null) ? "placement_s3" : (
-        var.production_type == "external" && var.azure_account_name != null) ? "placement_azure" : (
-      var.production_type == "external" && var.gcs_bucket != null) ? "placement_gcs" : null
+      value = ((var.production_type == "external" || var.production_type == "active-active") && var.s3_bucket != null) ? "placement_s3" : (
+      (var.production_type == "external" || var.production_type == "active-active") && var.azure_account_name != null) ? "placement_azure" : (
+      (var.production_type == "external" || var.production_type == "active-active") && var.gcs_bucket != null) ? "placement_gcs" : null
     }
 
     registry_session_encryption_key = {
