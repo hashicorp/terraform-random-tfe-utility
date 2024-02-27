@@ -247,7 +247,13 @@ echo "[Terraform Enterprise] Skipping Airgapped Replicated download" | tee -a $l
 # Install Terraform Enterprise
 # -----------------------------------------------------------------------------
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Install TFE" | tee -a $log_pathname
+
+%{ if cloud == "azurerm" ~}
+instance_ip=$(curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance?api-version=2021-02-01" | jq '.network.interface[0].ipv4.ipAddress[0].privateIpAddress' -r)
+%{ else ~}
 instance_ip=$(hostname -i)
+%{ endif ~}
+
 install_pathname="$replicated_directory/install.sh"
 
 %{ if airgap_pathname == null ~}
