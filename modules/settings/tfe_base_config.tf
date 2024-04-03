@@ -36,10 +36,6 @@ locals {
       value = random_id.cookie_hash.hex
     }
 
-    consolidated_services_enabled = {
-      value = var.consolidated_services_enabled != null ? var.consolidated_services_enabled ? "1" : "0" : null
-    }
-
     custom_image_tag = {
       value = var.custom_agent_image_tag != null ? null : var.custom_image_tag
     }
@@ -143,4 +139,3 @@ locals {
     }
   }
 }
-
