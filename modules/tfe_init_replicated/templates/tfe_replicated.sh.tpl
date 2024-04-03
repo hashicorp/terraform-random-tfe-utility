@@ -172,8 +172,16 @@ fi
 echo "[Terraform Enterprise] Creating mounted disk directory at '${disk_path}'" | tee -a $log_pathname
 mkdir --parents ${disk_path}
 
-echo "[Terraform Enterprise] Mounting disk '$device' to directory at '${disk_path}'" | tee -a $log_pathname
-mount --options discard,defaults $device ${disk_path}
+if findmnt -rno SOURCE,TARGET $device | grep -q $disk_path; then
+    echo "The device is already mounted at $disk_path." | tee -a $log_pathname
+else
+    if mount --options discard,defaults $device ${disk_path}; then
+        echo "Mount successful." | tee -a $log_pathname
+    else
+        echo "Failed to mount the device." | tee -a $log_pathname
+        exit 1
+    fi
+fi
 chmod og+rw ${disk_path}
 
 echo "[Terraform Enterprise] Configuring automatic mounting of '$device' to directory at '${disk_path}' on reboot" | tee -a $log_pathname
