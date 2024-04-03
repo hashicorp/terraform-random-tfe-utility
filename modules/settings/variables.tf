@@ -37,12 +37,6 @@ variable "capacity_memory" {
   description = "The maximum amount of memory (in megabytes) that a Terraform plan or apply can use on the system; defaults to 512."
 }
 
-variable "consolidated_services_enabled" {
-  default     = null
-  type        = bool
-  description = "(Required) True if TFE uses consolidated services."
-}
-
 variable "custom_image_tag" {
   type        = string
   description = "(Required if tbw_image is 'custom_image'.) The name and tag for your alternative Terraform build worker image in the format <name>:<tag>. Default is 'hashicorp/build-worker:now'. If this variable is used, the 'tbw_image' variable must be 'custom_image'."
