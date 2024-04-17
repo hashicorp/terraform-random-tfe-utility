@@ -164,7 +164,7 @@ variable "metrics_endpoint_port_http" {
 
 variable "metrics_endpoint_port_https" {
   default     = null
-  type        = string
+  type        = number
   description = "(Optional when metrics_endpoint_enabled is true.) Defines the TCP port on which HTTPS metrics requests will be handled. Defaults to 9091."
 }
 
