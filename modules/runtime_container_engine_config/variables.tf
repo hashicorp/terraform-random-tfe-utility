@@ -135,13 +135,39 @@ variable "https_proxy" {
 
 variable "license_reporting_opt_out" {
   type        = bool
+  default     = false
   description = "Whether to opt out of reporting licensing information to HashiCorp. Defaults to false if no value is given."
+}
+
+variable "usage_reporting_opt_out" {
+  type        = bool
+  default     = false
+  description = "Whether to opt out of TFE usage reporting to HashiCorp. Defaults to false if no value is given."
 }
 
 variable "key_file" {
   type        = string
   description = "Path to a file containing the TLS private key Terraform Enterprise will use when serving TLS connections to clients."
 }
+
+variable "metrics_endpoint_enabled" {
+  default     = false
+  type        = bool
+  description = "(Optional) Metrics are used to understand the behavior of Terraform Enterprise and to troubleshoot and tune performance. Enable an endpoint to expose container metrics. Defaults to false."
+}
+
+variable "metrics_endpoint_port_http" {
+  default     = null
+  type        = number
+  description = "(Optional when metrics_endpoint_enabled is true.) Defines the TCP port on which HTTP metrics requests will be handled. Defaults to 9090."
+}
+
+variable "metrics_endpoint_port_https" {
+  default     = null
+  type        = string
+  description = "(Optional when metrics_endpoint_enabled is true.) Defines the TCP port on which HTTPS metrics requests will be handled. Defaults to 9091."
+}
+
 
 variable "no_proxy" {
   type        = list(string)
