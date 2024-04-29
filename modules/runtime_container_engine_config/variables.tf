@@ -188,6 +188,11 @@ variable "operational_mode" {
     error_message = "Supported values for operational_mode are 'disk', 'external', and 'active-active'."
   }
 }
+variable "encryption_password" {
+  default     = null
+  type        = string
+  description = "Encryption password used to encrypt and decrypt the internal Vault root token and unseal key."
+}
 
 variable "redis_host" {
   type        = string

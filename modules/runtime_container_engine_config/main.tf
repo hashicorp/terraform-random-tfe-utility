@@ -21,7 +21,7 @@ locals {
       TFE_HTTP_PORT                 = var.http_port
       TFE_HTTPS_PORT                = var.https_port
       TFE_OPERATIONAL_MODE          = var.operational_mode
-      TFE_ENCRYPTION_PASSWORD       = random_id.enc_password.hex
+      TFE_ENCRYPTION_PASSWORD       = var.encryption_password != null ? var.encryption_password : random_id.enc_password.hex
       TFE_DISK_CACHE_VOLUME_NAME    = "terraform-enterprise_terraform-enterprise-cache"
       TFE_LICENSE_REPORTING_OPT_OUT = var.license_reporting_opt_out
       TFE_USAGE_REPORTING_OPT_OUT   = var.usage_reporting_opt_out
