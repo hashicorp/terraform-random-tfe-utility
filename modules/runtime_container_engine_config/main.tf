@@ -227,4 +227,5 @@ locals {
 resource "random_string" "enc_password" {
   length = 16
   special = true
+  override_special = "?!%&*"
 }
