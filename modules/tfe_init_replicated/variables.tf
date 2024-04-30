@@ -17,10 +17,10 @@ variable "distribution" {
   default     = null
   type        = string
   description = "(Required) What is the OS distribution of the instance on which Terraoform Enterprise will be deployed?"
-  # validation {
-  #   condition     = contains(["rhel", "ubuntu"], var.distribution)
-  #   error_message = "Supported values for distribution are 'rhel', or 'ubuntu'."
-  # }
+  validation {
+    condition     = contains(["rhel", "ubuntu", "amazon-linux-2"], var.distribution)
+    error_message = "Supported values for distribution are 'rhel', 'ubuntu' or amazon-linux-2."
+  }
 }
 
 variable "tfe_license_secret_id" {
