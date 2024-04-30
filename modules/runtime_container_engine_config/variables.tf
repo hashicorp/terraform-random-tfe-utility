@@ -189,6 +189,32 @@ variable "operational_mode" {
   }
 }
 
+variable "container_allow_restart" {
+  default     = false
+  type        = bool
+  description = "(Optional) Allow TFE containers to be automatically restarted."
+}
+
+variable "container_restart_policy" {
+  default     = "unless-stopped"
+  type        = string
+  description = "(Optional) Allow TFE containers to be automatically restarted."
+  validation {
+    condition = (
+      var.container_restart_policy == "on-failure" ||
+      var.container_restart_policy == "always" ||
+      var.container_restart_policy == "unless-stopped"
+    )
+    error_message = "Supported values for container_restart_policy are 'on-failure', 'always', and 'unless-stopped'."
+  }
+}
+
+variable "container_restart_max_retries" {
+  default     = 1
+  type        = number
+  description = "(Optional) Allow TFE containers to be automatically restarted x number of times."
+}
+
 variable "redis_host" {
   type        = string
   description = "The Redis server to connect to in the format HOST[:PORT] (e.g. redis.example.com or redis.example.com:). If only HOST is provided then the :PORT defaults to :6379 if no value is given. Required when TFE_OPERATIONAL_MODE is active-active."
