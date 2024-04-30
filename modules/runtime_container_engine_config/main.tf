@@ -5,6 +5,10 @@ locals {
 
   active_active = var.operational_mode == "active-active"
   disk          = var.operational_mode == "disk"
+
+  http_port = var.http_port != null ? var.http_port : "80"
+  https_port = var.https_port != null ? var.https_port : "443"
+
   env = merge(
     local.database_configuration,
     local.redis_configuration,
@@ -18,8 +22,8 @@ locals {
       no_proxy                      = var.no_proxy != null ? join(",", var.no_proxy) : null
       NO_PROXY                      = var.no_proxy != null ? join(",", var.no_proxy) : null
       TFE_HOSTNAME                  = var.hostname
-      TFE_HTTP_PORT                 = var.http_port
-      TFE_HTTPS_PORT                = var.https_port
+      TFE_HTTP_PORT                 = local.http_port
+      TFE_HTTPS_PORT                = local.https_port
       TFE_OPERATIONAL_MODE          = var.operational_mode
       TFE_ENCRYPTION_PASSWORD       = random_id.enc_password.hex
       TFE_DISK_CACHE_VOLUME_NAME    = "terraform-enterprise_terraform-enterprise-cache"
@@ -57,8 +61,8 @@ locals {
           "/var/log/terraform-enterprise",
         ]
         ports = flatten([
-          "80:${var.http_port}",
-          "443:${var.https_port}",
+          "80:${local.http_port}",
+          "443:${local.https_port}",
           local.active_active ? ["8201:8201"] : [],
           var.metrics_endpoint_enabled ? [
             "${var.metrics_endpoint_port_http}:9090",
