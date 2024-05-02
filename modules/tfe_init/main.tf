@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 locals {
+  tfe_hostname = var.tfe_hostname != null ? var.tfe_hostname : "localhost"
 
   tls_bootstrap_path          = "/etc/tfe/ssl"
   tls_bootstrap_cert_pathname = "${local.tls_bootstrap_path}/cert.pem"
@@ -76,5 +77,7 @@ locals {
       registry_credential = base64encode("${var.registry_username}:${var.registry_password}")
 
       tfe_image = var.tfe_image
+      
+      tfe_hostname = local.tfe_hostname
   })
 }
