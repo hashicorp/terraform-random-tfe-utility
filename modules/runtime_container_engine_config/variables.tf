@@ -40,6 +40,12 @@ variable "capacity_memory" {
   description = "Maximum amount of memory (MiB) a Terraform run is allowed to use. Defaults to 2048 if no value is given."
 }
 
+variable "tls_bootstrap_path" {
+  default = "/etc/ssl/private/terraform-enterprise"
+  type = string
+  description = "(optional) Path to location of SSL Certificate files. Defaults to /etc/ssl/private/terraform-enterprise if no value is given."
+}
+
 variable "cert_file" {
   type        = string
   description = "Path to a file containing the TLS certificate Terraform Enterprise will use when serving TLS connections to clients."
@@ -187,6 +193,32 @@ variable "operational_mode" {
 
     error_message = "Supported values for operational_mode are 'disk', 'external', and 'active-active'."
   }
+}
+
+variable "container_allow_restart" {
+  default     = false
+  type        = bool
+  description = "(Optional) Allow TFE containers to be automatically restarted."
+}
+
+variable "container_restart_policy" {
+  default     = "unless-stopped"
+  type        = string
+  description = "(Optional) Allow TFE containers to be automatically restarted."
+  validation {
+    condition = (
+      var.container_restart_policy == "on-failure" ||
+      var.container_restart_policy == "always" ||
+      var.container_restart_policy == "unless-stopped"
+    )
+    error_message = "Supported values for container_restart_policy are 'on-failure', 'always', and 'unless-stopped'."
+  }
+}
+
+variable "container_restart_max_retries" {
+  default     = 1
+  type        = number
+  description = "(Optional) Allow TFE containers to be automatically restarted x number of times."
 }
 
 variable "redis_host" {
