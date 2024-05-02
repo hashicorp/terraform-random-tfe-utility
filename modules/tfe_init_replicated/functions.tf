@@ -4,7 +4,6 @@
 locals {
   get_base64_secrets = templatefile("${path.module}/templates/get_base64_secrets.func", {
     cloud = var.cloud
-    distribution = var.distribution
   })
 
   install_packages = templatefile("${path.module}/templates/install_packages.func", {
