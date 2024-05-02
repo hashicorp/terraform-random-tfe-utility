@@ -14,12 +14,15 @@ function install_packages {
 		systemctl start amazon-ssm-agent
 		systemctl enable firewalld
 		systemctl start firewalld
+	%{ elif distribution == "amazon-linux-2" ~}
+		yum install -y \
+			firewalld
+		systemctl enable firewalld
+		systemctl start firewalld
 	%{ else ~}
-		%{ if distribution != "amazon-linux-2" ~}
 		echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip with apt-get" | tee -a $log_pathname
 		apt-get update -y
 		apt-get install -y unzip
-		%{ endif ~}
 	%{ endif ~}
 
 	%{ if distribution != "amazon-linux-2" ~}
