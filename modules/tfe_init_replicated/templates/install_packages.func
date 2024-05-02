@@ -22,12 +22,14 @@ function install_packages {
 		%{ endif ~}
 	%{ endif ~}
 
-	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install AWS CLI" | tee -a $log_pathname
-	curl --noproxy '*' "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-	unzip awscliv2.zip
-	./aws/install
-	rm -f ./awscliv2.zip
-	rm -rf ./aws
+	%{ if distribution != "amazon-linux-2" ~}
+		echo "[$(date +"%FT%T")] [Terraform Enterprise] Install AWS CLI" | tee -a $log_pathname
+		curl --noproxy '*' "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+		unzip awscliv2.zip
+		./aws/install
+		rm -f ./awscliv2.zip
+		rm -rf ./aws
+	%{ endif ~}
 }
 %{ endif ~}
 
