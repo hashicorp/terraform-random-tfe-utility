@@ -6,6 +6,9 @@ locals {
   active_active = var.operational_mode == "active-active"
   disk          = var.operational_mode == "disk"
 
+  tls_bootstrap_cert_pathname = "${var.tls_bootstrap_path}/cert.pem"
+  tls_bootstrap_key_pathname  = "${var.tls_bootstrap_path}/key.pem"
+  tls_bootstrap_ca_pathname   = "${var.tls_bootstrap_path}/bundle.pem"
   container_restart_policy = format("%s%s", var.container_restart_policy, var.container_restart_policy == "on-failure" ? format(":%d", var.container_restart_max_retries) : "")
   container_restart        = var.container_allow_restart ? local.container_restart_policy : "no"
 
@@ -30,10 +33,10 @@ locals {
       TFE_LICENSE_REPORTING_OPT_OUT = var.license_reporting_opt_out
       TFE_USAGE_REPORTING_OPT_OUT   = var.usage_reporting_opt_out
       TFE_LICENSE                   = var.tfe_license
-      TFE_TLS_CA_BUNDLE_FILE        = var.tls_ca_bundle_file != null ? var.tls_ca_bundle_file : null
-      TFE_TLS_CERT_FILE             = var.cert_file
+      TFE_TLS_CA_BUNDLE_FILE        = var.tls_ca_bundle_file != null ? var.tls_ca_bundle_file : local.tls_bootstrap_ca_pathname
+      TFE_TLS_CERT_FILE             = var.cert_file != null ? var.cert_file : local.tls_bootstrap_cert_pathname
       TFE_TLS_CIPHERS               = var.tls_ciphers
-      TFE_TLS_KEY_FILE              = var.key_file
+      TFE_TLS_KEY_FILE              = var.key_file != null ? var.cert_file : local.tls_bootstrap_key_pathname
       TFE_TLS_VERSION               = var.tls_version != null ? var.tls_version : ""
       TFE_RUN_PIPELINE_IMAGE        = var.run_pipeline_image
       TFE_CAPACITY_CONCURRENCY      = var.capacity_concurrency
@@ -79,7 +82,7 @@ locals {
           {
             type   = "bind"
             source = "/etc/tfe/ssl"
-            target = "/etc/ssl/private/terraform-enterprise"
+            target = "${var.tls_bootstrap_path}"
           },
           {
             type   = "volume"

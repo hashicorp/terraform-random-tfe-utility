@@ -40,6 +40,12 @@ variable "capacity_memory" {
   description = "Maximum amount of memory (MiB) a Terraform run is allowed to use. Defaults to 2048 if no value is given."
 }
 
+variable "tls_bootstrap_path" {
+  default = "/etc/ssl/private/terraform-enterprise"
+  type = string
+  description = "(optional) Path to location of SSL Certificate files. Defaults to /etc/ssl/private/terraform-enterprise if no value is given."
+}
+
 variable "cert_file" {
   type        = string
   description = "Path to a file containing the TLS certificate Terraform Enterprise will use when serving TLS connections to clients."
