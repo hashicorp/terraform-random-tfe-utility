@@ -5,6 +5,10 @@ locals {
 
   active_active = var.operational_mode == "active-active"
   disk          = var.operational_mode == "disk"
+
+  container_restart_policy = format("%s%s", var.container_restart_policy, var.container_restart_policy == "on-failure" ? format(":%d", var.container_restart_max_retries) : "")
+  container_restart        = var.container_allow_restart ? local.container_restart_policy : "no"
+
   env = merge(
     local.database_configuration,
     local.redis_configuration,
@@ -65,7 +69,7 @@ locals {
             "${var.metrics_endpoint_port_https}:9091"
           ] : []
         ])
-
+        restart = local.container_restart
         volumes = flatten([
           {
             type   = "bind"
