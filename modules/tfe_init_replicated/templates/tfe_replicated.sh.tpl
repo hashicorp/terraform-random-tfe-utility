@@ -104,7 +104,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configu
 #------------------------------------------------------------------------------
 ca_certificate_directory="/dev/null"
 
-%{ if distribution == "rhel" || distribution == "amazon-linux-2" ~}
+%{ if distribution == "rhel" || distribution == "amazon-linux-2023" ~}
 ca_certificate_directory=/usr/share/pki/ca-trust-source/anchors
 %{ else ~}
 ca_certificate_directory=/usr/local/share/ca-certificates/extra
@@ -123,7 +123,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configur
 
 if [ -f "$ca_cert_filepath" ]
 then
-	%{ if distribution == "rhel" || distribution == "amazon-linux-2" ~}
+	%{ if distribution == "rhel" || distribution == "amazon-linux-2023" ~}
 	update-ca-trust
 
 	%{ else ~}
@@ -284,7 +284,7 @@ $install_pathname \
 # -----------------------------------------------------------------------------
 # Add docker0 to firewalld (for Red Hat instances only)
 # -----------------------------------------------------------------------------
-%{ if distribution == "rhel" || distribution == "amazon-linux-2" && cloud != "google" ~}
+%{ if distribution == "rhel" || distribution == "amazon-linux-2023" && cloud != "google" ~}
 os_release=$(cat /etc/os-release | grep VERSION_ID | sed "s/VERSION_ID=\"\(.*\)\"/\1/g")
 if (( $(echo "$os_release < 8.0" | bc -l ) )); then
   echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
