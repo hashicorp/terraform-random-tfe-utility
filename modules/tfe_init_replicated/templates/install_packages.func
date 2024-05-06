@@ -15,9 +15,20 @@ function install_packages {
 		systemctl enable firewalld
 		systemctl start firewalld
 	%{ else ~}
-		echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip with apt-get" | tee -a $log_pathname
-		apt-get update -y
-		apt-get install -y unzip
+		%{ if distribution == "amazon-linux-2023" ~}
+			echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip and SSMAgent with yum" | tee -a $log_pathname
+			yum install -y \
+				firewalld \
+				unzip
+			systemctl enable amazon-ssm-agent
+			systemctl start amazon-ssm-agent
+			systemctl enable firewalld
+			systemctl start firewalld
+		%{ else ~}
+			echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip with apt-get" | tee -a $log_pathname
+			apt-get update -y
+			apt-get install -y unzip
+		%{ endif ~}
 	%{ endif ~}
 
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install AWS CLI" | tee -a $log_pathname
