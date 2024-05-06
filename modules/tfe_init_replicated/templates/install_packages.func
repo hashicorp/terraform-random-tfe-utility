@@ -4,7 +4,7 @@ function install_packages {
 	# OS: Agnostic
 	# Description: Install AWS packages
 
-	%{ if distribution == "rhel" || distribution == "amazon-linux-2023" ~}
+	%{ if distribution == "rhel" ~}
 		echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip and SSMAgent with yum" | tee -a $log_pathname
 		yum install -y \
 			firewalld \
@@ -24,6 +24,11 @@ function install_packages {
 			systemctl start amazon-ssm-agent
 			systemctl enable firewalld
 			systemctl start firewalld
+
+			yum uninstall docker -y
+			yum install docker-24.0.5-1.amzn2023.0.3 -y
+			systemctl start docker
+			systemctl enable docker
 		%{ else ~}
 			echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip with apt-get" | tee -a $log_pathname
 			apt-get update -y
