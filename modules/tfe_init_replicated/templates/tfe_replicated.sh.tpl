@@ -287,7 +287,7 @@ $install_pathname \
 # -----------------------------------------------------------------------------
 # Add docker0 to firewalld (for Red Hat instances only)
 # -----------------------------------------------------------------------------
-%{ if distribution == "rhel" || distribution == "amazon-linux-2023" && cloud != "google" ~}
+%{ if distribution == "rhel" && cloud != "google" ~}
 os_release=$(cat /etc/os-release | grep VERSION_ID | sed "s/VERSION_ID=\"\(.*\)\"/\1/g")
 if (( $(echo "$os_release < 8.0" | bc -l ) )); then
   echo "[$(date +"%FT%T")] [Terraform Enterprise] Disable SELinux (temporary)" | tee -a $log_pathname
