@@ -279,6 +279,9 @@ $install_pathname \
 	%{ if airgap_pathname != null ~}
 	airgap \
 	%{ endif ~}
+	%{ if distribution == "amazon-linux-2023" ~}
+	no-docker \
+	%{ endif ~}
 	| tee -a $log_pathname
 
 # -----------------------------------------------------------------------------
