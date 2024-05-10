@@ -18,13 +18,13 @@ jobs:
       contents: read
 
     steps:
-    - uses: hashicorp/checkout@v3
+    - uses: hashicorp/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         persist-credentials: false
 
     - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
+      uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: 1.1.5
 
@@ -40,7 +40,7 @@ jobs:
       contents: read
 
     steps:
-    - uses: hashicorp/checkout@v3
+    - uses: hashicorp/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         persist-credentials: false

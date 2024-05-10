@@ -147,7 +147,7 @@ jobs:
           curl -L $K6_URL | tar -xz --strip-components=1
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v3
         with:
           cli_config_credentials_hostname: 'app.terraform.io'
           cli_config_credentials_token: ${{ secrets[inputs.TFC_token_secret_name] }}
