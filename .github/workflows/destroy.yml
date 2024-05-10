@@ -90,7 +90,7 @@ jobs:
       # test in the module repo.
       - name: Checkout
         if: ${{ ! inputs.utility_test }}
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
         with:
           repository: ${{ github.event.client_payload.pull_request.head.repo.full_name }}
           ref: ${{ github.event.client_payload.pull_request.head.sha }}
@@ -101,7 +101,7 @@ jobs:
       # the configuration to target the appropriate TFC workspace.
       - name: Checkout
         if: ${{ inputs.utility_test }}
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
         with:
           repository: ${{inputs.module_repository_id}}
       
@@ -119,7 +119,7 @@ jobs:
           sed --in-place "s/?ref=main/?ref=$SHA/" ../../main.tf
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v3
         with:
           cli_config_credentials_hostname: 'app.terraform.io'
           cli_config_credentials_token: ${{ secrets[inputs.TFC_token_secret_name] }}
@@ -138,7 +138,7 @@ jobs:
 
       - name: Update comment
         if: ${{ always() }}
-        uses: peter-evans/create-or-update-comment@c6c9a1a66007646a28c153e2a8580a5bad27bcfa # v3.0.2
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ inputs.pull_request_repo_name }}
