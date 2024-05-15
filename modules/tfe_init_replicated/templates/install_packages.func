@@ -5,15 +5,17 @@ function install_packages {
 	# Description: Install AWS packages
 
 	%{ if distribution == "rhel" || distribution == "amazon-linux-2023" ~}
-		echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip and SSMAgent with yum" | tee -a $log_pathname
+		echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip and firewalld with yum" | tee -a $log_pathname
 		yum install -y firewalld unzip
 
 		%{ if distribution == "rhel" ~}
 			# Amazon Linux 2023 already has amazon-ssm-agent so install on rhel only
+			echo "[$(date +"%FT%T")] [Terraform Enterprise] Install ssm-agent with yum" | tee -a $log_pathname
 			yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 		%{ endif ~}
 
 		%{ if distribution == "amazon-linux-2023" ~}
+			echo "[$(date +"%FT%T")] [Terraform Enterprise] Remove existing docker and install v24 with yum" | tee -a $log_pathname
 			yum remove docker -y
 			yum install docker-24.0.5-1.amzn2023.0.3 -y
 
