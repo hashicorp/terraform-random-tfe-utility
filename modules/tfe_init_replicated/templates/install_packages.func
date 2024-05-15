@@ -4,36 +4,31 @@ function install_packages {
 	# OS: Agnostic
 	# Description: Install AWS packages
 
-	%{ if distribution == "rhel" ~}
+	%{ if distribution == "rhel" || distribution == "amazon-linux-2023" ~}
 		echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip and SSMAgent with yum" | tee -a $log_pathname
-		yum install -y \
-			firewalld \
-			unzip \
-			https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+		yum install -y firewalld unzip
+
+		%{ if distribution == "rhel" ~}
+			# Amazon Linux 2023 already has amazon-ssm-agent so install on rhel only
+			yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+		%{ endif ~}
+
+		%{ if distribution == "amazon-linux-2023" ~}
+			yum remove docker -y
+			yum install docker-24.0.5-1.amzn2023.0.3 -y
+
+			systemctl start docker
+			systemctl enable docker
+		%{ endif ~}
+
 		systemctl enable amazon-ssm-agent
 		systemctl start amazon-ssm-agent
 		systemctl enable firewalld
 		systemctl start firewalld
 	%{ else ~}
-		%{ if distribution == "amazon-linux-2023" ~}
-			echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip and SSMAgent with yum" | tee -a $log_pathname
-			yum install -y \
-				firewalld \
-				unzip
-			systemctl enable amazon-ssm-agent
-			systemctl start amazon-ssm-agent
-			systemctl enable firewalld
-			systemctl start firewalld
-
-			yum remove docker -y
-			yum install docker-24.0.5-1.amzn2023.0.3 -y
-			systemctl start docker
-			systemctl enable docker
-		%{ else ~}
-			echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip with apt-get" | tee -a $log_pathname
-			apt-get update -y
-			apt-get install -y unzip
-		%{ endif ~}
+		echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip with apt-get" | tee -a $log_pathname
+		apt-get update -y
+		apt-get install -y unzip
 	%{ endif ~}
 
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install AWS CLI" | tee -a $log_pathname
