@@ -104,7 +104,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configu
 #------------------------------------------------------------------------------
 ca_certificate_directory="/dev/null"
 
-%{ if distribution == "rhel" ~}
+%{ if distribution == "rhel" || distribution == "amazon-linux-2023" ~}
 ca_certificate_directory=/usr/share/pki/ca-trust-source/anchors
 %{ else ~}
 ca_certificate_directory=/usr/local/share/ca-certificates/extra
@@ -123,7 +123,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configur
 
 if [ -f "$ca_cert_filepath" ]
 then
-	%{ if distribution == "rhel" ~}
+	%{ if distribution == "rhel" || distribution == "amazon-linux-2023" ~}
 	update-ca-trust
 
 	%{ else ~}
@@ -278,6 +278,9 @@ $install_pathname \
 	public-address="$instance_ip" \
 	%{ if airgap_pathname != null ~}
 	airgap \
+	%{ endif ~}
+	%{ if distribution == "amazon-linux-2023" ~}
+	no-docker \
 	%{ endif ~}
 	| tee -a $log_pathname
 
