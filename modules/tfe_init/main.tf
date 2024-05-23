@@ -45,6 +45,7 @@ locals {
       get_base64_secrets        = local.get_base64_secrets
       install_packages          = local.install_packages
       install_monitoring_agents = local.install_monitoring_agents
+      retry                     = local.retry
       quadlet_unit              = local.quadlet_unit
 
       active_active               = var.operational_mode == "active-active"
