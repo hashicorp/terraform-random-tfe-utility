@@ -16,4 +16,8 @@ locals {
     distribution      = var.distribution
     enable_monitoring = var.enable_monitoring != null ? var.enable_monitoring : false
   })
+
+  retry = templatefile("${path.module}/templates/retry.func", {
+    cloud = var.cloud
+  })
 }
