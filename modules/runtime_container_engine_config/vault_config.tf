@@ -12,6 +12,7 @@ locals {
     TFE_VAULT_PATH         = var.vault_path
     TFE_VAULT_ROLE_ID      = var.vault_role_id
     TFE_VAULT_SECRET_ID    = var.vault_secret_id
+    TFE_VAULT_TOKEN_RENEW  = var.vault_token_renew
   }
 
   vault_cluster_address = {
