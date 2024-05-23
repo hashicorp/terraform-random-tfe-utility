@@ -343,3 +343,8 @@ variable "vault_secret_id" {
   type        = string
   description = "Vault secret ID. External Vault only. Required when TFE_VAULT_USE_EXTERNAL is true."
 }
+
+variable "vault_token_renew" {
+  type = number
+  description = "Vault token renewal period in seconds. Required when TFE_VAULT_USE_EXTERNAL is true."
+}
