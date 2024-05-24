@@ -181,9 +181,7 @@ export HOST_IP=$(hostname -i)
 tfe_dir="/etc/tfe"
 mkdir -p $tfe_dir
 
-cat > $tfe_dir/compose.yaml <<EOF
-${docker_compose}
-EOF
+echo ${docker_compose} | base64 -d > $tfe_dir/compose.yaml
 
 docker compose -f /etc/tfe/compose.yaml up -d
 
