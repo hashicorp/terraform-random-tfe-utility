@@ -49,7 +49,7 @@ locals {
     }
 
     enc_password = {
-      value = var.extern_vault_enable != null ? var.extern_vault_enable ? null : random_id.enc_password.hex : random_id.enc_password.hex
+      value = var.extern_vault_enable != null ? var.extern_vault_enable ? null : random_password.enc_password.result : random_password.enc_password.result
     }
 
     extra_no_proxy = {
