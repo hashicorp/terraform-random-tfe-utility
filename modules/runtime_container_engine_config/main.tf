@@ -40,13 +40,19 @@ locals {
       TFE_IACT_TRUSTED_PROXIES      = join(",", var.trusted_proxies)
     }
   )
+  # compose files allow for $ deliminated variable injection.  $$ is the appropriate escape.
+  sensitive_fields = ["TFE_ENCRYPTION_PASSWORD", "TFE_DATABASE_PASSWORD", "TFE_REDIS_PASSWORD"]
+  compose_escaped_env = {
+    for k, v in local.env :
+    k => (contains(local.sensitive_fields, k) ? replace((v == null ? "" : v), "$", "$$") : v)
+  }
   compose = {
     version = "3.9"
     name    = "terraform-enterprise"
     services = {
       tfe = {
         image       = var.tfe_image
-        environment = local.env
+        environment = local.compose_escaped_env
         cap_add = [
           "IPC_LOCK"
         ]
