@@ -345,6 +345,6 @@ variable "vault_secret_id" {
 }
 
 variable "vault_token_renew" {
-  type = number
+  type        = number
   description = "Vault token renewal period in seconds. Required when TFE_VAULT_USE_EXTERNAL is true."
 }
