@@ -11,6 +11,7 @@ locals {
       get_base64_secrets        = local.get_base64_secrets
       install_packages          = local.install_packages
       install_monitoring_agents = local.install_monitoring_agents
+      retry                     = local.retry
 
       # Configuration data
       active_active               = var.tfe_configuration != null ? var.tfe_configuration.enable_active_active.value == "1" ? true : false : null

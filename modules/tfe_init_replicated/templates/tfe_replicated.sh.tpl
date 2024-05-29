@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+${retry}
 ${get_base64_secrets}
 ${install_packages}
 ${install_monitoring_agents}

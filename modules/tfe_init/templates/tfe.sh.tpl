@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -eu pipefail
-
+${retry}
 ${get_base64_secrets}
 ${install_packages}
 %{ if enable_monitoring ~}
