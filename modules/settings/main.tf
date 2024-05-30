@@ -26,9 +26,12 @@ resource "random_id" "cookie_hash" {
   byte_length = 16
 }
 
-resource "random_id" "enc_password" {
-  byte_length = 16
+resource "random_password" "enc_password" {
+  length           = 32
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
 }
+
 
 resource "random_id" "install_id" {
   byte_length = 16
