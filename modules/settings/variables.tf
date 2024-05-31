@@ -48,12 +48,12 @@ variable "custom_agent_image_tag" {
 }
 
 variable "production_type" {
-  default     = null
+  default     = "disk"
   type        = string
   description = "Where Terraform Enterprise application data will be stored. Valid values are `external`, `disk`, `active-active` or `null`. Choose `external` when storing application data in an external object storage service and database. Choose `disk` when storing application data in a directory on the Terraform Enterprise instance itself. Close `active-active` when deploying more than 1 node. Leave it `null` when you want Terraform Enterprise to use its own default."
 
   validation {
-    condition     = contains(["external", "disk", "active-active", null], var.production_type, "The production_type must be 'external', 'disk', or omitted.")
+    condition     = contains(["external", "disk", "active-active"], var.production_type)
     error_message = "The production_type must be 'external', 'disk', `active-active`, or omitted."
   }
 }
