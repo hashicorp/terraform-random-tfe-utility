@@ -94,8 +94,7 @@ locals {
     }
 
     placement = {
-      value = (
-      local.has_external_storage && var.s3_bucket != null) ? "placement_s3" : (local.has_external_storage && var.azure_account_name != null) ? "placement_azure" : (local.has_external_storage && var.gcs_bucket != null) ? "placement_gcs" : null
+      value = (local.has_external_storage && var.s3_bucket != null) ? "placement_s3" : (local.has_external_storage && var.azure_account_name != null) ? "placement_azure" : (local.has_external_storage && var.gcs_bucket != null) ? "placement_gcs" : null
     }
 
     registry_session_encryption_key = {
