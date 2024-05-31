@@ -208,29 +208,29 @@ variable "tls_bootstrap_key_pathname" {
 # ------------------------------------------------------
 # PostgreSQL Database
 # ------------------------------------------------------
-# If you have chosen external for operational_mode, the following settings apply:
+# If you have chosen external for production_type, the following settings apply:
 variable "pg_user" {
   default     = null
   type        = string
-  description = "(Required when operational_mode is 'external' or 'active-active') PostgreSQL user to connect as."
+  description = "(Required when production_type is 'external' or 'active-active') PostgreSQL user to connect as."
 }
 
 variable "pg_password" {
   default     = null
   type        = string
-  description = "(Required when operational_mode is 'external' or 'active-active') The password for the PostgreSQL user."
+  description = "(Required when production_type is 'external' or 'active-active') The password for the PostgreSQL user."
 }
 
 variable "pg_netloc" {
   default     = null
   type        = string
-  description = "(Required when operational_mode is 'external' or 'active-active') The hostname and port of the target PostgreSQL server, in the format hostname:port."
+  description = "(Required when production_type is 'external' or 'active-active') The hostname and port of the target PostgreSQL server, in the format hostname:port."
 }
 
 variable "pg_dbname" {
   default     = null
   type        = string
-  description = "(Required when operational_mode is 'external' or 'active-active') The database name"
+  description = "(Required when production_type is 'external' or 'active-active') The database name"
 }
 
 variable "pg_extra_params" {
@@ -245,7 +245,7 @@ variable "pg_extra_params" {
 variable "redis_host" {
   default     = null
   type        = string
-  description = "(Required when operational_mode is 'active-active') Hostname of an external Redis instance which is resolvable from the TFE instance."
+  description = "(Required when production_type is 'active-active') Hostname of an external Redis instance which is resolvable from the TFE instance."
 }
 
 variable "redis_pass" {
@@ -272,7 +272,7 @@ variable "redis_use_tls" {
 variable "disk_path" {
   default     = null
   type        = string
-  description = "(Required when operational_mode is 'disk') Absolute path to a directory on the instance to store Terraform Enteprise data. Valid for mounted disk installations."
+  description = "(Required when production_type is 'disk') Absolute path to a directory on the instance to store Terraform Enteprise data. Valid for mounted disk installations."
 }
 
 # ------------------------------------------------------
