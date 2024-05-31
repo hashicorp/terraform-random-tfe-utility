@@ -24,5 +24,5 @@ locals {
     }
   }
 
-  redis_configuration = var.enable_active_active ? local.redis_configs : {}
+  redis_configuration = var.production_type == "active-active" ? local.redis_configs : {}
 }

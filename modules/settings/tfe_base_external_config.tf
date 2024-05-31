@@ -4,7 +4,7 @@
 locals {
   pg_configs = {
     enable_active_active = {
-      value = var.enable_active_active != null ? var.enable_active_active ? "1" : "0" : null
+      value = var.production_type == "active-active" ? "1" : "0"
     }
 
     pg_dbname = {
@@ -39,5 +39,5 @@ locals {
     }
   }
 
-  base_external_configs = local.pg_optional_configs != null && (var.enable_active_active || var.production_type == "external") ? (merge(local.pg_configs, local.pg_optional_configs)) : local.pg_configs
+  base_external_configs = local.pg_optional_configs != null && (var.production_type == "active-active" || var.production_type == "external") ? (merge(local.pg_configs, local.pg_optional_configs)) : local.pg_configs
 }
