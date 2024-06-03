@@ -212,8 +212,8 @@ echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootst
 	yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
 	yum install --assumeyes docker-ce docker-ce-cli containerd.io
 	%{ else ~}
-	apt-get --assume-yes update
-	apt-get --assume-yes install \
+	retry 10 apt-get --assume-yes update
+	retry 10 apt-get --assume-yes install \
 		ca-certificates \
 		curl \
 		gnupg \
@@ -224,9 +224,9 @@ echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootst
 		"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
 		https://download.docker.com/linux/ubuntu $(lsb_release --codename --short) stable" \
 		| sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-	apt-get --assume-yes update
-	apt-get --assume-yes install docker-ce docker-ce-cli containerd.io
-	apt-get --assume-yes autoremove
+	retry 10 apt-get --assume-yes update
+	retry 10 apt-get --assume-yes install docker-ce docker-ce-cli containerd.io
+	retrt 10 apt-get --assume-yes autoremove
 	%{ endif ~}
 
 replicated_filename="replicated.tar.gz"
