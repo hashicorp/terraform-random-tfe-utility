@@ -18,7 +18,7 @@ function install_packages {
 			echo "[$(date +"%FT%T")] [Terraform Enterprise] Remove existing docker and install v24 with yum" | tee -a $log_pathname
 			yum -y remove docker
 			yum clean packages
-			yum -y install docker-24.0.5-1.amzn2023.0.3
+			yum -y install docker-24.0.5-1.amzn2023.0.3 bc
 
 			systemctl start docker
 			systemctl enable docker
