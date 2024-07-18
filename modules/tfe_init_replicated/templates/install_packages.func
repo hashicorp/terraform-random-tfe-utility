@@ -5,13 +5,19 @@ function install_packages {
 	# Description: Install AWS packages
 
 	%{ if distribution == "rhel" || distribution == "amazon-linux-2023" ~}
-		echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip and firewalld with yum" | tee -a $log_pathname
-		yum install -y firewalld unzip
+		echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip with yum" | tee -a $log_pathname
+		yum install -y unzip
 
 		%{ if distribution == "rhel" ~}
+			echo "[$(date +"%FT%T")] [Terraform Enterprise] Install firewalld with yum" | tee -a $log_pathname
+			yum install -y firewalld
+
 			# Amazon Linux 2023 already has amazon-ssm-agent so install on rhel only
 			echo "[$(date +"%FT%T")] [Terraform Enterprise] Install ssm-agent with yum" | tee -a $log_pathname
 			yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+
+			systemctl enable firewalld
+			systemctl start firewalld
 		%{ endif ~}
 
 		%{ if distribution == "amazon-linux-2023" ~}
@@ -26,8 +32,6 @@ function install_packages {
 
 		systemctl enable amazon-ssm-agent
 		systemctl start amazon-ssm-agent
-		systemctl enable firewalld
-		systemctl start firewalld
 	%{ else ~}
 		echo "[$(date +"%FT%T")] [Terraform Enterprise] Install unzip with apt-get" | tee -a $log_pathname
 		retry 10 apt-get update -y
