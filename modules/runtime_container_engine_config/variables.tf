@@ -348,3 +348,9 @@ variable "vault_token_renew" {
   type        = number
   description = "Vault token renewal period in seconds. Required when TFE_VAULT_USE_EXTERNAL is true."
 }
+
+variable "enable_run_exec_tmpfs" {
+  default     = false
+  type        = bool
+  description = "Enable the use of executables in the tmpfs for the /run directory. Defaults to false."
+}
