@@ -59,7 +59,7 @@ locals {
         read_only = true
         tmpfs = [
           "/tmp:mode=01777",
-          "/run",
+          "/run:${var.enable_run_exec_tmpfs ? "exec" : "noexec"}",
           "/var/log/terraform-enterprise",
         ]
         ports = flatten([
