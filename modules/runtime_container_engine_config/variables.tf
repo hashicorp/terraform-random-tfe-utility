@@ -76,6 +76,24 @@ variable "disk_path" {
   type        = string
 }
 
+variable "database_reconnect_enabled" {
+  type        = bool
+  description = "Whether to enable database reconnection. Defaults to false if no value is given."
+  default     = false
+}
+
+variable "database_reconnect_max_retries" {
+  type        = number
+  description = "Maximum number of times to retry a database connection. Defaults to 10 if no value is given."
+  default     = 10
+}
+
+variable "database_reconnect_interval" {
+  type        = string
+  description = "Interval between database connection retries. Defaults to 5s if no value is given."
+  default     = "5s"
+}
+
 variable "http_port" {
   default     = null
   type        = number
