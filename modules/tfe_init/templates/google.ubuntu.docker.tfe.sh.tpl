@@ -45,6 +45,11 @@ https_proxy="${proxy_ip}:${proxy_port}"
 no_proxy="${no_proxy}"
 EOF
 
+/bin/cat <<EOF >/etc/apt/apt.conf
+Acquire::http::Proxy "http://${proxy_ip}:${proxy_port}";
+Acquire::https::Proxy "https://${proxy_ip}:${proxy_port}";
+EOF
+
 export http_proxy="${proxy_ip}:${proxy_port}"
 export https_proxy="${proxy_ip}:${proxy_port}"
 export no_proxy="${no_proxy}"
