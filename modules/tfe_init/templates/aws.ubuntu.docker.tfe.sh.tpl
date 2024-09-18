@@ -34,7 +34,7 @@ EOF
 
 /bin/cat <<EOF >/etc/apt/apt.conf
 Acquire::http::Proxy "http://${proxy_ip}:${proxy_port}";
-Acquire::https::Proxy "https://${proxy_ip}:${proxy_port}";
+Acquire::https::Proxy "http://${proxy_ip}:${proxy_port}";
 EOF
 
 export http_proxy="${proxy_ip}:${proxy_port}"
