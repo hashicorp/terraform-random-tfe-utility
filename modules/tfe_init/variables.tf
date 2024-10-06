@@ -134,3 +134,9 @@ variable "tfe_image" {
   type        = string
   description = "The registry path, image name, and image version (e.g. \"quay.io/hashicorp/terraform-enterprise:1234567\")"
 }
+
+variable "tfe_hostname" {
+  default     = null
+  type        = string
+  description = "Hostname where Terraform Enterprise is accessed (e.g. terraform.example.com). Used for generating TLS certificates."
+}
