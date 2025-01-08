@@ -38,6 +38,8 @@ locals {
       TFE_IACT_SUBNETS              = var.iact_subnets
       TFE_IACT_TIME_LIMIT           = var.iact_time_limit
       TFE_IACT_TRUSTED_PROXIES      = join(",", var.trusted_proxies)
+      TFE_LOG_FORWARDING_CONFIG_PATH = var.tfe_log_forwarding_config_path
+      TFE_LOG_FORWARDING_ENABLED = var.tfe_log_forwarding_enabled
     }
   )
   # compose files allow for $ deliminated variable injection.  $$ is the appropriate escape.
