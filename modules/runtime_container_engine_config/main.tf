@@ -87,8 +87,8 @@ locals {
           },
           {
             type   = "bind"
-            source = "/etc/fluent-bit.conf"
-            target = "/etc/fluent-bit.conf"
+            source = "/etc/tfe/fluent-bit.conf"
+            target = "/etc/tfe/fluent-bit.conf"
           },
           {
             type   = "bind"
