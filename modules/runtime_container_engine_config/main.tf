@@ -82,6 +82,16 @@ locals {
           },
           {
             type   = "bind"
+            source = "/var/run/docker.sock"
+            target = "/run/docker.sock"
+          },
+          {
+            type   = "bind"
+            source = "/etc/fluent-bit.conf"
+            target = "/etc/fluent-bit.conf"
+          },
+          {
+            type   = "bind"
             source = "/etc/tfe/ssl"
             target = "/etc/ssl/private/terraform-enterprise"
           },
