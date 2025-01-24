@@ -32,6 +32,22 @@ https_proxy="${proxy_ip}:${proxy_port}"
 no_proxy="${no_proxy}"
 EOF
 
+mkdir -p /etc/fluent-bit
+/bin/cat <<EOF > /etc/fluent-bit/fluent-bit.conf
+[OUTPUT]
+    Name         datadog
+    Match        *
+    Host         http-intake.logs.datadoghq.com
+    TLS          On
+    compress     gzip
+    apikey       1234
+    dd_service   terraform-enterprise
+    dd_source    docker
+    dd_tags      environment:development,owner:scale-perf-team
+EOF
+
+chmod 644 /etc/fluent-bit/fluent-bit.conf
+
 /bin/cat <<EOF >/etc/apt/apt.conf
 Acquire::http::Proxy "http://${proxy_ip}:${proxy_port}";
 Acquire::https::Proxy "http://${proxy_ip}:${proxy_port}";

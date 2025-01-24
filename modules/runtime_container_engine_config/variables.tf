@@ -287,6 +287,21 @@ variable "tfe_license" {
   description = "The HashiCorp license. Defaults to \"\" if no value is given. Required when TFE_LICENSE_PATH is unset."
 }
 
+# ------------------------------------------------------
+# Log Forwarding and Metrics
+# ------------------------------------------------------
+variable "tfe_log_forwarding_enabled" {
+  default     = false
+  type        = bool
+  description = "(Optional) Whether or not to enable log forwarding for Terraform Enterprise. Defaults to false."
+}
+
+variable "tfe_log_forwarding_config_path" {
+  default     = null
+  type        = string
+  description = "The path to a file containing valid Fluent Bit [OUTPUT] configuration"
+}
+
 variable "tls_ca_bundle_file" {
   default     = null
   type        = string
