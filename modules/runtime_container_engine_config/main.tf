@@ -11,35 +11,35 @@ locals {
     local.storage_configuration,
     local.vault_configuration,
     {
-      http_proxy                    = var.http_proxy != null ? "http://${var.http_proxy}" : null
-      HTTP_PROXY                    = var.http_proxy != null ? "http://${var.http_proxy}" : null
-      https_proxy                   = var.https_proxy != null ? "http://${var.https_proxy}" : null
-      HTTPS_PROXY                   = var.https_proxy != null ? "http://${var.https_proxy}" : null
-      no_proxy                      = var.no_proxy != null ? join(",", var.no_proxy) : null
-      NO_PROXY                      = var.no_proxy != null ? join(",", var.no_proxy) : null
-      TFE_HOSTNAME                  = var.hostname
-      TFE_HTTP_PORT                 = var.http_port
-      TFE_HTTPS_PORT                = var.https_port
-      TFE_OPERATIONAL_MODE          = var.operational_mode
-      TFE_ENCRYPTION_PASSWORD       = random_password.enc_password.result
-      TFE_DISK_CACHE_VOLUME_NAME    = "terraform-enterprise_terraform-enterprise-cache"
-      TFE_LICENSE_REPORTING_OPT_OUT = var.license_reporting_opt_out
-      TFE_USAGE_REPORTING_OPT_OUT   = var.usage_reporting_opt_out
-      TFE_LICENSE                   = var.tfe_license
-      TFE_TLS_CA_BUNDLE_FILE        = var.tls_ca_bundle_file != null ? var.tls_ca_bundle_file : null
-      TFE_TLS_CERT_FILE             = var.cert_file
-      TFE_TLS_CIPHERS               = var.tls_ciphers
-      TFE_TLS_KEY_FILE              = var.key_file
-      TFE_TLS_VERSION               = var.tls_version != null ? var.tls_version : ""
-      TFE_RUN_PIPELINE_IMAGE        = var.run_pipeline_image
-      TFE_CAPACITY_CONCURRENCY      = var.capacity_concurrency
-      TFE_CAPACITY_CPU              = var.capacity_cpu
-      TFE_CAPACITY_MEMORY           = var.capacity_memory
-      TFE_IACT_SUBNETS              = var.iact_subnets
-      TFE_IACT_TIME_LIMIT           = var.iact_time_limit
-      TFE_IACT_TRUSTED_PROXIES      = join(",", var.trusted_proxies)
+      http_proxy                     = var.http_proxy != null ? "http://${var.http_proxy}" : null
+      HTTP_PROXY                     = var.http_proxy != null ? "http://${var.http_proxy}" : null
+      https_proxy                    = var.https_proxy != null ? "http://${var.https_proxy}" : null
+      HTTPS_PROXY                    = var.https_proxy != null ? "http://${var.https_proxy}" : null
+      no_proxy                       = var.no_proxy != null ? join(",", var.no_proxy) : null
+      NO_PROXY                       = var.no_proxy != null ? join(",", var.no_proxy) : null
+      TFE_HOSTNAME                   = var.hostname
+      TFE_HTTP_PORT                  = var.http_port
+      TFE_HTTPS_PORT                 = var.https_port
+      TFE_OPERATIONAL_MODE           = var.operational_mode
+      TFE_ENCRYPTION_PASSWORD        = random_password.enc_password.result
+      TFE_DISK_CACHE_VOLUME_NAME     = "terraform-enterprise_terraform-enterprise-cache"
+      TFE_LICENSE_REPORTING_OPT_OUT  = var.license_reporting_opt_out
+      TFE_USAGE_REPORTING_OPT_OUT    = var.usage_reporting_opt_out
+      TFE_LICENSE                    = var.tfe_license
+      TFE_TLS_CA_BUNDLE_FILE         = var.tls_ca_bundle_file != null ? var.tls_ca_bundle_file : null
+      TFE_TLS_CERT_FILE              = var.cert_file
+      TFE_TLS_CIPHERS                = var.tls_ciphers
+      TFE_TLS_KEY_FILE               = var.key_file
+      TFE_TLS_VERSION                = var.tls_version != null ? var.tls_version : ""
+      TFE_RUN_PIPELINE_IMAGE         = var.run_pipeline_image
+      TFE_CAPACITY_CONCURRENCY       = var.capacity_concurrency
+      TFE_CAPACITY_CPU               = var.capacity_cpu
+      TFE_CAPACITY_MEMORY            = var.capacity_memory
+      TFE_IACT_SUBNETS               = var.iact_subnets
+      TFE_IACT_TIME_LIMIT            = var.iact_time_limit
+      TFE_IACT_TRUSTED_PROXIES       = join(",", var.trusted_proxies)
       TFE_LOG_FORWARDING_CONFIG_PATH = var.tfe_log_forwarding_config_path
-      TFE_LOG_FORWARDING_ENABLED = var.tfe_log_forwarding_enabled
+      TFE_LOG_FORWARDING_ENABLED     = var.tfe_log_forwarding_enabled
     }
   )
   # compose files allow for $ deliminated variable injection.  $$ is the appropriate escape.
@@ -88,7 +88,7 @@ locals {
           {
             type   = "bind"
             source = "/etc/tfe/fluent-bit.conf"
-            target = "/etc/tfe/fluent-bit.conf"
+            target = "/etc/fluent-bit.conf"
           },
           {
             type   = "bind"

@@ -32,8 +32,7 @@ https_proxy="${proxy_ip}:${proxy_port}"
 no_proxy="${no_proxy}"
 EOF
 
-cat <<EOF > /etc/tfe/fluent-bit.conf
-
+/bin/cat <<EOF > /etc/tfe/fluent-bit.conf
 [OUTPUT]
     Name         datadog
     Match        *
