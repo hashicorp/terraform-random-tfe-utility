@@ -32,7 +32,8 @@ https_proxy="${proxy_ip}:${proxy_port}"
 no_proxy="${no_proxy}"
 EOF
 
-/bin/cat <<EOF > /etc/tfe/fluent-bit.conf
+mkdir -p /etc/fluent-bit
+/bin/cat <<EOF > /etc/fluent-bit/fluent-bit.conf
 [OUTPUT]
     Name         datadog
     Match        *
@@ -44,6 +45,8 @@ EOF
     dd_source    docker
     dd_tags      environment:development,owner:scale-perf-team
 EOF
+
+chmod 644 /etc/fluent-bit/fluent-bit.conf
 
 /bin/cat <<EOF >/etc/apt/apt.conf
 Acquire::http::Proxy "http://${proxy_ip}:${proxy_port}";
