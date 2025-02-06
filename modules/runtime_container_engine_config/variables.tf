@@ -45,6 +45,12 @@ variable "cert_file" {
   description = "Path to a file containing the TLS certificate Terraform Enterprise will use when serving TLS connections to clients."
 }
 
+variable "cert_file_secondary" {
+  type        = string
+  description = "(Optional) Path to a file containing the TLS certificate Terraform Enterprise will use when serving TLS connections to clients from its secondary hostname. Defaults to null if no value is given."
+  default     = null
+}
+
 variable "database_host" {
   type        = string
   description = "The PostgreSQL server to connect to in the format HOST[:PORT] (e.g. db.example.com or db.example.com:5432). If only HOST is provided then the :PORT defaults to :5432 if no value is given. Required when TFE_OPERATIONAL_MODE is external or active-active."
@@ -121,6 +127,12 @@ variable "hostname" {
   description = "Hostname where Terraform Enterprise is accessed (e.g. terraform.example.com)."
 }
 
+variable "hostname_secondary" {
+  description = "(Optional) Secondary hostname where Terraform Enterprise is accessed (e.g. terraform-secondary.example.com). Defaults to null if no value is given."
+  type        = string
+  default     = null
+}
+
 variable "http_proxy" {
   type        = string
   description = "(Optional) The IP address and port of existing web proxy to route TFE http traffic through."
@@ -150,6 +162,12 @@ variable "key_file" {
   description = "Path to a file containing the TLS private key Terraform Enterprise will use when serving TLS connections to clients."
 }
 
+variable "key_file_secondary" {
+  description = "(Optional) Path to a file containing the TLS private key Terraform Enterprise will use when serving TLS connections to clients from its secondary hostname. Defaults to null if no value is given."
+  type        = string
+  default     = null
+}
+
 variable "metrics_endpoint_enabled" {
   default     = false
   type        = bool
@@ -173,6 +191,12 @@ variable "no_proxy" {
   type        = list(string)
   description = "(Optional) List of IP addresses to not proxy"
   default     = []
+}
+
+variable "oidc_hostname_choice" {
+  description = "(Optional) OpenID Connect hostname choice. Defaults to \"primary\" if no value is given."
+  type        = string
+  default     = "primary"
 }
 
 variable "operational_mode" {
