@@ -214,6 +214,33 @@ variable "redis_user" {
   description = "Redis server user. Leave blank to not use a user when authenticating. Defaults to \"\" if no value is given."
 }
 
+variable "redis_use_sentinel" {
+  type        = bool
+  description = "Will connections to redis use the sentinel protocol?"
+  default     = false
+}
+
+variable "redis_sentinel_hosts" {
+  type        = array(string)
+  description = "A list of sentinel host/port combinations in the form of 'host:port', eg: sentinel-leader.terraform.io:26379"
+  default     = []
+}
+
+variable "redis_sentinel_leader_name" {
+  type        = string
+  description = "The name of the sentinel leader."
+}
+
+variable "redis_sentinel_user" {
+  type        = string
+  description = "Redis sentinel user. Leave blank to not use a user when authenticating to redis sentinel. Defaults to \"\" if no value is given."
+}
+
+variable "redis_sentinel_password" {
+  type        = string
+  description = "Redis senitnel password."
+}
+
 variable "run_pipeline_image" {
   type        = string
   description = "Container image used to execute Terraform runs. Leave blank to use the default image that comes with Terraform Enterprise. Defaults to \"\" if no value is given."
