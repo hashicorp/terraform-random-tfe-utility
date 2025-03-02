@@ -221,7 +221,7 @@ variable "redis_use_sentinel" {
 }
 
 variable "redis_sentinel_hosts" {
-  type        = array(string)
+  type        = list(string)
   description = "A list of sentinel host/port combinations in the form of 'host:port', eg: sentinel-leader.terraform.io:26379"
   default     = []
 }
