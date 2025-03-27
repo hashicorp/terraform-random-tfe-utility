@@ -235,13 +235,13 @@ variable "redis_sentinel_leader_name" {
 variable "redis_sentinel_user" {
   type        = string
   description = "Redis sentinel user. Leave blank to not use a user when authenticating to redis sentinel. Defaults to \"\" if no value is given."
-  default = null
+  default     = null
 }
 
 variable "redis_sentinel_password" {
   type        = string
   description = "Redis senitnel password."
-  default = null
+  default     = null
 }
 
 variable "run_pipeline_image" {
