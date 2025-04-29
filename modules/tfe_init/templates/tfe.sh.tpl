@@ -12,7 +12,7 @@ log_pathname="/var/log/startup.log"
 
 %{ if cloud == "google" && distribution == "rhel" ~}
 echo "[Terraform Enterprise] Patching GCP Yum repo configuration" | tee -a $log_pathname
-# workaround for GCP RHEL 7 known issue 
+# workaround for GCP RHEL 7 known issue
 # https://cloud.google.com/compute/docs/troubleshooting/known-issues#keyexpired
 sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
 %{ endif ~}
@@ -20,7 +20,7 @@ sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
 install_packages $log_pathname
 
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
-sudo curl --noproxy '*' -Lo /bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
+sudo curl --noproxy '*' -Lo /bin/jq https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-$(uname -m | grep -q "arm\|aarch" && echo "arm64" || echo "amd64")
 sudo chmod +x /bin/jq
 
 %{ if cloud == "google" ~}
