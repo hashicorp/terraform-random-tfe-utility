@@ -9,7 +9,7 @@ function install_packages {
 	apt-get install -y unzip
 
 	echo "[$(date +"%FT%T")] [Terraform Enterprise] Install AWS CLI" | tee -a $log_pathname
-	curl --noproxy '*' "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+	curl --noproxy '*' "https://awscli.amazonaws.com/awscli-exe-linux-$(uname -m | grep -q "arm\|aarch" && echo "aarch64" || echo "x86_64").zip" -o "awscliv2.zip"
 	unzip awscliv2.zip
 	./aws/install
 	rm -f ./awscliv2.zip
