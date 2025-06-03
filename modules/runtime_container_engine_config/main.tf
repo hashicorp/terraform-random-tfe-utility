@@ -66,6 +66,7 @@ locals {
         ports = flatten([
           "80:${var.http_port}",
           "443:${var.https_port}",
+          "8443:${var.admin_api_https_port}",
           local.active_active ? ["8201:8201"] : [],
           var.metrics_endpoint_enabled ? [
             "${var.metrics_endpoint_port_http}:9090",
@@ -130,6 +131,10 @@ locals {
           {
             containerPort = var.https_port
             hostPort      = 443
+          },
+          {
+            containerPort = var.admin_api_https_port
+            hostPort      = 8443
           },
           local.active_active ? [{ containerPort = 8201, hostPort = 8201 }] : [],
           var.metrics_endpoint_enabled ? [
