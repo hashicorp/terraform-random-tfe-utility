@@ -91,7 +91,7 @@ variable "https_port" {
 variable "admin_api_https_port" {
   default     = null
   type        = number
-  description = "Port application listens on for Admin API. Default is 8443."
+  description = "Port application listens on for Admin API."
 }
 
 variable "iact_subnets" {
