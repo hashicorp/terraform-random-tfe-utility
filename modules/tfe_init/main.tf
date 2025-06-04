@@ -11,7 +11,7 @@ locals {
   redis_bootstrap_path          = "/etc/tfe/ssl/redis"
   redis_bootstrap_cert_pathname = "${local.redis_bootstrap_path}/cert.pem"
   redis_bootstrap_key_pathname  = "${local.redis_bootstrap_path}/key.pem"
-  redis_bootstrap_ca_pathname   = "${local.redis_bootstrap_path}/ca_cert.pem"
+  redis_bootstrap_ca_pathname   = "${local.redis_bootstrap_path}/cacert.pem"
 
   user_data_template = {
     aws = {
