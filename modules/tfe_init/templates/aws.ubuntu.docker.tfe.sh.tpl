@@ -98,7 +98,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configur
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure Redis CA cert" | tee -a $log_pathname
 redis_ca_certificate_data_b64=$(get_base64_secrets ${redis_ca_certificate_secret_id})
 mkdir -p $(dirname ${redis_bootstrap_ca_pathname})
-echo $redis_ca_certificate_data_b64 | base64 --decode > $redis_bootstrap_ca_pathname
+echo $redis_ca_certificate_data_b64 | base64 --decode > ${redis_bootstrap_ca_pathname}
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping Redis CA certificate configuration" | tee -a $log_pathname
 %{ endif ~}
