@@ -272,24 +272,6 @@ variable "redis_use_mtls" {
   description = "Redis service requires mutual TLS authentication. If true, the external Redis instance will use TLS certs for authentication."
 }
 
-variable "redis_ca_cert_path" {
-  default     = null
-  type        = string
-  description = "(Required when redis_use_mtls is true) The path to the CA certificate file for the Redis instance."
-}
-
-variable "redis_client_cert_path" {
-  default     = null
-  type        = string
-  description = "(Required when redis_use_mtls is true) The path to the client certificate file for the Redis instance."
-}
-
-variable "redis_client_key_path" {
-  default     = null
-  type        = string
-  description = "(Required when redis_use_mtls is true) The path to the client key file for the Redis instance."
-}
-
 # ------------------------------------------------------
 # Mounted Disk
 # ------------------------------------------------------
