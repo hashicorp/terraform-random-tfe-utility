@@ -22,13 +22,13 @@ variable "certificate_secret_id" {
 variable "redis_ca_certificate_secret_id" {
   default     = null
   type        = string
-  description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate of a certificate authority (CA) to be trusted by the TFE instance(s)."
+  description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate of a certificate authority (CA) to be trusted by the redis instance"
 }
 
 variable "redis_client_certificate_secret_id" {
   default     = null
   type        = string
-  description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate for the TFE instance(s)."
+  description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate for redis instance."
 }
 
 variable "cloud" {
@@ -132,7 +132,7 @@ variable "proxy_port" {
 variable "redis_client_key_secret_id" {
   default     = null
   type        = string
-  description = "A secret ID which contains the Base64 encoded version of a PEM encoded private key for the TFE instance(s)."
+  description = "A secret ID which contains the Base64 encoded version of a PEM encoded private key for the redis instance"
 }
 
 variable "registry" {
