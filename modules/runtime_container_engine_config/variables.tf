@@ -218,20 +218,24 @@ variable "redis_use_tls" {
 variable "redis_ca_cert_path" {
   type        = string
   description = "Path to a file containing the CA certificate for Redis TLS connections. Leave blank to not use a CA certificate for Redis TLS connections. Defaults to \"\" if no value is given."
+  default     = null
 }
 variable "redis_client_cert_path" {
   type        = string
   description = "Path to a file containing the client certificate for Redis TLS connections. Leave blank to not use a client certificate for Redis TLS connections. Defaults to \"\" if no value is given."
+  default     = null
 }
 
 variable "redis_client_key_path" {
   type        = string
   description = "Path to a file containing the client key for Redis TLS connections. Leave blank to not use a client key for Redis TLS connections. Defaults to \"\" if no value is given."
+  default     = null
 }
 
 variable "redis_use_mtls" {
   type        = bool
   description = "Whether or not to use mutual TLS to access Redis. Defaults to false if no value is given."
+  default     = false
 }
 
 variable "redis_user" {
