@@ -53,6 +53,15 @@ echo $certificate_data_b64 | base64 --decode > ${tls_bootstrap_cert_pathname}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapCert configuration" | tee -a $log_pathname
 %{ endif ~}
 
+%{ if enable_redis_mtls == true ~}
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure RedisCertBootstrap" | tee -a $log_pathname
+redis_certificate_data_b64=$(get_base64_secrets ${redis_certificate_secret_id})
+mkdir -p $(dirname ${redis_bootstrap_cert_pathname})
+echo $redis_certificate_data_b64 | base64 --decode > ${redis_bootstrap_cert_pathname}
+%{ else ~}
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping RedisCertBootstrap configuration" | tee -a $log_pathname
+%{ endif ~}
+
 %{ if key_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapKey" | tee -a $log_pathname
 key_data_b64=$(get_base64_secrets ${key_secret_id})
@@ -62,6 +71,17 @@ chmod 0600 ${tls_bootstrap_key_pathname}
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configuration" | tee -a $log_pathname
 %{ endif ~}
+
+%{ if redis_client_key_secret_id != null ~}
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure RedisKeyBootstrap" | tee -a $log_pathname
+redis_key_data_b64=$(get_base64_secrets ${redis_client_key_secret_id})
+mkdir -p $(dirname ${redis_bootstrap_key_pathname})
+echo $redis_key_data_b64 | base64 --decode > ${redis_bootstrap_key_pathname}
+chmod 0600 ${redis_bootstrap_key_pathname}
+%{ else ~}
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configuration" | tee -a $log_pathname
+%{ endif ~}
+
 ca_certificate_directory="/dev/null"
 ca_certificate_directory=/usr/local/share/ca-certificates/extra
 ca_cert_filepath="$ca_certificate_directory/tfe-ca-certificate.crt"
@@ -72,6 +92,15 @@ mkdir -p $ca_certificate_directory
 echo $ca_certificate_data_b64 | base64 --decode > $ca_cert_filepath
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configuration" | tee -a $log_pathname
+%{ endif ~}
+
+%{ if redis_ca_certificate_secret_id != null ~}
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure Redis CA cert" | tee -a $log_pathname
+redis_ca_certificate_data_b64=$(get_base64_secrets ${redis_ca_certificate_secret_id})
+mkdir -p $(dirname ${redis_bootstrap_ca_pathname})
+echo $redis_ca_certificate_data_b64 | base64 --decode > ${redis_bootstrap_ca_pathname}
+%{ else ~}
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping Redis CA certificate configuration" | tee -a $log_pathname
 %{ endif ~}
 
 if [ -f "$ca_cert_filepath" ]

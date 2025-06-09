@@ -1,6 +1,12 @@
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
+variable "enable_redis_mtls" {
+  default     = false
+  type        = bool
+  description = "Should Redis mTLS be enabled? This requires the redis_ca_certificate_secret_id, redis_client_key_secret_id and redis_client_certificate_secret_id variables to be set."
+}
+
 variable "ca_certificate_secret_id" {
   default     = null
   type        = string
@@ -11,6 +17,18 @@ variable "certificate_secret_id" {
   default     = null
   type        = string
   description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate for the TFE instance(s)."
+}
+
+variable "redis_ca_certificate_secret_id" {
+  default     = null
+  type        = string
+  description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate of a certificate authority (CA) to be trusted by the redis instance"
+}
+
+variable "redis_client_certificate_secret_id" {
+  default     = null
+  type        = string
+  description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate for redis instance."
 }
 
 variable "cloud" {
@@ -89,7 +107,6 @@ variable "key_secret_id" {
   description = "A secret ID which contains the Base64 encoded version of a PEM encoded private key for the TFE instance(s)."
 }
 
-
 variable "operational_mode" {
   default     = null
   description = "A special string to control the operational mode of Terraform Enterprise. Valid values are: 'external' for External Services mode; 'disk' for Mounted Disk mode; 'active-active' for Active/Active mode."
@@ -110,6 +127,12 @@ variable "proxy_port" {
   default     = null
   type        = string
   description = "Port that the proxy server will use"
+}
+
+variable "redis_client_key_secret_id" {
+  default     = null
+  type        = string
+  description = "A secret ID which contains the Base64 encoded version of a PEM encoded private key for the redis instance"
 }
 
 variable "registry" {

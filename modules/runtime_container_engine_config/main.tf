@@ -86,6 +86,11 @@ locals {
             target = "/etc/ssl/private/terraform-enterprise"
           },
           {
+            type   = "bind"
+            source = "/etc/tfe/ssl/redis"
+            target = "/etc/ssl/private/terraform-enterprise/redis"
+          },
+          {
             type   = "volume"
             source = "terraform-enterprise-cache"
             target = "/var/cache/tfe-task-worker/terraform"

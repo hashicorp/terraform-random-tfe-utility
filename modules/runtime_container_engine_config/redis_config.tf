@@ -13,6 +13,10 @@ locals {
     TFE_REDIS_SENTINEL_LEADER_NAME = var.redis_sentinel_leader_name
     TFE_REDIS_SENTINEL_PASSWORD    = var.redis_sentinel_password
     TFE_REDIS_SENTINEL_USERNAME    = var.redis_sentinel_user
+    TFE_REDIS_CA_CERT_PATH         = var.redis_ca_cert_path
+    TFE_REDIS_CLIENT_CERT_PATH     = var.redis_client_cert_path
+    TFE_REDIS_CLIENT_KEY_PATH      = var.redis_client_key_path
+    TFE_REDIS_USE_MTLS             = var.redis_use_mtls
   }
   redis_configuration = local.active_active ? local.redis : {}
 }
