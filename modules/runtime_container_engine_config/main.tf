@@ -84,6 +84,11 @@ locals {
             target = "/etc/ssl/private/terraform-enterprise"
           },
           {
+            type   = "bind"
+            source = "/etc/tfe/ssl/postgres"
+            target = "/etc/ssl/private/terraform-enterprise/postgres"
+          },
+          {
             type   = "volume"
             source = "terraform-enterprise-cache"
             target = "/var/cache/tfe-task-worker/terraform"

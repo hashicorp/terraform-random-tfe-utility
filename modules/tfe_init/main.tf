@@ -7,6 +7,12 @@ locals {
   tls_bootstrap_cert_pathname = "${local.tls_bootstrap_path}/cert.pem"
   tls_bootstrap_key_pathname  = "${local.tls_bootstrap_path}/key.pem"
   tls_bootstrap_ca_pathname   = "${local.tls_bootstrap_path}/bundle.pem"
+
+  postgres_bootstrap_path          = "/etc/tfe/ssl/postgres"
+  postgres_bootstrap_cert_pathname = "${local.postgres_bootstrap_path}/cert.pem"
+  postgres_bootstrap_key_pathname  = "${local.postgres_bootstrap_path}/key.pem"
+  postgres_bootstrap_ca_pathname   = "${local.postgres_bootstrap_path}/ca_cert.pem"
+
   user_data_template = {
     aws = {
       ubuntu = {
@@ -66,6 +72,10 @@ locals {
       ca_certificate_secret_id = var.ca_certificate_secret_id
       certificate_secret_id    = var.certificate_secret_id
       key_secret_id            = var.key_secret_id
+
+      postgres_bootstrap_cert_pathname = local.postgres_bootstrap_cert_pathname
+      postgres_bootstrap_key_pathname  = local.postgres_bootstrap_key_pathname
+      postgres_bootstrap_ca_pathname   = local.postgres_bootstrap_ca_pathname
 
       proxy_ip   = var.proxy_ip
       proxy_port = var.proxy_port
