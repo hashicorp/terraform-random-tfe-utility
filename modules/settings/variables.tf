@@ -266,6 +266,12 @@ variable "redis_use_tls" {
   description = "Redis service requires TLS. If true, the external Redis instance will use port 6380, otherwise 6379."
 }
 
+variable "redis_use_mtls" {
+  default     = null
+  type        = bool
+  description = "Redis service requires mutual TLS authentication. If true, the external Redis instance will use TLS certs for authentication."
+}
+
 # ------------------------------------------------------
 # Mounted Disk
 # ------------------------------------------------------

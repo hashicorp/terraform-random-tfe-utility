@@ -13,6 +13,11 @@ locals {
   postgres_bootstrap_key_pathname  = "${local.postgres_bootstrap_path}/key.pem"
   postgres_bootstrap_ca_pathname   = "${local.postgres_bootstrap_path}/ca_cert.pem"
 
+  redis_bootstrap_path          = "/etc/tfe/ssl/redis"
+  redis_bootstrap_cert_pathname = "${local.redis_bootstrap_path}/cert.pem"
+  redis_bootstrap_key_pathname  = "${local.redis_bootstrap_path}/key.pem"
+  redis_bootstrap_ca_pathname   = "${local.redis_bootstrap_path}/cacert.pem"
+
   user_data_template = {
     aws = {
       ubuntu = {
@@ -76,6 +81,15 @@ locals {
       postgres_bootstrap_cert_pathname = local.postgres_bootstrap_cert_pathname
       postgres_bootstrap_key_pathname  = local.postgres_bootstrap_key_pathname
       postgres_bootstrap_ca_pathname   = local.postgres_bootstrap_ca_pathname
+
+      enable_redis_mtls              = var.enable_redis_mtls
+      redis_ca_certificate_secret_id = var.redis_ca_certificate_secret_id
+      redis_certificate_secret_id    = var.redis_client_certificate_secret_id
+      redis_client_key_secret_id     = var.redis_client_key_secret_id
+
+      redis_bootstrap_cert_pathname = local.redis_bootstrap_cert_pathname
+      redis_bootstrap_key_pathname  = local.redis_bootstrap_key_pathname
+      redis_bootstrap_ca_pathname   = local.redis_bootstrap_ca_pathname
 
       proxy_ip   = var.proxy_ip
       proxy_port = var.proxy_port

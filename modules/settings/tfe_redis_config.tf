@@ -22,6 +22,10 @@ locals {
     redis_use_tls = {
       value = var.redis_use_tls != null ? var.redis_use_tls ? "1" : "0" : null
     }
+
+    redis_use_mtls = {
+      value = var.redis_use_mtls != null ? var.redis_use_mtls ? "1" : "0" : null
+    }
   }
 
   redis_configuration = var.production_type == "active-active" ? local.redis_configs : {}

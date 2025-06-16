@@ -107,6 +107,12 @@ variable "https_port" {
   description = "Port application listens on for HTTPS. Default is 443."
 }
 
+variable "admin_api_https_port" {
+  default     = 8443
+  type        = number
+  description = "Port application listens on for Admin API. Default is 8443."
+}
+
 variable "iact_subnets" {
   type        = string
   description = "Comma-separated list of subnets in CIDR notation that are allowed to retrieve the initial admin creation token via the API (e.g. 10.0.0.0/8,192.168.0.0/24). Leave blank to disable retrieving the initial admin creation token via the API from outside the host. Defaults to \"\" if no value is given."
@@ -226,6 +232,29 @@ variable "redis_use_auth" {
 variable "redis_use_tls" {
   type        = bool
   description = "Whether or not to use TLS to access Redis. Defaults to false if no value is given."
+}
+
+variable "redis_ca_cert_path" {
+  type        = string
+  description = "Path to a file containing the CA certificate for Redis TLS connections. Leave blank to not use a CA certificate for Redis TLS connections. Defaults to \"\" if no value is given."
+  default     = null
+}
+variable "redis_client_cert_path" {
+  type        = string
+  description = "Path to a file containing the client certificate for Redis TLS connections. Leave blank to not use a client certificate for Redis TLS connections. Defaults to \"\" if no value is given."
+  default     = null
+}
+
+variable "redis_client_key_path" {
+  type        = string
+  description = "Path to a file containing the client key for Redis TLS connections. Leave blank to not use a client key for Redis TLS connections. Defaults to \"\" if no value is given."
+  default     = null
+}
+
+variable "redis_use_mtls" {
+  type        = bool
+  description = "Whether or not to use mutual TLS to access Redis. Defaults to false if no value is given."
+  default     = false
 }
 
 variable "redis_user" {
