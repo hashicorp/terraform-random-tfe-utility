@@ -85,11 +85,11 @@ locals {
             source = "/etc/tfe/ssl"
             target = "/etc/ssl/private/terraform-enterprise"
           },
-          {
-            type   = "bind"
-            source = "/etc/tfe/ssl/postgres"
-            target = "/etc/ssl/private/terraform-enterprise/postgres"
-          },
+          # {
+          #   type   = "bind"
+          #   source = "/etc/tfe/ssl/postgres"
+          #   target = "/etc/ssl/private/terraform-enterprise/postgres"
+          # },
           {
             type   = "bind"
             source = "/etc/tfe/ssl/redis"
