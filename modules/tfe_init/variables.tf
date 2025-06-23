@@ -160,21 +160,25 @@ variable "tfe_image" {
 
 ### Database details
 variable "database_host" {
+  default     = null
   type        = string
   description = "The PostgreSQL server to connect to. Required when Azure PostgreSQL MSI auth is enabled"
 }
 
 variable "database_name" {
+  default     = null
   type        = string
   description = "Name of the PostgreSQL database to store application data in."
 }
 
 variable "admin_database_username" {
+  default     = null
   type        = string
   description = "PostgreSQL user."
 }
 
 variable "admin_database_password" {
+  default     = null
   type        = string
   description = "PostgreSQL password."
 }
