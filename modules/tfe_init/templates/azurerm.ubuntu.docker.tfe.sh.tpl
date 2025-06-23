@@ -6,6 +6,9 @@ ${install_packages}
 %{ if enable_monitoring ~}
 ${install_monitoring_agents}
 %{ endif ~}
+%{ if database_azure_msi_auth_enabled ~}
+${azurerm_database_init}
+%{ endif ~}
 
 log_pathname="/var/log/startup.log"
 
@@ -102,6 +105,10 @@ echo "UUID=$(lsblk --noheadings --output uuid $device) ${disk_path} ext4 discard
 
 %{ if enable_monitoring ~}
 install_monitoring_agents $log_pathname
+%{ endif ~}
+
+%{ if database_azure_msi_auth_enabled ~}
+azurerm_database_init $log_pathname
 %{ endif ~}
 
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing Docker Engine from Repository" | tee -a $log_pathname

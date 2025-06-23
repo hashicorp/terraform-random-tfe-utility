@@ -157,3 +157,30 @@ variable "tfe_image" {
   type        = string
   description = "The registry path, image name, and image version (e.g. \"quay.io/hashicorp/terraform-enterprise:1234567\")"
 }
+
+### Database details
+variable "database_host" {
+  type        = string
+  description = "The PostgreSQL server to connect to. Required when Azure PostgreSQL MSI auth is enabled"
+}
+
+variable "database_name" {
+  type        = string
+  description = "Name of the PostgreSQL database to store application data in."
+}
+
+variable "admin_database_username" {
+  type        = string
+  description = "PostgreSQL user."
+}
+
+variable "admin_database_password" {
+  type        = string
+  description = "PostgreSQL password."
+}
+
+variable "database_passwordless_azure_use_msi" {
+  default     = false
+  type        = bool
+  description = "Whether or not to use Azure Managed Service Identity (MSI) to connect to the PostgreSQL database. Defaults to false if no value is given."
+}

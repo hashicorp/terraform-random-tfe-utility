@@ -53,6 +53,7 @@ locals {
       install_monitoring_agents = local.install_monitoring_agents
       retry                     = local.retry
       quadlet_unit              = local.quadlet_unit
+      azurerm_database_init     = local.azurerm_database_init
 
       active_active               = var.operational_mode == "active-active"
       cloud                       = var.cloud
@@ -81,6 +82,8 @@ locals {
       redis_bootstrap_cert_pathname = local.redis_bootstrap_cert_pathname
       redis_bootstrap_key_pathname  = local.redis_bootstrap_key_pathname
       redis_bootstrap_ca_pathname   = local.redis_bootstrap_ca_pathname
+
+      database_azure_msi_auth_enabled   = var.database_passwordless_azure_use_msi
 
       proxy_ip   = var.proxy_ip
       proxy_port = var.proxy_port
