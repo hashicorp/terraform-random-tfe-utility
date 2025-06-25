@@ -7,6 +7,12 @@ variable "enable_redis_mtls" {
   description = "Should Redis mTLS be enabled? This requires the redis_ca_certificate_secret_id, redis_client_key_secret_id and redis_client_certificate_secret_id variables to be set."
 }
 
+variable "enable_postgres_mtls" {
+  default     = false
+  type        = bool
+  description = "Should Redis mTLS be enabled? This requires the redis_ca_certificate_secret_id, redis_client_key_secret_id and redis_client_certificate_secret_id variables to be set."
+}
+
 variable "ca_certificate_secret_id" {
   default     = null
   type        = string
@@ -26,6 +32,18 @@ variable "redis_ca_certificate_secret_id" {
 }
 
 variable "redis_client_certificate_secret_id" {
+  default     = null
+  type        = string
+  description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate for redis instance."
+}
+
+variable "postgres_ca_certificate_secret_id" {
+  default     = null
+  type        = string
+  description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate of a certificate authority (CA) to be trusted by the redis instance"
+}
+
+variable "postgres_client_certificate_secret_id" {
   default     = null
   type        = string
   description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate for redis instance."
@@ -130,6 +148,12 @@ variable "proxy_port" {
 }
 
 variable "redis_client_key_secret_id" {
+  default     = null
+  type        = string
+  description = "A secret ID which contains the Base64 encoded version of a PEM encoded private key for the redis instance"
+}
+
+variable "postgres_client_key_secret_id" {
   default     = null
   type        = string
   description = "A secret ID which contains the Base64 encoded version of a PEM encoded private key for the redis instance"
