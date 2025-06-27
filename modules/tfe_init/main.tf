@@ -9,9 +9,9 @@ locals {
   tls_bootstrap_ca_pathname   = "${local.tls_bootstrap_path}/bundle.pem"
 
   postgres_bootstrap_path          = "/etc/tfe/ssl/postgres"
-  postgres_bootstrap_cert_pathname = "${local.postgres_bootstrap_path}/cert.pem"
-  postgres_bootstrap_key_pathname  = "${local.postgres_bootstrap_path}/key.pem"
-  postgres_bootstrap_ca_pathname   = "${local.postgres_bootstrap_path}/ca_cert.pem"
+  postgres_bootstrap_cert_pathname = "${local.postgres_bootstrap_path}/cert.crt"
+  postgres_bootstrap_key_pathname  = "${local.postgres_bootstrap_path}/key.key"
+  postgres_bootstrap_ca_pathname   = "${local.postgres_bootstrap_path}/ca.crt"
 
   redis_bootstrap_path          = "/etc/tfe/ssl/redis"
   redis_bootstrap_cert_pathname = "${local.redis_bootstrap_path}/cert.pem"
