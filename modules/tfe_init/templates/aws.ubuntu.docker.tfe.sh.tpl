@@ -84,20 +84,18 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configu
 
 %{ if postgres_ca_certificate_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure Postgres CA cert" | tee -a $log_pathname
-postgres_certificate_data_b64=$(get_base64_secrets ${postgres_ca_certificate_secret_id})
+postgres_ca_certificate_data_b64=$(get_base64_secrets ${postgres_ca_certificate_secret_id})
 mkdir -p $(dirname ${postgres_bootstrap_ca_pathname})
-echo $postgres_certificate_data_b64 | base64 --decode > ${postgres_bootstrap_ca_pathname}
-chmod 0600 ${postgres_bootstrap_ca_pathname}
+echo $postgres_ca_certificate_data_b64 | base64 --decode > ${postgres_bootstrap_ca_pathname}
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configuration" | tee -a $log_pathname
 %{ endif ~}
 
 %{ if postgres_certificate_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure Postgres Client cert" | tee -a $log_pathname
-postgres_key_data_b64=$(get_base64_secrets ${postgres_certificate_secret_id})
+postgres_certificate_data_b64=$(get_base64_secrets ${postgres_certificate_secret_id})
 mkdir -p $(dirname ${postgres_bootstrap_cert_pathname})
-echo $postgres_key_data_b64 | base64 --decode > ${postgres_bootstrap_cert_pathname}
-chmod 0600 ${postgres_bootstrap_cert_pathname}
+echo $postgres_certificate_data_b64 | base64 --decode > ${postgres_bootstrap_cert_pathname}
 %{ else ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configuration" | tee -a $log_pathname
 %{ endif ~}

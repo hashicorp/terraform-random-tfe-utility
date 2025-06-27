@@ -238,6 +238,11 @@ variable "pg_extra_params" {
   type        = string
   description = "(Optional) Parameter keywords of the form param1=value1&param2=value2 to support additional options that may be necessary for your specific PostgreSQL server. Allowed values are documented on the PostgreSQL site. An additional restriction on the sslmode parameter is that only the  require, verify-full, verify-ca, and disable values are allowed."
 }
+variable "pg_use_mtls" {
+  default     = null
+  type        = bool
+  description = "Enable mTLS for PostgreSQL connections. If true, the external PostgreSQL instance will use TLS certs for authentication."
+}
 
 # ------------------------------------------------------
 # Redis
