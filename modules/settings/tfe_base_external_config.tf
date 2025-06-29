@@ -23,9 +23,9 @@ locals {
       value = var.pg_user
     }
 
-    # pg_use_mtls = {
-    #   value = var.pg_use_mtls != null ? var.pg_use_mtls ? "1" : "0" : null
-    # }
+    pg_use_mtls = {
+      value = var.pg_use_mtls != null ? var.pg_use_mtls ? "1" : "0" : null
+    }
 
     log_forwarding_config = {
       value = var.log_forwarding_config

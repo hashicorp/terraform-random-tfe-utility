@@ -87,6 +87,7 @@ variable "database_client_key_file" {
 variable "database_use_mtls" {
   type        = bool
   description = "Whether or not to use mutual TLS to access database. Defaults to false if no value is given."
+  default     = false
 }
 
 variable "disk_path" {
