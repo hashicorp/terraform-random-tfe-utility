@@ -87,6 +87,11 @@ locals {
           },
           {
             type   = "bind"
+            source = "/etc/tfe/ssl/postgres"
+            target = "/etc/ssl/private/terraform-enterprise/postgres"
+          },
+          {
+            type   = "bind"
             source = "/etc/tfe/ssl/redis"
             target = "/etc/ssl/private/terraform-enterprise/redis"
           },
