@@ -75,6 +75,7 @@ variable "database_ca_cert_file" {
   description = "Path to a file containing the CA certificate for Database TLS connections. Leave blank to not use a CA certificate for Database TLS connections. Defaults to \"\" if no value is given."
   default     = null
 }
+
 variable "database_client_cert_file" {
   type        = string
   description = "Path to a file containing the client certificate for Database TLS connections. Leave blank to not use a client certificate for Database TLS connections. Defaults to \"\" if no value is given."

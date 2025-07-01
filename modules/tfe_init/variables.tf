@@ -49,6 +49,12 @@ variable "postgres_client_certificate_secret_id" {
   description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate for database instance."
 }
 
+variable "postgres_client_key_secret_id" {
+  default     = null
+  type        = string
+  description = "A secret ID which contains the Base64 encoded version of a PEM encoded private key for the database instance"
+}
+
 variable "cloud" {
   default     = null
   type        = string
@@ -151,12 +157,6 @@ variable "redis_client_key_secret_id" {
   default     = null
   type        = string
   description = "A secret ID which contains the Base64 encoded version of a PEM encoded private key for the redis instance"
-}
-
-variable "postgres_client_key_secret_id" {
-  default     = null
-  type        = string
-  description = "A secret ID which contains the Base64 encoded version of a PEM encoded private key for the database instance"
 }
 
 variable "registry" {
