@@ -97,7 +97,7 @@ locals {
       redis_bootstrap_key_pathname  = local.redis_bootstrap_key_pathname
       redis_bootstrap_ca_pathname   = local.redis_bootstrap_ca_pathname
 
-      database_azure_msi_auth_enabled   = var.database_passwordless_azure_use_msi
+      database_azure_msi_auth_enabled = var.database_passwordless_azure_use_msi
 
       proxy_ip   = var.proxy_ip
       proxy_port = var.proxy_port
