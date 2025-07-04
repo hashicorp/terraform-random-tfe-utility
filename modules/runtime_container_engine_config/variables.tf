@@ -70,6 +70,30 @@ variable "database_user" {
   description = "PostgreSQL user. Required when TFE_OPERATIONAL_MODE is external or active-active."
 }
 
+variable "database_ca_cert_file" {
+  type        = string
+  description = "Path to a file containing the CA certificate for Database TLS connections. Leave blank to not use a CA certificate for Database TLS connections. Defaults to \"\" if no value is given."
+  default     = null
+}
+
+variable "database_client_cert_file" {
+  type        = string
+  description = "Path to a file containing the client certificate for Database TLS connections. Leave blank to not use a client certificate for Database TLS connections. Defaults to \"\" if no value is given."
+  default     = null
+}
+
+variable "database_client_key_file" {
+  type        = string
+  description = "Path to a file containing the client key for Database TLS connections. Leave blank to not use a client key for Database TLS connections. Defaults to \"\" if no value is given."
+  default     = null
+}
+
+variable "database_use_mtls" {
+  type        = bool
+  description = "Whether or not to use mutual TLS to access database. Defaults to false if no value is given."
+  default     = false
+}
+
 variable "database_passwordless_azure_use_msi" {
   default     = false
   type        = bool
