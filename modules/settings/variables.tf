@@ -272,6 +272,13 @@ variable "redis_use_mtls" {
   description = "Redis service requires mutual TLS authentication. If true, the external Redis instance will use TLS certs for authentication."
 }
 
+variable "redis_use_sentinel" {
+  default     = null
+  type        = bool
+  description = "Redis service uses Sentinel."
+}
+
+
 # ------------------------------------------------------
 # Mounted Disk
 # ------------------------------------------------------

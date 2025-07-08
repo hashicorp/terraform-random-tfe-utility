@@ -7,6 +7,12 @@ variable "enable_redis_mtls" {
   description = "Should Redis mTLS be enabled? This requires the redis_ca_certificate_secret_id, redis_client_key_secret_id and redis_client_certificate_secret_id variables to be set."
 }
 
+variable "enable_redis_sentinel" {
+  default     = false
+  type        = bool
+  description = "Should Redis Sentinel be enabled? This requires the redis_sentinel_hosts, redis_sentinel_leader_name, redis_sentinel_username, and redis_sentinel_password variables to be set."
+}
+
 variable "enable_postgres_mtls" {
   default     = false
   type        = bool
@@ -42,6 +48,31 @@ variable "postgres_ca_certificate_secret_id" {
   type        = string
   description = "A secret ID which contains the Base64 encoded version of a PEM encoded public certificate of a certificate authority (CA) to be trusted by the database instance"
 }
+
+variable "redis_sentinel_hosts" {
+  default     = null
+  type        = list(string)
+  description = "hostnames of Redis Sentinel instances"
+}
+
+variable "redis_sentinel_leader_name" {
+  default     = null
+  type        = string
+  description = "the Sentinel instance that is elected to manage a failover when a master Redis instance becomes unavailable"
+}
+
+variable "redis_sentinel_username" {
+  default     = null
+  type        = string
+  description = "username to log into sentinel"
+}
+
+variable "redis_sentinel_password" {
+  default     = null
+  type        = string
+  description = "password to log into sentinel"
+}
+
 
 variable "postgres_client_certificate_secret_id" {
   default     = null

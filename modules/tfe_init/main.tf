@@ -88,6 +88,14 @@ locals {
       redis_certificate_secret_id    = var.redis_client_certificate_secret_id
       redis_client_key_secret_id     = var.redis_client_key_secret_id
 
+      enable_redis_sentinel          = var.enable_redis_sentinel
+      redis_sentinel_hosts           = var.redis_sentinel_hosts
+      redis_sentinel_leader_name     = var.redis_sentinel_leader_name    
+      redis_sentinel_username        = var.redis_sentinel_username
+      redis_sentinel_password        = var.redis_sentinel_password
+
+      
+
       enable_postgres_mtls              = var.enable_postgres_mtls
       postgres_ca_certificate_secret_id = var.postgres_ca_certificate_secret_id
       postgres_certificate_secret_id    = var.postgres_client_certificate_secret_id
