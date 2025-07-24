@@ -7,6 +7,7 @@ ${install_packages}
 %{ if enable_monitoring ~}
 ${install_monitoring_agents}
 %{ endif ~}
+${get_unmounted_disk}
 
 log_pathname="/var/log/startup.log"
 
@@ -78,7 +79,7 @@ then
 fi
 
 %{ if disk_path != null ~}
-device="/dev/${disk_device_name}"
+device=/dev/$$(get_unmounted_disk)
 echo "[Terraform Enterprise] Checking disk at '$device' for EXT4 filesystem" | tee -a $log_pathname
 if lsblk --fs $device | grep ext4
 then

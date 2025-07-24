@@ -59,6 +59,7 @@ locals {
       retry                     = local.retry
       quadlet_unit              = local.quadlet_unit
       azurerm_database_init     = local.azurerm_database_init
+      get_unmounted_disk        = local.get_unmounted_disk
 
       active_active               = var.operational_mode == "active-active"
       cloud                       = var.cloud
