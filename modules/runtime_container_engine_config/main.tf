@@ -10,6 +10,7 @@ locals {
     local.redis_configuration,
     local.storage_configuration,
     local.vault_configuration,
+    local.explorer_database_configuration,
     {
       http_proxy                    = var.http_proxy != null ? "http://${var.http_proxy}" : null
       HTTP_PROXY                    = var.http_proxy != null ? "http://${var.http_proxy}" : null

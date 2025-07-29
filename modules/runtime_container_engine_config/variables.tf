@@ -106,6 +106,31 @@ variable "database_passwordless_azure_client_id" {
   description = "Azure Managed Service Identity (MSI) Client ID. If not set, System Assigned Managed Identity will be used."
 }
 
+variable "explorer_database_host" {
+  type        = string
+  description = "The PostgreSQL server to connect to in the format HOST[:PORT] (e.g. db.example.com or db.example.com:5432). If only HOST is provided then the :PORT defaults to :5432 if no value is given. Required when TFE_OPERATIONAL_MODE is external or active-active."
+}
+
+variable "explorer_database_name" {
+  type        = string
+  description = "Name of the PostgreSQL database to store application data in. Required when TFE_OPERATIONAL_MODE is external or active-active."
+}
+
+variable "explorer_database_parameters" {
+  type        = string
+  description = "PostgreSQL server parameters for the connection URI. Used to configure the PostgreSQL connection (e.g. sslmode=require)."
+}
+
+variable "explorer_database_password" {
+  type        = string
+  description = "PostgreSQL password. Required when TFE_OPERATIONAL_MODE is external or active-active."
+}
+
+variable "explorer_database_user" {
+  type        = string
+  description = "PostgreSQL user. Required when TFE_OPERATIONAL_MODE is external or active-active."
+}
+
 variable "disk_path" {
   default     = null
   description = "The pathname of the directory in which Terraform Enterprise will store data in Mounted Disk mode. Required when var.operational_mode is 'disk'."
