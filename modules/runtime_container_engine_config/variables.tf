@@ -108,6 +108,7 @@ variable "database_passwordless_azure_client_id" {
 
 variable "explorer_database_host" {
   type        = string
+  default     = null
   description = "The PostgreSQL server to connect to in the format HOST[:PORT] (e.g. db.example.com or db.example.com:5432). If only HOST is provided then the :PORT defaults to :5432 if no value is given. Required when TFE_OPERATIONAL_MODE is external or active-active."
 }
 
