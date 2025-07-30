@@ -113,21 +113,25 @@ variable "explorer_database_host" {
 
 variable "explorer_database_name" {
   type        = string
+  default     = null
   description = "Name of the PostgreSQL database to store application data in. Required when TFE_OPERATIONAL_MODE is external or active-active."
 }
 
 variable "explorer_database_parameters" {
   type        = string
+  default     = null
   description = "PostgreSQL server parameters for the connection URI. Used to configure the PostgreSQL connection (e.g. sslmode=require)."
 }
 
 variable "explorer_database_password" {
   type        = string
+  default     = null
   description = "PostgreSQL password. Required when TFE_OPERATIONAL_MODE is external or active-active."
 }
 
 variable "explorer_database_user" {
   type        = string
+  default     = null
   description = "PostgreSQL user. Required when TFE_OPERATIONAL_MODE is external or active-active."
 }
 
