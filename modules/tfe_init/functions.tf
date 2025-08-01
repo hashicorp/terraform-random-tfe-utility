@@ -31,4 +31,5 @@ locals {
     admin_database_username = var.admin_database_username
     admin_database_password = var.admin_database_password
   })
+  get_unmounted_disk = file("${path.module}/templates/get_unmounted_disk.func")
 }
