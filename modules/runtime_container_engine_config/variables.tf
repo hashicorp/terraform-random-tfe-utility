@@ -142,6 +142,12 @@ variable "disk_path" {
   type        = string
 }
 
+variable "enable_sentinel_mtls" {
+  type        = bool
+  description = "Whether or not to use mutual TLS to access Redis Sentinel. Defaults to false if no value is given."
+  default     = false
+}
+
 variable "http_port" {
   default     = null
   type        = number

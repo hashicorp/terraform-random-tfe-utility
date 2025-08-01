@@ -13,6 +13,12 @@ variable "enable_postgres_mtls" {
   description = "Should postgres mTLS be enabled? This requires the postgres_ca_certificate_secret_id, postgres_client_key_secret_id and postgres_client_certificate_secret_id variables to be set."
 }
 
+variable "enable_sentinel_mtls" {
+  type        = bool
+  description = "Whether or not to use mutual TLS to access Redis Sentinel. Defaults to false if no value is given."
+  default     = false
+}
+
 variable "ca_certificate_secret_id" {
   default     = null
   type        = string
