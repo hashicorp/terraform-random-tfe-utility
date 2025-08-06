@@ -345,6 +345,18 @@ variable "redis_sentinel_password" {
   default     = null
 }
 
+variable "redis_passwordless_azure_use_msi" {
+  default     = false
+  type        = bool
+  description = "Whether or not to use Azure Managed Service Identity (MSI) to connect to the Redis server. Defaults to false if no value is given."
+}
+
+variable "redis_passwordless_azure_client_id" {
+  default     = ""
+  type        = string
+  description = "Azure Managed Service Identity (MSI) Client ID to be used for redis authentication. If not set, System Assigned Managed Identity will be used."
+}
+
 variable "run_pipeline_image" {
   type        = string
   description = "Container image used to execute Terraform runs. Leave blank to use the default image that comes with Terraform Enterprise. Defaults to \"\" if no value is given."
