@@ -17,6 +17,9 @@ locals {
     TFE_REDIS_CLIENT_CERT_PATH     = var.redis_client_cert_path
     TFE_REDIS_CLIENT_KEY_PATH      = var.redis_client_key_path
     TFE_REDIS_USE_MTLS             = var.redis_use_mtls ? "true" : var.enable_sentinel_mtls ? "true" : "false"
+    TFE_REDIS_PASSWORDLESS_AZURE_USE_MSI = var.redis_passwordless_azure_use_msi
+    TFE_REDIS_SIDEKIQ_PASSWORDLESS_AZURE_USE_MSI = var.redis_passwordless_azure_use_msi 
+    TFE_REDIS_PASSWORDLESS_AZURE_CLIENT_ID = var.redis_passwordless_azure_client_id
   }
   redis_configuration = local.active_active ? local.redis : {}
 }
