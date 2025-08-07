@@ -13,11 +13,11 @@ function azurerm_database_init {
 	%{ endif ~}
 
 	# Database connection parameters
-	DB_HOST="${database_host}"
+	DB_HOST='${database_host}'
 	DB_PORT="5432"
 	DEFAULT_DATABASE="postgres"
-	DB_USER="${admin_database_username}"
-	DB_PASSWORD="${admin_database_password}"
+	DB_USER='${admin_database_username}'
+	DB_PASSWORD='${admin_database_password}'
 
 	# SQL command to execute
 	SQL_COMMAND="ALTER DATABASE ${database_name} OWNER TO azure_pg_admin;"
