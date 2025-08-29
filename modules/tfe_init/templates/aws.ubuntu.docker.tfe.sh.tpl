@@ -47,7 +47,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping proxy configuration" | 
 
 %{ if certificate_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapCert" | tee -a $log_pathname
-certificate_data_b64=$(get_base64_secrets ${certificate_secret_id})
+certificate_data_b64=$(retry 10 get_base64_secrets ${certificate_secret_id})
 mkdir -p $(dirname ${tls_bootstrap_cert_pathname})
 echo $certificate_data_b64 | base64 --decode > ${tls_bootstrap_cert_pathname}
 %{ else ~}
@@ -56,7 +56,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapCert config
 
 %{ if enable_redis_mtls == true  || enable_sentinel_mtls == true ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure RedisCertBootstrap" | tee -a $log_pathname
-redis_certificate_data_b64=$(get_base64_secrets ${redis_certificate_secret_id})
+redis_certificate_data_b64=$(retry 10 get_base64_secrets ${redis_certificate_secret_id})
 mkdir -p $(dirname ${redis_bootstrap_cert_pathname})
 echo $redis_certificate_data_b64 | base64 --decode > ${redis_bootstrap_cert_pathname}
 %{ else ~}
@@ -65,7 +65,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping RedisCertBootstrap conf
 
 %{ if key_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure TlsBootstrapKey" | tee -a $log_pathname
-key_data_b64=$(get_base64_secrets ${key_secret_id})
+key_data_b64=$(retry 10 get_base64_secrets ${key_secret_id})
 mkdir -p $(dirname ${tls_bootstrap_key_pathname})
 echo $key_data_b64 | base64 --decode > ${tls_bootstrap_key_pathname}
 chmod 0600 ${tls_bootstrap_key_pathname}
@@ -75,7 +75,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configu
 
 %{ if enable_redis_mtls == true  || enable_sentinel_mtls == true ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure RedisKeyBootstrap" | tee -a $log_pathname
-redis_key_data_b64=$(get_base64_secrets ${redis_client_key_secret_id})
+redis_key_data_b64=$(retry 10 get_base64_secrets ${redis_client_key_secret_id})
 mkdir -p $(dirname ${redis_bootstrap_key_pathname})
 echo $redis_key_data_b64 | base64 --decode > ${redis_bootstrap_key_pathname}
 chmod 0600 ${redis_bootstrap_key_pathname}
@@ -85,7 +85,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configu
 
 %{ if postgres_ca_certificate_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure Postgres CA cert" | tee -a $log_pathname
-postgres_ca_certificate_data_b64=$(get_base64_secrets ${postgres_ca_certificate_secret_id})
+postgres_ca_certificate_data_b64=$(retry 10 get_base64_secrets ${postgres_ca_certificate_secret_id})
 mkdir -p $(dirname ${postgres_bootstrap_ca_pathname})
 echo $postgres_ca_certificate_data_b64 | base64 --decode > ${postgres_bootstrap_ca_pathname}
 %{ else ~}
@@ -94,7 +94,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configu
 
 %{ if postgres_certificate_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure Postgres Client cert" | tee -a $log_pathname
-postgres_certificate_data_b64=$(get_base64_secrets ${postgres_certificate_secret_id})
+postgres_certificate_data_b64=$(retry 10 get_base64_secrets ${postgres_certificate_secret_id})
 mkdir -p $(dirname ${postgres_bootstrap_cert_pathname})
 echo $postgres_certificate_data_b64 | base64 --decode > ${postgres_bootstrap_cert_pathname}
 %{ else ~}
@@ -103,7 +103,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping TlsBootstrapKey configu
 
 %{ if postgres_client_key_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure Postgres Client key" | tee -a $log_pathname
-postgres_key_data_b64=$(get_base64_secrets ${postgres_client_key_secret_id})
+postgres_key_data_b64=$(retry 10 get_base64_secrets ${postgres_client_key_secret_id})
 mkdir -p $(dirname ${postgres_bootstrap_key_pathname})
 echo $postgres_key_data_b64 | base64 --decode > ${postgres_bootstrap_key_pathname}
 chmod 0600 ${postgres_bootstrap_key_pathname}
@@ -116,7 +116,7 @@ ca_certificate_directory=/usr/local/share/ca-certificates/extra
 ca_cert_filepath="$ca_certificate_directory/tfe-ca-certificate.crt"
 %{ if ca_certificate_secret_id != null ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure CA cert" | tee -a $log_pathname
-ca_certificate_data_b64=$(get_base64_secrets ${ca_certificate_secret_id})
+ca_certificate_data_b64=$(retry 10 get_base64_secrets ${ca_certificate_secret_id})
 mkdir -p $ca_certificate_directory
 echo $ca_certificate_data_b64 | base64 --decode > $ca_cert_filepath
 %{ else ~}
@@ -125,7 +125,7 @@ echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping CA certificate configur
 
 %{ if enable_redis_mtls == true  || enable_sentinel_mtls == true ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Configure Redis CA cert" | tee -a $log_pathname
-redis_ca_certificate_data_b64=$(get_base64_secrets ${redis_ca_certificate_secret_id})
+redis_ca_certificate_data_b64=$(retry 10 get_base64_secrets ${redis_ca_certificate_secret_id})
 mkdir -p $(dirname ${redis_bootstrap_ca_pathname})
 echo $redis_ca_certificate_data_b64 | base64 --decode > ${redis_bootstrap_ca_pathname}
 %{ else ~}
