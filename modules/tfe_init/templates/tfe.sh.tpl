@@ -7,6 +7,7 @@ ${install_packages}
 %{ if enable_monitoring ~}
 ${install_monitoring_agents}
 %{ endif ~}
+${install_jq}
 
 log_pathname="/var/log/startup.log"
 
@@ -18,10 +19,7 @@ sed -i 's/repo_gpgcheck=1/repo_gpgcheck=0/g' /etc/yum.repos.d/google-cloud.repo
 %{ endif ~}
 
 install_packages $log_pathname
-
-echo "[$(date +"%FT%T")] [Terraform Enterprise] Install JQ" | tee -a $log_pathname
-sudo curl --noproxy '*' -Lo /bin/jq https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-$(uname -m | grep -q "arm\|aarch" && echo "arm64" || echo "amd64")
-sudo chmod +x /bin/jq
+install_jq $log_pathname
 
 %{ if cloud == "google" ~}
 docker_directory="/etc/docker"
