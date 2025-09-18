@@ -11,6 +11,10 @@ locals {
     distribution = var.distribution
   })
 
+  install_jq = templatefile("${path.module}/templates/install_jq.func", {
+    distribution = var.distribution
+  })
+
   install_monitoring_agents = templatefile("${path.module}/templates/install_monitoring_agents.func", {
     cloud             = var.cloud
     distribution      = var.distribution

@@ -55,6 +55,7 @@ locals {
     {
       get_base64_secrets        = local.get_base64_secrets
       install_packages          = local.install_packages
+      install_jq                = local.install_jq
       install_monitoring_agents = local.install_monitoring_agents
       retry                     = local.retry
       quadlet_unit              = local.quadlet_unit
