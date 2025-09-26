@@ -106,6 +106,18 @@ variable "database_passwordless_azure_client_id" {
   description = "Azure Managed Service Identity (MSI) Client ID. If not set, System Assigned Managed Identity will be used."
 }
 
+variable "database_passwordless_aws_use_iam" {
+  default     = false
+  type        = bool
+  description = "Whether or not to use AWS IAM authentication to connect to the PostgreSQL database. Defaults to false if no value is given."
+}
+
+variable "database_passwordless_aws_region" {
+  default     = ""
+  type        = string
+  description = "AWS region for IAM database authentication. Required when database_passwordless_aws_use_iam is true."
+}
+
 variable "explorer_database_host" {
   type        = string
   default     = null
