@@ -14,6 +14,8 @@ locals {
     TFE_DATABASE_CLIENT_KEY_FILE              = var.database_client_key_file
     TFE_DATABASE_PASSWORDLESS_AZURE_USE_MSI   = var.database_passwordless_azure_use_msi
     TFE_DATABASE_PASSWORDLESS_AZURE_CLIENT_ID = var.database_passwordless_azure_client_id
+    DATABASE_AUTH_USE_AWS_IAM                 = var.database_passwordless_aws_use_iam
+    DATABASE_AUTH_AWS_DB_REGION               = var.database_passwordless_aws_region
   }
   database_configuration = local.disk ? {} : local.database
   explorer_database = {
