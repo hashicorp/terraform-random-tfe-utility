@@ -393,6 +393,18 @@ variable "redis_passwordless_aws_region" {
   description = "AWS region for IAM Redis authentication. Required when redis_passwordless_aws_use_iam is true."
 }
 
+variable "redis_passwordless_aws_service_name" {
+  default     = ""
+  type        = string
+  description = "AWS service name for IAM Redis authentication (default: elasticache)."
+}
+
+variable "redis_passwordless_aws_host_name" {
+  default     = ""
+  type        = string
+  description = "AWS hostname for IAM Redis authentication. Required when redis_passwordless_aws_use_iam is true."
+}
+
 variable "run_pipeline_image" {
   type        = string
   description = "Container image used to execute Terraform runs. Leave blank to use the default image that comes with Terraform Enterprise. Defaults to \"\" if no value is given."
