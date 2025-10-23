@@ -22,9 +22,14 @@ locals {
     TFE_REDIS_PASSWORDLESS_AZURE_CLIENT_ID       = var.redis_passwordless_azure_client_id
     TFE_REDIS_PASSWORDLESS_AWS_USE_IAM           = var.redis_passwordless_aws_use_iam
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_USE_IAM   = var.redis_passwordless_aws_use_iam
+    TFE_REDIS_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = var.redis_passwordless_aws_use_iam
+    TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = var.redis_passwordless_aws_use_iam
     TFE_REDIS_PASSWORDLESS_AWS_REGION            = var.redis_passwordless_aws_region
     TFE_REDIS_PASSWORDLESS_AWS_SERVICE_NAME      = var.redis_passwordless_aws_service_name
     TFE_REDIS_PASSWORDLESS_AWS_HOST_NAME         = var.redis_passwordless_aws_host_name
+    TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_REGION    = var.redis_passwordless_aws_region
+    TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_SERVICE_NAME = var.redis_passwordless_aws_service_name
+    TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_HOST_NAME = var.redis_passwordless_aws_host_name
   }
   redis_configuration = local.active_active ? local.redis : {}
 }
