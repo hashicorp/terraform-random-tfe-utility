@@ -272,6 +272,30 @@ variable "redis_use_mtls" {
   description = "Redis service requires mutual TLS authentication. If true, the external Redis instance will use TLS certs for authentication."
 }
 
+variable "redis_passwordless_aws_use_iam" {
+  default     = null
+  type        = bool
+  description = "Enable Redis passwordless authentication using AWS IAM."
+}
+
+variable "redis_passwordless_aws_region" {
+  default     = null
+  type        = string
+  description = "AWS region for Redis IAM authentication."
+}
+
+variable "redis_passwordless_aws_service_name" {
+  default     = null
+  type        = string
+  description = "AWS service name for Redis IAM authentication (default: elasticache)."
+}
+
+variable "redis_passwordless_aws_host_name" {
+  default     = null
+  type        = string
+  description = "AWS hostname for Redis IAM authentication."
+}
+
 # ------------------------------------------------------
 # Mounted Disk
 # ------------------------------------------------------
