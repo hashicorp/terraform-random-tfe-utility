@@ -33,6 +33,8 @@ locals {
     # Legacy Redis IAM environment variables (for backward compatibility)
     REDIS_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = var.redis_passwordless_aws_use_iam ? "true" : ""
     REDIS_PASSWORDLESS_AWS_REGION                = var.redis_passwordless_aws_region
+    # Redis URL for IAM authentication (format: redis://username@host:port)
+    REDIS_URL = var.redis_passwordless_aws_use_iam && var.redis_user != null && var.redis_host != null ? "redis://${var.redis_user}@${var.redis_host}:${var.redis_use_tls ? "6380" : "6379"}" : null
   }
   redis_configuration = local.active_active ? local.redis : {}
 }
