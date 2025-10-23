@@ -30,6 +30,9 @@ locals {
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_REGION    = var.redis_passwordless_aws_region
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_SERVICE_NAME = var.redis_passwordless_aws_service_name
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_HOST_NAME = var.redis_passwordless_aws_host_name
+    # Legacy Redis IAM environment variables (for backward compatibility)
+    REDIS_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = var.redis_passwordless_aws_use_iam ? "true" : ""
+    REDIS_PASSWORDLESS_AWS_REGION                = var.redis_passwordless_aws_region
   }
   redis_configuration = local.active_active ? local.redis : {}
 }
