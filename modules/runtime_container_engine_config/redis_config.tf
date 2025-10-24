@@ -33,6 +33,11 @@ locals {
     # Legacy Redis IAM environment variables (for backward compatibility)
     REDIS_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = var.redis_passwordless_aws_use_iam ? "true" : ""
     REDIS_PASSWORDLESS_AWS_REGION                = var.redis_passwordless_aws_region
+    # Additional legacy variables that TFE might expect
+    REDIS_USER = var.redis_user
+    REDIS_PASSWORD = var.redis_password
+    REDIS_USE_TLS = var.redis_use_tls ? "true" : "false"
+    REDIS_USE_AUTH = var.redis_use_auth ? "true" : "false"
     # Redis URL for IAM authentication (format: redis://username@host:port)
     REDIS_URL = var.redis_passwordless_aws_use_iam && var.redis_user != null && var.redis_host != null ? "redis://${var.redis_user}@${var.redis_host}:${var.redis_use_tls ? "6380" : "6379"}" : null
   }
