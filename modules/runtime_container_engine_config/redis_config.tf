@@ -41,8 +41,8 @@ locals {
     REDIS_PASSWORD = var.redis_password
     REDIS_USE_TLS = var.redis_use_tls ? "true" : "false"
     REDIS_USE_AUTH = var.redis_use_auth ? "true" : "false"
-    # Redis URL for IAM authentication (format: redis://username:@host:port - empty password like Azure MSI)
-    REDIS_URL = var.redis_passwordless_aws_use_iam && var.redis_user != null && var.redis_host != null ? "redis://${var.redis_user}:@${var.redis_host}:${var.redis_use_tls ? "6380" : "6379"}" : null
+    # Redis URL should not be set when using IAM authentication as it conflicts with passwordless auth
+    REDIS_URL = var.redis_passwordless_aws_use_iam ? null : null
   }
   redis_configuration = local.active_active ? local.redis : {}
 }
