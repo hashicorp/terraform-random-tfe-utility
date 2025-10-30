@@ -20,6 +20,25 @@ locals {
     TFE_REDIS_PASSWORDLESS_AZURE_USE_MSI         = var.redis_passwordless_azure_use_msi
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AZURE_USE_MSI = var.redis_passwordless_azure_use_msi
     TFE_REDIS_PASSWORDLESS_AZURE_CLIENT_ID       = var.redis_passwordless_azure_client_id
+    # Additional legacy variables that TFE might expect
+    REDIS_HOST = var.redis_use_tls != null ? var.redis_use_tls ? "${var.redis_host}:6380" : var.redis_host : null
+    REDIS_USER = var.redis_user
+    REDIS_PASSWORD = var.redis_password
+    REDIS_USE_TLS = var.redis_use_tls ? "true" : "false"
+    REDIS_USE_AUTH = var.redis_use_auth ? "true" : "false"
+    # Legacy Redis IAM environment variables (for backward compatibility)
+    REDIS_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = var.redis_passwordless_aws_use_iam ? "true" : ""
+    REDIS_PASSWORDLESS_AWS_REGION                = var.redis_passwordless_aws_region
+    REDIS_PASSWORDLESS_AWS_SERVICE_NAME          = var.redis_passwordless_aws_service_name
+    REDIS_PASSWORDLESS_AWS_HOST_NAME             = var.redis_passwordless_aws_host_name
+    # Additional legacy variables that TFE might expect
+    REDIS_HOST = var.redis_use_tls != null ? var.redis_use_tls ? "${var.redis_host}:6380" : var.redis_host : null
+    REDIS_USER = var.redis_user
+    REDIS_PASSWORD = var.redis_password
+    REDIS_USE_TLS = var.redis_use_tls ? "true" : "false"
+    REDIS_USE_AUTH = var.redis_use_auth ? "true" : "false"
+    # Redis URL should not be set when using IAM authentication as it conflicts with passwordless auth
+    REDIS_URL = var.redis_passwordless_aws_use_iam ? null : null
   }
   redis_configuration = local.active_active ? local.redis : {}
 }
