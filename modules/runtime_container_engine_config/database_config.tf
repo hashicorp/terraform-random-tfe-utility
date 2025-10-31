@@ -16,16 +16,20 @@ locals {
     TFE_DATABASE_PASSWORDLESS_AZURE_CLIENT_ID                = var.database_passwordless_azure_client_id
     TFE_DATABASE_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE       = var.database_passwordless_aws_use_iam
     TFE_DATABASE_PASSWORDLESS_AWS_REGION                     = var.database_passwordless_aws_region
+    TFE_DATABASE_PASSWORDLESS_GCP_USE_DEFAULT_CREDENTIALS    = var.database_passwordless_gcp_use_default_credentials
     DATABASE_AUTH_USE_AWS_IAM                                = var.database_passwordless_aws_use_iam
     DATABASE_AUTH_AWS_DB_REGION                              = var.database_passwordless_aws_region
+    DATABASE_AUTH_USE_GCP_IAM                                = var.database_passwordless_gcp_use_default_credentials
   }
   database_configuration = local.disk ? {} : local.database
   explorer_database = {
-    TFE_EXPLORER_DATABASE_HOST       = var.explorer_database_host
-    TFE_EXPLORER_DATABASE_NAME       = var.explorer_database_name
-    TFE_EXPLORER_DATABASE_USER       = var.explorer_database_user
-    TFE_EXPLORER_DATABASE_PASSWORD   = var.explorer_database_password
-    TFE_EXPLORER_DATABASE_PARAMETERS = var.explorer_database_parameters
+    TFE_EXPLORER_DATABASE_HOST                         = var.explorer_database_host
+    TFE_EXPLORER_DATABASE_NAME                         = var.explorer_database_name
+    TFE_EXPLORER_DATABASE_USER                         = var.explorer_database_user
+    TFE_EXPLORER_DATABASE_PASSWORD                     = var.explorer_database_password
+    TFE_EXPLORER_DATABASE_PARAMETERS                   = var.explorer_database_parameters
+    TFE_EXPLORER_DATABASE_PASSWORDLESS_AZURE_USE_MSI   = var.explorer_database_passwordless_azure_use_msi
+    TFE_EXPLORER_DATABASE_PASSWORDLESS_AZURE_CLIENT_ID = var.explorer_database_passwordless_azure_client_id
   }
   explorer_database_configuration = var.explorer_database_host == null ? {} : local.explorer_database
 }
