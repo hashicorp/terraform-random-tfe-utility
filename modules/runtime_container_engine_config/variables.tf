@@ -106,6 +106,12 @@ variable "database_passwordless_azure_client_id" {
   description = "Azure Managed Service Identity (MSI) Client ID. If not set, System Assigned Managed Identity will be used."
 }
 
+variable "database_passwordless_gcp_use_default_credentials" {
+  default     = false
+  type        = bool
+  description = "Whether or not to use Google Cloud default credentials (IAM) to connect to the PostgreSQL database. Defaults to false if no value is given."
+}
+
 variable "explorer_database_host" {
   type        = string
   default     = null
