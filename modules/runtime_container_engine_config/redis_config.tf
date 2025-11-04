@@ -8,6 +8,14 @@ locals {
     TFE_REDIS_PASSWORD                           = var.redis_password
     TFE_REDIS_USE_TLS                            = var.redis_use_tls
     TFE_REDIS_USE_AUTH                           = var.redis_use_auth
+    
+    # Sidekiq Redis connection details (can be same or different Redis instance)
+    TFE_REDIS_SIDEKIQ_HOST                       = var.redis_sidekiq_host != "" ? var.redis_sidekiq_host : var.redis_host
+    TFE_REDIS_SIDEKIQ_USER                       = var.redis_sidekiq_user != "" ? var.redis_sidekiq_user : var.redis_user
+    TFE_REDIS_SIDEKIQ_PASSWORD                   = var.redis_sidekiq_password != "" ? var.redis_sidekiq_password : var.redis_password
+    TFE_REDIS_SIDEKIQ_USE_TLS                    = var.redis_sidekiq_use_tls != null ? var.redis_sidekiq_use_tls : var.redis_use_tls
+    TFE_REDIS_SIDEKIQ_USE_AUTH                   = var.redis_sidekiq_use_auth != null ? var.redis_sidekiq_use_auth : var.redis_use_auth
+    
     TFE_REDIS_SENTINEL_ENABLED                   = var.redis_use_sentinel
     TFE_REDIS_SENTINEL_HOSTS                     = join(",", var.redis_sentinel_hosts)
     TFE_REDIS_SENTINEL_LEADER_NAME               = var.redis_sentinel_leader_name
@@ -23,6 +31,15 @@ locals {
     TFE_REDIS_PASSWORDLESS_AWS_USE_IAM           = var.redis_passwordless_aws_use_iam
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_USE_IAM   = var.redis_passwordless_aws_use_iam
     TFE_REDIS_PASSWORDLESS_AWS_REGION            = var.redis_passwordless_aws_region
+    
+    # Additional Sidekiq Redis passwordless variables
+    TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = var.redis_passwordless_aws_use_iam ? "true" : "false"
+    TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_REGION               = var.redis_passwordless_aws_region
+    TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_HOST_NAME            = var.redis_passwordless_aws_host_name
+    
+    # Main Redis passwordless variables  
+    TFE_REDIS_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = var.redis_passwordless_aws_use_iam ? "true" : "false"
+    TFE_REDIS_PASSWORDLESS_AWS_HOST_NAME            = var.redis_passwordless_aws_host_name
   }
   redis_configuration = local.active_active ? local.redis : {}
 }
