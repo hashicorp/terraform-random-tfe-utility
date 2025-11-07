@@ -17,11 +17,13 @@ locals {
   }
   database_configuration = local.disk ? {} : local.database
   explorer_database = {
-    TFE_EXPLORER_DATABASE_HOST       = var.explorer_database_host
-    TFE_EXPLORER_DATABASE_NAME       = var.explorer_database_name
-    TFE_EXPLORER_DATABASE_USER       = var.explorer_database_user
-    TFE_EXPLORER_DATABASE_PASSWORD   = var.explorer_database_password
-    TFE_EXPLORER_DATABASE_PARAMETERS = var.explorer_database_parameters
+    TFE_EXPLORER_DATABASE_HOST                         = var.explorer_database_host
+    TFE_EXPLORER_DATABASE_NAME                         = var.explorer_database_name
+    TFE_EXPLORER_DATABASE_USER                         = var.explorer_database_user
+    TFE_EXPLORER_DATABASE_PASSWORD                     = var.explorer_database_password
+    TFE_EXPLORER_DATABASE_PARAMETERS                   = var.explorer_database_parameters
+    TFE_EXPLORER_DATABASE_PASSWORDLESS_AZURE_USE_MSI   = var.explorer_database_passwordless_azure_use_msi
+    TFE_EXPLORER_DATABASE_PASSWORDLESS_AZURE_CLIENT_ID = var.explorer_database_passwordless_azure_client_id
   }
   explorer_database_configuration = var.explorer_database_host == null ? {} : local.explorer_database
 }
