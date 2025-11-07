@@ -136,6 +136,18 @@ variable "explorer_database_user" {
   description = "PostgreSQL user. Required when TFE_OPERATIONAL_MODE is external or active-active."
 }
 
+variable "explorer_database_passwordless_azure_use_msi" {
+  default     = false
+  type        = bool
+  description = "Whether or not to use Azure Managed Service Identity (MSI) to connect to the explorer PostgreSQL database. Defaults to false if no value is given."
+}
+
+variable "explorer_database_passwordless_azure_client_id" {
+  default     = ""
+  type        = string
+  description = "Azure Managed Service Identity (MSI) Client ID for explorer database. If not set, System Assigned Managed Identity will be used."
+}
+
 variable "disk_path" {
   default     = null
   description = "The pathname of the directory in which Terraform Enterprise will store data in Mounted Disk mode. Required when var.operational_mode is 'disk'."
