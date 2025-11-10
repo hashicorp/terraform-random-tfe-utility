@@ -369,6 +369,68 @@ variable "redis_passwordless_azure_client_id" {
   description = "Azure Managed Service Identity (MSI) Client ID to be used for redis authentication. If not set, System Assigned Managed Identity will be used."
 }
 
+
+# redis sidekiq
+variable "redis_sidekiq_host" {
+  type        = string
+  description = "The Redis server to connect to in the format HOST[:PORT] (e.g. redis.example.com or redis.example.com:). If only HOST is provided then the :PORT defaults to :6379 if no value is given. Required when TFE_OPERATIONAL_MODE is active-active."
+}
+
+variable "redis_sidekiq_password" {
+  type        = string
+  description = "Redis server password. Required when TFE_REDIS_USE_AUTH is true."
+}
+
+variable "redis_sidekiq_use_auth" {
+  type        = bool
+  description = "Whether or not to use authentication to access Redis. Defaults to false if no value is given."
+}
+
+variable "redis_sidekiq_use_tls" {
+  type        = bool
+  description = "Whether or not to use TLS to access Redis. Defaults to false if no value is given."
+}
+
+variable "redis_sidekiq_ca_cert_path" {
+  type        = string
+  description = "Path to a file containing the CA certificate for Redis TLS connections. Leave blank to not use a CA certificate for Redis TLS connections. Defaults to \"\" if no value is given."
+  default     = null
+}
+variable "redis_sidekiq_client_cert_path" {
+  type        = string
+  description = "Path to a file containing the client certificate for Redis TLS connections. Leave blank to not use a client certificate for Redis TLS connections. Defaults to \"\" if no value is given."
+  default     = null
+}
+
+variable "redis_sidekiq_client_key_path" {
+  type        = string
+  description = "Path to a file containing the client key for Redis TLS connections. Leave blank to not use a client key for Redis TLS connections. Defaults to \"\" if no value is given."
+  default     = null
+}
+
+variable "redis_sidekiq_use_mtls" {
+  type        = bool
+  description = "Whether or not to use mutual TLS to access Redis. Defaults to false if no value is given."
+  default     = false
+}
+
+variable "redis_sidekiq_user" {
+  type        = string
+  description = "Redis server user. Leave blank to not use a user when authenticating. Defaults to \"\" if no value is given."
+}
+
+variable "redis_sidekiq_passwordless_azure_use_msi" {
+  default     = false
+  type        = bool
+  description = "Whether or not to use Azure Managed Service Identity (MSI) to connect to the Redis server. Defaults to false if no value is given."
+}
+
+variable "redis_sidekiq_passwordless_azure_client_id" {
+  default     = ""
+  type        = string
+  description = "Azure Managed Service Identity (MSI) Client ID to be used for redis authentication. If not set, System Assigned Managed Identity will be used."
+}
+
 variable "run_pipeline_image" {
   type        = string
   description = "Container image used to execute Terraform runs. Leave blank to use the default image that comes with Terraform Enterprise. Defaults to \"\" if no value is given."
