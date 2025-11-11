@@ -20,6 +20,11 @@ locals {
     TFE_REDIS_PASSWORDLESS_AZURE_USE_MSI         = var.redis_passwordless_azure_use_msi
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AZURE_USE_MSI = var.redis_passwordless_azure_use_msi
     TFE_REDIS_PASSWORDLESS_AZURE_CLIENT_ID       = var.redis_passwordless_azure_client_id
+
+    TFE_REDIS_SIDEKIQ_HOST = var.redis_sidekiq_host
+    TFE_REDIS_SIDEKIQ_PASSWORD = var.redis_sidekiq_password
+    TFE_REDIS_SIDEKIQ_USE_TLS = var.redis_sidekiq_use_tls
+    TFE_REDIS_SIDEKIQ_USE_AUTH = var.redis_sidekiq_use_auth
   }
   redis_configuration = local.active_active ? local.redis : {}
 }

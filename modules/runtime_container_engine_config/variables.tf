@@ -279,6 +279,26 @@ variable "operational_mode" {
   }
 }
 
+variable "redis_sidekiq_host" {
+  type        = string
+  description = "The Redis server to connect to in the format HOST[:PORT] (e.g. redis.example.com or redis.example.com:). If only HOST is provided then the :PORT defaults to :6379 if no value is given. Required when TFE_OPERATIONAL_MODE is active-active."
+}
+
+variable "redis_sidekiq_password" {
+  type        = string
+  description = "Redis server password. Required when TFE_REDIS_USE_AUTH is true."
+}
+
+variable "redis_sidekiq_use_auth" {
+  type        = bool
+  description = "Whether or not to use authentication to access Redis. Defaults to false if no value is given."
+}
+
+variable "redis_sidekiq_use_tls" {
+  type        = bool
+  description = "Whether or not to use TLS to access Redis. Defaults to false if no value is given."
+}
+
 variable "redis_host" {
   type        = string
   description = "The Redis server to connect to in the format HOST[:PORT] (e.g. redis.example.com or redis.example.com:). If only HOST is provided then the :PORT defaults to :6379 if no value is given. Required when TFE_OPERATIONAL_MODE is active-active."
