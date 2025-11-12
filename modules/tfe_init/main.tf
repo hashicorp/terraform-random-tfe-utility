@@ -100,6 +100,14 @@ locals {
       redis_bootstrap_key_pathname  = local.redis_bootstrap_key_pathname
       redis_bootstrap_ca_pathname   = local.redis_bootstrap_ca_pathname
 
+      # Database configuration for templates
+      Database = {
+        Passwordless = {
+          AWSUseInstanceProfile = var.database_passwordless_aws_use_iam
+          AWSRegion = var.database_passwordless_aws_region
+        }
+      }
+
       database_azure_msi_auth_enabled = var.database_passwordless_azure_use_msi
       database_aws_iam_auth_enabled   = var.database_passwordless_aws_use_iam
       database_aws_iam_region         = var.database_passwordless_aws_region
