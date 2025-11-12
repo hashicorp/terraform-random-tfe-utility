@@ -17,7 +17,7 @@ locals {
     DATABASE_AUTH_USE_AWS_IAM                 = var.database_passwordless_aws_use_iam
     DATABASE_AUTH_AWS_DB_REGION               = var.database_passwordless_aws_region
     # Add DATABASE_URL for AWS IAM authentication
-    DATABASE_URL                              = var.database_host != null ? "postgresql://${var.database_user}:${var.database_password}@${var.database_host}:5432/${var.database_name}${var.database_parameters != null ? "?${var.database_parameters}" : ""}" : null
+    DATABASE_URL                              = var.database_host != null ? "postgresql://${var.database_user}${var.database_password != null ? ":${var.database_password}" : ""}@${var.database_host}:5432/${var.database_name}${var.database_parameters != null ? "?${var.database_parameters}" : ""}" : null
   }
   database_configuration = local.disk ? {} : local.database
   explorer_database = {
