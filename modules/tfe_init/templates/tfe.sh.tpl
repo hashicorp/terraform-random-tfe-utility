@@ -274,6 +274,51 @@ EOF
 
 # Create the IAM user before starting TFE
 create_postgres_iam_user
+
+# Function to generate RDS IAM authentication token and update docker-compose environment
+generate_database_url_with_iam_token() {
+    echo "[$(date +"%FT%T")] [Terraform Enterprise] Generating RDS IAM authentication token..." | tee -a $log_pathname
+    
+    local db_endpoint="${database_host}"
+    local iam_user="${database_iam_username}"
+    local db_name="${database_name}"
+    local region="${database_aws_iam_region}"
+    
+    # Generate RDS IAM authentication token (valid for 15 minutes)
+    local auth_token
+    auth_token=$(aws rds generate-db-auth-token \
+        --hostname "$db_endpoint" \
+        --port 5432 \
+        --username "$iam_user" \
+        --region "$region")
+    
+    if [ $? -eq 0 ] && [ -n "$auth_token" ]; then
+        # URL encode the token to handle special characters
+        local encoded_token=$(printf '%s' "$auth_token" | python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.stdin.read().strip()))")
+        
+        # Construct DATABASE_URL with IAM token
+        local database_url="postgresql://$iam_user:$encoded_token@$db_endpoint:5432/$db_name?sslmode=require"
+        
+        echo "[$(date +"%FT%T")] [Terraform Enterprise] Adding DATABASE_URL to Docker Compose configuration..." | tee -a $log_pathname
+        
+        # Update the compose file to include DATABASE_URL environment variable
+        # Add DATABASE_URL to the TFE service environment section
+        if grep -q "environment:" /etc/tfe/compose.yaml; then
+            # Add DATABASE_URL to existing environment section
+            sed -i "/environment:/a\\      - DATABASE_URL=$database_url" /etc/tfe/compose.yaml
+        else
+            echo "[$(date +"%FT%T")] [Terraform Enterprise] WARNING: Could not find environment section in compose.yaml" | tee -a $log_pathname
+        fi
+        
+        echo "[$(date +"%FT%T")] [Terraform Enterprise] RDS IAM authentication token generated and added to compose file" | tee -a $log_pathname
+    else
+        echo "[$(date +"%FT%T")] [Terraform Enterprise] ERROR: Failed to generate RDS IAM authentication token" | tee -a $log_pathname
+        return 1
+    fi
+}
+
+# Generate IAM token and update compose configuration
+generate_database_url_with_iam_token
 %{ endif ~}
 
 docker compose -f /etc/tfe/compose.yaml up -d
