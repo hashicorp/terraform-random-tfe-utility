@@ -187,6 +187,91 @@ mkdir -p $tfe_dir
 
 echo ${docker_compose} | base64 -d > $tfe_dir/compose.yaml
 
+%{ if database_aws_iam_auth_enabled ~}
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Setting up PostgreSQL IAM user" | tee -a $log_pathname
+
+# Install PostgreSQL client for database operations
+if command -v apt-get >/dev/null 2>&1; then
+    echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing PostgreSQL client" | tee -a $log_pathname
+    apt-get update -qq
+    apt-get install -y postgresql-client-15 postgresql-client-common
+elif command -v yum >/dev/null 2>&1; then
+    echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing PostgreSQL client" | tee -a $log_pathname
+    yum update -y
+    yum install -y postgresql15
+fi
+
+# Function to create PostgreSQL IAM user
+create_postgres_iam_user() {
+    local db_endpoint="${database_host}"
+    local admin_user="${admin_database_username}"
+    local admin_password="${admin_database_password}"
+    local iam_user="${database_iam_username}"
+    local db_name="${database_name}"
+    
+    echo "[$(date +"%FT%T")] [Terraform Enterprise] Creating PostgreSQL IAM user: $iam_user" | tee -a $log_pathname
+    
+    # Wait for database to be ready
+    echo "[$(date +"%FT%T")] [Terraform Enterprise] Waiting for PostgreSQL database to be ready..." | tee -a $log_pathname
+    max_attempts=30
+    attempt=0
+    
+    while [ $attempt -lt $max_attempts ]; do
+        if PGPASSWORD="$admin_password" psql -h "$db_endpoint" -U "$admin_user" -d "$db_name" -c 'SELECT 1;' >/dev/null 2>&1; then
+            echo "[$(date +"%FT%T")] [Terraform Enterprise] Database is ready!" | tee -a $log_pathname
+            break
+        fi
+        attempt=$((attempt + 1))
+        echo "[$(date +"%FT%T")] [Terraform Enterprise] Waiting for PostgreSQL... (attempt $attempt/$max_attempts)" | tee -a $log_pathname
+        sleep 10
+    done
+    
+    if [ $attempt -ge $max_attempts ]; then
+        echo "[$(date +"%FT%T")] [Terraform Enterprise] ERROR: Database not ready after $max_attempts attempts" | tee -a $log_pathname
+        return 1
+    fi
+    
+    # Create IAM user
+    echo "[$(date +"%FT%T")] [Terraform Enterprise] Creating IAM user in PostgreSQL..." | tee -a $log_pathname
+    PGPASSWORD="$admin_password" psql -h "$db_endpoint" -U "$admin_user" -d "$db_name" -v ON_ERROR_STOP=1 << EOF
+DO \$\$
+BEGIN
+    -- Check if user exists
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$iam_user') THEN
+        -- Create the IAM user
+        CREATE USER "$iam_user";
+        -- Grant rds_iam role (this role exists automatically in RDS PostgreSQL with IAM auth enabled)
+        GRANT rds_iam TO "$iam_user";
+        -- Grant necessary database permissions
+        GRANT CONNECT ON DATABASE "$db_name" TO "$iam_user";
+        GRANT USAGE ON SCHEMA public TO "$iam_user";
+        GRANT CREATE ON SCHEMA public TO "$iam_user";
+        -- Grant table permissions
+        GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "$iam_user";
+        GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO "$iam_user";
+        -- Grant default privileges for future objects
+        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO "$iam_user";
+        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "$iam_user";
+        RAISE NOTICE 'Successfully created IAM user: $iam_user';
+    ELSE
+        RAISE NOTICE 'IAM user already exists: $iam_user';
+    END IF;
+END
+\$\$;
+EOF
+    
+    if [ $? -eq 0 ]; then
+        echo "[$(date +"%FT%T")] [Terraform Enterprise] PostgreSQL IAM user setup completed successfully" | tee -a $log_pathname
+    else
+        echo "[$(date +"%FT%T")] [Terraform Enterprise] ERROR: Failed to create PostgreSQL IAM user" | tee -a $log_pathname
+        return 1
+    fi
+}
+
+# Create the IAM user before starting TFE
+create_postgres_iam_user
+%{ endif ~}
+
 docker compose -f /etc/tfe/compose.yaml up -d
 
 %{ if distribution == "rhel" && cloud != "google" ~}

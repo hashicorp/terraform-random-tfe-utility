@@ -111,6 +111,11 @@ locals {
       database_azure_msi_auth_enabled = var.database_passwordless_azure_use_msi
       database_aws_iam_auth_enabled   = var.database_passwordless_aws_use_iam
       database_aws_iam_region         = var.database_passwordless_aws_region
+      database_host                   = var.database_host
+      database_name                   = var.database_name
+      admin_database_username         = var.admin_database_username
+      admin_database_password         = var.admin_database_password
+      database_iam_username           = var.database_iam_username
 
       proxy_ip   = var.proxy_ip
       proxy_port = var.proxy_port

@@ -230,3 +230,9 @@ variable "database_passwordless_aws_region" {
   type        = string
   description = "AWS region for IAM database authentication. Required when database_passwordless_aws_use_iam is true."
 }
+
+variable "database_iam_username" {
+  default     = null
+  type        = string
+  description = "PostgreSQL IAM user for AWS IAM authentication."
+}
