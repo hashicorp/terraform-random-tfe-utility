@@ -190,6 +190,10 @@ echo ${docker_compose} | base64 -d > $tfe_dir/compose.yaml
 %{ if database_aws_iam_auth_enabled ~}
 echo "[$(date +"%FT%T")] [Terraform Enterprise] Setting up PostgreSQL IAM user" | tee -a $log_pathname
 
+# Set AWS region for CLI commands
+export AWS_DEFAULT_REGION="${database_aws_iam_region}"
+echo "[$(date +"%FT%T")] [Terraform Enterprise] AWS region set to: $AWS_DEFAULT_REGION" | tee -a $log_pathname
+
 # Install PostgreSQL client for database operations
 if command -v apt-get >/dev/null 2>&1; then
     echo "[$(date +"%FT%T")] [Terraform Enterprise] Installing PostgreSQL client" | tee -a $log_pathname
