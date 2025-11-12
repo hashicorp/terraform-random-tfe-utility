@@ -17,7 +17,8 @@ locals {
     DATABASE_AUTH_USE_AWS_IAM                 = var.database_passwordless_aws_use_iam
     DATABASE_AUTH_AWS_DB_REGION               = var.database_passwordless_aws_region
     # DATABASE_URL for IAM auth: base connection string without password (pgmultiauth handles IAM tokens)
-    DATABASE_URL                              = var.database_passwordless_aws_use_iam ? (var.database_host != null ? "postgresql://${var.database_user}@${var.database_host}:5432/${var.database_name}${var.database_parameters != null ? "?${var.database_parameters}" : ""}" : null) : (var.database_host != null ? "postgresql://${var.database_user}${var.database_password != null ? ":${var.database_password}" : ""}@${var.database_host}:5432/${var.database_name}${var.database_parameters != null ? "?${var.database_parameters}" : ""}" : null)
+    # Note: database_host already includes :5432 port, so don't add it again
+    DATABASE_URL                              = var.database_passwordless_aws_use_iam ? (var.database_host != null ? "postgresql://${var.database_user}@${var.database_host}/${var.database_name}${var.database_parameters != null ? "?${var.database_parameters}" : ""}" : null) : (var.database_host != null ? "postgresql://${var.database_user}${var.database_password != null ? ":${var.database_password}" : ""}@${var.database_host}/${var.database_name}${var.database_parameters != null ? "?${var.database_parameters}" : ""}" : null)
   }
   database_configuration = local.disk ? {} : local.database
   explorer_database = {
