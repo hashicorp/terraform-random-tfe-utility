@@ -20,13 +20,6 @@ locals {
     # Additional environment variables for TFE config validation bypass
     TFE_DATABASE_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = var.database_passwordless_aws_use_iam
     TFE_DATABASE_PASSWORDLESS_AWS_REGION      = var.database_passwordless_aws_region
-    # Atlas-specific environment variables for IAM authentication
-    DATABASE_AUTH_USE_AWS_IAM                 = var.database_passwordless_aws_use_iam
-    DATABASE_AUTH_AWS_DB_REGION               = var.database_passwordless_aws_region
-    DATABASE_AUTH_AWS_SERVICE_NAME            = var.database_passwordless_aws_use_iam ? "rds-db" : null
-    # Database URL for Atlas to parse connection parameters (empty password for IAM auth)
-    # Note: database_host may already include port, so we don't add :5432
-    DATABASE_URL                              = var.database_passwordless_aws_use_iam ? "postgresql://${var.database_user}:@${var.database_host}/${var.database_name}?${var.database_parameters}" : null
   }
   # Filter out null values so they don't appear in the compose file at all
   database_configuration = local.disk ? {} : { for k, v in local.database : k => v if v != null }
