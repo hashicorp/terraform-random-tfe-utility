@@ -30,7 +30,7 @@ locals {
   azurerm_database_init = templatefile("${path.module}/templates/azurerm_database_init.func.tpl", {
     distribution            = var.distribution
     msi_auth_enabled        = var.database_passwordless_azure_use_msi
-    database_host           = var.database_host
+    database_host           = split(":", var.database_host)[0]
     database_name           = var.database_name
     admin_database_username = var.admin_database_username
     admin_database_password = var.admin_database_password
