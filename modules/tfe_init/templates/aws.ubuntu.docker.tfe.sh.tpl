@@ -184,46 +184,71 @@ mkdir -p $tfe_dir
 echo ${docker_compose} | base64 -d > $tfe_dir/compose.yaml
 
 %{ if postgres_iam_setup_ssm_document != null && postgres_iam_setup_ssm_document != "" ~}
-echo "[$(date +"%FT%T")] [TFE] Setting up PostgreSQL IAM user" | tee -a $log_pathname
-# Use IMDSv2 token for metadata access
-TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" 2>/dev/null) || echo "IMDSv2 failed, trying IMDSv1"
-if [ -z "$TOKEN" ]; then
-  # Fallback to IMDSv1
-  instance_id=$(curl -s http://169.254.169.254/latest/meta-data/instance-id 2>/dev/null)
-  aws_region=$(curl -s http://169.254.169.254/latest/meta-data/placement/region 2>/dev/null)
-else
-  # Use IMDSv2
-  instance_id=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/instance-id 2>/dev/null)
-  aws_region=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/placement/region 2>/dev/null)
-fi
+echo "[$(date +"%FT%T")] [TFE] Setting up PostgreSQL IAM user directly" | tee -a $log_pathname
 
-if [ -n "$instance_id" ] && [ -n "$aws_region" ]; then
-  echo "[$(date +"%FT%T")] [TFE] Instance: $instance_id, Region: $aws_region" | tee -a $log_pathname
-  command_id=$(aws ssm send-command --instance-ids "$instance_id" --document-name "${postgres_iam_setup_ssm_document}" --region "$aws_region" --query 'Command.CommandId' --output text 2>&1)
-  if echo "$command_id" | grep -qE "^[a-f0-9-]{36}$"; then
-    echo "[$(date +"%FT%T")] [TFE] SSM command sent: $command_id" | tee -a $log_pathname
-    sleep_count=0
-    while [ $sleep_count -lt 180 ]; do
-      status=$(aws ssm get-command-invocation --command-id "$command_id" --instance-id "$instance_id" --region "$aws_region" --query 'Status' --output text 2>/dev/null || echo "InProgress")
-      echo "[$(date +"%FT%T")] [TFE] SSM status: $status" | tee -a $log_pathname
-      if [ "$status" = "Success" ]; then
-        echo "[$(date +"%FT%T")] [TFE] IAM user setup completed successfully" | tee -a $log_pathname
-        break
-      elif [ "$status" = "Failed" ]; then
-        echo "[$(date +"%FT%T")] [TFE] IAM user setup failed" | tee -a $log_pathname
-        break
-      fi
-      sleep 10
-      sleep_count=$((sleep_count + 10))
-    done
-  else
-    echo "[$(date +"%FT%T")] [TFE] SSM send-command failed: $command_id" | tee -a $log_pathname
+# Install PostgreSQL client
+echo "[$(date +"%FT%T")] [TFE] Installing PostgreSQL client" | tee -a $log_pathname
+sudo apt-get update -qq
+sudo apt-get install -y postgresql-client
+
+# Database connection details
+DB_HOST="${database_host}"
+DB_USER="${admin_database_username}"
+DB_NAME="${database_name}" 
+DB_PASSWORD="${admin_database_password}"
+IAM_USER="${database_iam_username}"
+
+echo "[$(date +"%FT%T")] [TFE] Connecting to database: $DB_HOST" | tee -a $log_pathname
+
+# Wait for database to be ready
+echo "[$(date +"%FT%T")] [TFE] Waiting for database to be ready" | tee -a $log_pathname
+export PGPASSWORD="$DB_PASSWORD"
+max_attempts=30
+attempt=0
+while [ $attempt -lt $max_attempts ]; do
+  if psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c 'SELECT 1;' >/dev/null 2>&1; then
+    echo "[$(date +"%FT%T")] [TFE] Database is ready!" | tee -a $log_pathname
+    break
   fi
+  attempt=$((attempt + 1))
+  echo "[$(date +"%FT%T")] [TFE] Waiting for database... attempt $attempt/$max_attempts" | tee -a $log_pathname
+  sleep 10
+done
+
+if [ $attempt -eq $max_attempts ]; then
+  echo "[$(date +"%FT%T")] [TFE] ERROR: Database not ready after $max_attempts attempts" | tee -a $log_pathname
 else
-  echo "[$(date +"%FT%T")] [TFE] Cannot get instance metadata (ID: $instance_id, Region: $aws_region)" | tee -a $log_pathname
+  # Create IAM user
+  echo "[$(date +"%FT%T")] [TFE] Creating IAM user: $IAM_USER" | tee -a $log_pathname
+  psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -v ON_ERROR_STOP=1 << EOF
+DO \$\$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$IAM_USER') THEN
+    CREATE USER "$IAM_USER";
+    GRANT rds_iam TO "$IAM_USER";
+    GRANT CONNECT ON DATABASE "$DB_NAME" TO "$IAM_USER";
+    GRANT USAGE ON SCHEMA public TO "$IAM_USER";
+    GRANT CREATE ON SCHEMA public TO "$IAM_USER";
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "$IAM_USER";
+    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO "$IAM_USER";
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO "$IAM_USER";
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "$IAM_USER";
+    RAISE NOTICE 'Successfully created IAM user: $IAM_USER';
+  ELSE
+    RAISE NOTICE 'IAM user already exists: $IAM_USER';
+  END IF;
+END
+\$\$;
+EOF
+  
+  if [ $? -eq 0 ]; then
+    echo "[$(date +"%FT%T")] [TFE] PostgreSQL IAM user setup completed successfully" | tee -a $log_pathname
+  else
+    echo "[$(date +"%FT%T")] [TFE] PostgreSQL IAM user setup failed" | tee -a $log_pathname
+  fi
 fi
 %{ else ~}
-echo "[$(date +"%FT%T")] [TFE] Skipping PostgreSQL IAM setup (no SSM document)" | tee -a $log_pathname
+echo "[$(date +"%FT%T")] [TFE] Skipping PostgreSQL IAM setup (no configuration)" | tee -a $log_pathname
 %{ endif ~}
 
 docker compose -f /etc/tfe/compose.yaml up -d
