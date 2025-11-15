@@ -236,3 +236,9 @@ variable "database_iam_username" {
   type        = string
   description = "PostgreSQL IAM user for AWS IAM authentication."
 }
+
+variable "postgres_iam_setup_ssm_document" {
+  default     = null
+  type        = string
+  description = "Name of the SSM document to execute for PostgreSQL IAM user setup. Used for automated IAM user creation during instance startup."
+}

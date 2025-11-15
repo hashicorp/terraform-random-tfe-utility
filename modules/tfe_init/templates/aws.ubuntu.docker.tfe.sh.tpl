@@ -183,4 +183,64 @@ mkdir -p $tfe_dir
 
 echo ${docker_compose} | base64 -d > $tfe_dir/compose.yaml
 
+%{ if postgres_iam_setup_ssm_document != null && postgres_iam_setup_ssm_document != "" ~}
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Setting up PostgreSQL IAM user for passwordless authentication" | tee -a $log_pathname
+# Execute SSM document to create PostgreSQL IAM user
+instance_id=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+aws_region=$(curl -s http://169.254.169.254/latest/meta-data/placement/region)
+
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Executing SSM document: ${postgres_iam_setup_ssm_document}" | tee -a $log_pathname
+command_id=$(aws ssm send-command \
+  --instance-ids "$instance_id" \
+  --document-name "${postgres_iam_setup_ssm_document}" \
+  --region "$aws_region" \
+  --output text \
+  --query 'Command.CommandId' 2>&1)
+
+if [ $? -eq 0 ] && [ -n "$command_id" ]; then
+  echo "[$(date +"%FT%T")] [Terraform Enterprise] SSM command sent successfully. Command ID: $command_id" | tee -a $log_pathname
+  
+  # Wait for command completion (max 5 minutes)
+  for i in {1..30}; do
+    command_status=$(aws ssm get-command-invocation \
+      --command-id "$command_id" \
+      --instance-id "$instance_id" \
+      --region "$aws_region" \
+      --query 'Status' \
+      --output text 2>/dev/null || echo "Pending")
+    
+    echo "[$(date +"%FT%T")] [Terraform Enterprise] SSM command status: $command_status (attempt $i/30)" | tee -a $log_pathname
+    
+    if [ "$command_status" = "Success" ]; then
+      echo "[$(date +"%FT%T")] [Terraform Enterprise] PostgreSQL IAM user setup completed successfully" | tee -a $log_pathname
+      # Get command output for logging
+      aws ssm get-command-invocation \
+        --command-id "$command_id" \
+        --instance-id "$instance_id" \
+        --region "$aws_region" \
+        --query 'StandardOutputContent' \
+        --output text >> $log_pathname 2>&1
+      break
+    elif [ "$command_status" = "Failed" ]; then
+      echo "[$(date +"%FT%T")] [Terraform Enterprise] ERROR: PostgreSQL IAM user setup failed" | tee -a $log_pathname
+      # Get error output for debugging
+      aws ssm get-command-invocation \
+        --command-id "$command_id" \
+        --instance-id "$instance_id" \
+        --region "$aws_region" \
+        --query 'StandardErrorContent' \
+        --output text >> $log_pathname 2>&1
+      break
+    fi
+    
+    sleep 10
+  done
+else
+  echo "[$(date +"%FT%T")] [Terraform Enterprise] WARNING: Failed to send SSM command for PostgreSQL IAM user setup" | tee -a $log_pathname
+  echo "[$(date +"%FT%T")] [Terraform Enterprise] Error: $command_id" | tee -a $log_pathname
+fi
+%{ else ~}
+echo "[$(date +"%FT%T")] [Terraform Enterprise] Skipping PostgreSQL IAM user setup (no SSM document provided)" | tee -a $log_pathname
+%{ endif ~}
+
 docker compose -f /etc/tfe/compose.yaml up -d
