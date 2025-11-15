@@ -185,20 +185,42 @@ echo ${docker_compose} | base64 -d > $tfe_dir/compose.yaml
 
 %{ if postgres_iam_setup_ssm_document != null && postgres_iam_setup_ssm_document != "" ~}
 echo "[$(date +"%FT%T")] [TFE] Setting up PostgreSQL IAM user" | tee -a $log_pathname
-instance_id=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
-aws_region=$(curl -s http://169.254.169.254/latest/meta-data/placement/region)
-command_id=$(aws ssm send-command --instance-ids "$instance_id" --document-name "${postgres_iam_setup_ssm_document}" --region "$aws_region" --query 'Command.CommandId' --output text 2>&1)
-if [ $? -eq 0 ]; then
-  echo "[$(date +"%FT%T")] [TFE] SSM command sent: $command_id" | tee -a $log_pathname
-  for i in {1..18}; do
-    status=$(aws ssm get-command-invocation --command-id "$command_id" --instance-id "$instance_id" --region "$aws_region" --query 'Status' --output text 2>/dev/null || echo "Pending")
-    echo "[$(date +"%FT%T")] [TFE] SSM status: $status ($i/18)" | tee -a $log_pathname
-    [ "$status" = "Success" ] && break
-    [ "$status" = "Failed" ] && break
-    sleep 10
-  done
+# Use IMDSv2 token for metadata access
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" 2>/dev/null) || echo "IMDSv2 failed, trying IMDSv1"
+if [ -z "$TOKEN" ]; then
+  # Fallback to IMDSv1
+  instance_id=$(curl -s http://169.254.169.254/latest/meta-data/instance-id 2>/dev/null)
+  aws_region=$(curl -s http://169.254.169.254/latest/meta-data/placement/region 2>/dev/null)
 else
-  echo "[$(date +"%FT%T")] [TFE] WARNING: SSM command failed: $command_id" | tee -a $log_pathname
+  # Use IMDSv2
+  instance_id=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/instance-id 2>/dev/null)
+  aws_region=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/placement/region 2>/dev/null)
+fi
+
+if [ -n "$instance_id" ] && [ -n "$aws_region" ]; then
+  echo "[$(date +"%FT%T")] [TFE] Instance: $instance_id, Region: $aws_region" | tee -a $log_pathname
+  command_id=$(aws ssm send-command --instance-ids "$instance_id" --document-name "${postgres_iam_setup_ssm_document}" --region "$aws_region" --query 'Command.CommandId' --output text 2>&1)
+  if echo "$command_id" | grep -qE "^[a-f0-9-]{36}$"; then
+    echo "[$(date +"%FT%T")] [TFE] SSM command sent: $command_id" | tee -a $log_pathname
+    sleep_count=0
+    while [ $sleep_count -lt 180 ]; do
+      status=$(aws ssm get-command-invocation --command-id "$command_id" --instance-id "$instance_id" --region "$aws_region" --query 'Status' --output text 2>/dev/null || echo "InProgress")
+      echo "[$(date +"%FT%T")] [TFE] SSM status: $status" | tee -a $log_pathname
+      if [ "$status" = "Success" ]; then
+        echo "[$(date +"%FT%T")] [TFE] IAM user setup completed successfully" | tee -a $log_pathname
+        break
+      elif [ "$status" = "Failed" ]; then
+        echo "[$(date +"%FT%T")] [TFE] IAM user setup failed" | tee -a $log_pathname
+        break
+      fi
+      sleep 10
+      sleep_count=$((sleep_count + 10))
+    done
+  else
+    echo "[$(date +"%FT%T")] [TFE] SSM send-command failed: $command_id" | tee -a $log_pathname
+  fi
+else
+  echo "[$(date +"%FT%T")] [TFE] Cannot get instance metadata (ID: $instance_id, Region: $aws_region)" | tee -a $log_pathname
 fi
 %{ else ~}
 echo "[$(date +"%FT%T")] [TFE] Skipping PostgreSQL IAM setup (no SSM document)" | tee -a $log_pathname
