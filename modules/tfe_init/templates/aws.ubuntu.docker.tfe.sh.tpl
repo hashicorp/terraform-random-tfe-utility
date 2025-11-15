@@ -184,71 +184,13 @@ mkdir -p $tfe_dir
 echo ${docker_compose} | base64 -d > $tfe_dir/compose.yaml
 
 %{ if postgres_iam_setup_ssm_document != null && postgres_iam_setup_ssm_document != "" ~}
-echo "[$(date +"%FT%T")] [TFE] Setting up PostgreSQL IAM user directly" | tee -a $log_pathname
-
-# Install PostgreSQL client
-echo "[$(date +"%FT%T")] [TFE] Installing PostgreSQL client" | tee -a $log_pathname
-sudo apt-get update -qq
-sudo apt-get install -y postgresql-client
-
-# Database connection details
-DB_HOST="${database_host}"
-DB_USER="${admin_database_username}"
-DB_NAME="${database_name}" 
-DB_PASSWORD="${admin_database_password}"
-IAM_USER="${database_iam_username}"
-
-echo "[$(date +"%FT%T")] [TFE] Connecting to database: $DB_HOST" | tee -a $log_pathname
-
-# Wait for database to be ready
-echo "[$(date +"%FT%T")] [TFE] Waiting for database to be ready" | tee -a $log_pathname
-export PGPASSWORD="$DB_PASSWORD"
-max_attempts=30
-attempt=0
-while [ $attempt -lt $max_attempts ]; do
-  if psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c 'SELECT 1;' >/dev/null 2>&1; then
-    echo "[$(date +"%FT%T")] [TFE] Database is ready!" | tee -a $log_pathname
-    break
-  fi
-  attempt=$((attempt + 1))
-  echo "[$(date +"%FT%T")] [TFE] Waiting for database... attempt $attempt/$max_attempts" | tee -a $log_pathname
-  sleep 10
-done
-
-if [ $attempt -eq $max_attempts ]; then
-  echo "[$(date +"%FT%T")] [TFE] ERROR: Database not ready after $max_attempts attempts" | tee -a $log_pathname
-else
-  # Create IAM user
-  echo "[$(date +"%FT%T")] [TFE] Creating IAM user: $IAM_USER" | tee -a $log_pathname
-  psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -v ON_ERROR_STOP=1 << EOF
-DO \$\$
-BEGIN
-  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$IAM_USER') THEN
-    CREATE USER "$IAM_USER";
-    GRANT rds_iam TO "$IAM_USER";
-    GRANT CONNECT ON DATABASE "$DB_NAME" TO "$IAM_USER";
-    GRANT USAGE ON SCHEMA public TO "$IAM_USER";
-    GRANT CREATE ON SCHEMA public TO "$IAM_USER";
-    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "$IAM_USER";
-    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO "$IAM_USER";
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO "$IAM_USER";
-    ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO "$IAM_USER";
-    RAISE NOTICE 'Successfully created IAM user: $IAM_USER';
-  ELSE
-    RAISE NOTICE 'IAM user already exists: $IAM_USER';
-  END IF;
-END
-\$\$;
-EOF
-  
-  if [ $? -eq 0 ]; then
-    echo "[$(date +"%FT%T")] [TFE] PostgreSQL IAM user setup completed successfully" | tee -a $log_pathname
-  else
-    echo "[$(date +"%FT%T")] [TFE] PostgreSQL IAM user setup failed" | tee -a $log_pathname
-  fi
-fi
+echo "[$(date +"%FT%T")] [TFE] Setting up PostgreSQL IAM user" | tee -a $log_pathname
+sudo apt-get update -qq && sudo apt-get install -y postgresql-client
+export PGPASSWORD="${admin_database_password}"
+for i in $(seq 1 30); do psql -h "${database_host}" -U "${admin_database_username}" -d "${database_name}" -c 'SELECT 1;' >/dev/null 2>&1 && break; sleep 10; done
+psql -h "${database_host}" -U "${admin_database_username}" -d "${database_name}" -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${database_iam_username}') THEN CREATE USER \"${database_iam_username}\"; GRANT rds_iam TO \"${database_iam_username}\"; GRANT CONNECT ON DATABASE \"${database_name}\" TO \"${database_iam_username}\"; GRANT USAGE,CREATE ON SCHEMA public TO \"${database_iam_username}\"; GRANT ALL ON ALL TABLES IN SCHEMA public TO \"${database_iam_username}\"; GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO \"${database_iam_username}\"; ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO \"${database_iam_username}\"; ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO \"${database_iam_username}\"; END IF; END \$\$;" >/dev/null 2>&1 && echo "[$(date +"%FT%T")] [TFE] IAM user created" | tee -a $log_pathname
 %{ else ~}
-echo "[$(date +"%FT%T")] [TFE] Skipping PostgreSQL IAM setup (no configuration)" | tee -a $log_pathname
+echo "[$(date +"%FT%T")] [TFE] Skipping PostgreSQL IAM setup" | tee -a $log_pathname
 %{ endif ~}
 
 docker compose -f /etc/tfe/compose.yaml up -d
