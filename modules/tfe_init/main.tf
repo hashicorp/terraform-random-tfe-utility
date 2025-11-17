@@ -116,7 +116,6 @@ locals {
       admin_database_username         = var.admin_database_username
       admin_database_password         = var.admin_database_password
       database_iam_username           = var.database_iam_username
-      postgres_iam_setup_ssm_document = var.postgres_iam_setup_ssm_document
 
       proxy_ip   = var.proxy_ip
       proxy_port = var.proxy_port

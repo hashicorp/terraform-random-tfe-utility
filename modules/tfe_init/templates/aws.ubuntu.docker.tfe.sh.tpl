@@ -183,7 +183,7 @@ mkdir -p $tfe_dir
 
 echo ${docker_compose} | base64 -d > $tfe_dir/compose.yaml
 
-%{ if postgres_iam_setup_ssm_document != null && postgres_iam_setup_ssm_document != "" ~}
+%{ if database_iam_username != null && database_iam_username != "" ~}
 echo "[$(date +"%FT%T")] Setting up PostgreSQL IAM user" | tee -a $log_pathname
 sudo apt-get update -qq && sudo apt-get install -y postgresql-client-16 >/dev/null 2>&1
 export PGPASSWORD="${admin_database_password}"
