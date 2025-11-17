@@ -184,59 +184,20 @@ mkdir -p $tfe_dir
 echo ${docker_compose} | base64 -d > $tfe_dir/compose.yaml
 
 %{ if postgres_iam_setup_ssm_document != null && postgres_iam_setup_ssm_document != "" ~}
-# PostgreSQL IAM User Setup
-echo "[$(date +"%FT%T")] [TFE] Setting up PostgreSQL IAM user" | tee -a $log_pathname
-
-# Install PostgreSQL client
-sudo apt-get update -qq && sudo apt-get install -y postgresql-client || {
-    echo "[$(date +"%FT%T")] [TFE] ERROR: Failed to install postgresql-client" | tee -a $log_pathname
-    exit 1
-}
-
-# Set database password
+echo "[$(date +"%FT%T")] Setting up PostgreSQL IAM user" | tee -a $log_pathname
+sudo apt-get update -qq && sudo apt-get install -y postgresql-client-16 >/dev/null 2>&1
 export PGPASSWORD="${admin_database_password}"
-
-# Test database connectivity and create IAM user
-echo "[$(date +"%FT%T")] [TFE] Testing database connection to ${database_host}" | tee -a $log_pathname
-for i in $(seq 1 30); do
-    if psql -h "${database_host}" -U "${admin_database_username}" -d "${database_name}" -c "SELECT version();" >/dev/null 2>&1; then
-        echo "[$(date +"%FT%T")] [TFE] Database connection successful on attempt $i" | tee -a $log_pathname
-        
-        # Create IAM user
-        echo "[$(date +"%FT%T")] [TFE] Creating IAM user: ${database_iam_username}" | tee -a $log_pathname
-        if psql -h "${database_host}" -U "${admin_database_username}" -d "${database_name}" -c "
-DO \$\$ 
-BEGIN 
-    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${database_iam_username}') THEN 
-        CREATE USER \"${database_iam_username}\" WITH LOGIN; 
-        GRANT rds_iam TO \"${database_iam_username}\"; 
-        GRANT CONNECT ON DATABASE \"${database_name}\" TO \"${database_iam_username}\"; 
-        GRANT USAGE, CREATE ON SCHEMA public TO \"${database_iam_username}\"; 
-        GRANT ALL ON ALL TABLES IN SCHEMA public TO \"${database_iam_username}\"; 
-        GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO \"${database_iam_username}\"; 
-        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO \"${database_iam_username}\"; 
-        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO \"${database_iam_username}\"; 
-        RAISE NOTICE 'IAM user created: ${database_iam_username}';
-    ELSE 
-        RAISE NOTICE 'IAM user exists: ${database_iam_username}';
-    END IF; 
-END \$\$;" 2>&1 | tee -a $log_pathname; then
-            echo "[$(date +"%FT%T")] [TFE] IAM user setup completed successfully" | tee -a $log_pathname
-            
-            # Verify user
-            psql -h "${database_host}" -U "${admin_database_username}" -d "${database_name}" -c "SELECT usename FROM pg_user WHERE usename = '${database_iam_username}';" 2>&1 | tee -a $log_pathname
-            break
-        else
-            echo "[$(date +"%FT%T")] [TFE] ERROR: Failed to create IAM user" | tee -a $log_pathname
-            exit 1
-        fi
-    else
-        echo "[$(date +"%FT%T")] [TFE] Database connection attempt $i/30 failed, retrying in 10s..." | tee -a $log_pathname
-        sleep 10
-    fi
+for i in $(seq 1 20); do
+if psql -h "${database_host}" -U "${admin_database_username}" -d "${database_name}" -c "SELECT 1;" >/dev/null 2>&1; then
+echo "DB connected on attempt $i" | tee -a $log_pathname
+psql -h "${database_host}" -U "${admin_database_username}" -d "${database_name}" -c "DO \$\$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${database_iam_username}') THEN CREATE USER \"${database_iam_username}\" WITH LOGIN; GRANT rds_iam TO \"${database_iam_username}\"; GRANT CONNECT ON DATABASE \"${database_name}\" TO \"${database_iam_username}\"; GRANT USAGE, CREATE ON SCHEMA public TO \"${database_iam_username}\"; GRANT ALL ON ALL TABLES IN SCHEMA public TO \"${database_iam_username}\"; GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO \"${database_iam_username}\"; ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO \"${database_iam_username}\"; ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO \"${database_iam_username}\"; RAISE NOTICE 'IAM user created'; ELSE RAISE NOTICE 'IAM user exists'; END IF; END \$\$;" >/dev/null 2>&1
+echo "IAM user ${database_iam_username} ready" | tee -a $log_pathname
+break
+else
+echo "DB attempt $i/20 failed" | tee -a $log_pathname
+sleep 10
+fi
 done
-%{ else ~}
-echo "[$(date +"%FT%T")] [TFE] Skipping PostgreSQL IAM setup" | tee -a $log_pathname
 %{ endif ~}
 
 docker compose -f /etc/tfe/compose.yaml up -d
