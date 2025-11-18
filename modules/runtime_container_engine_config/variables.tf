@@ -370,9 +370,21 @@ variable "redis_passwordless_azure_client_id" {
 }
 
 variable "redis_passwordless_aws_use_instance_profile" {
-  default     = false
   type        = bool
-  description = "Whether or not to use AWS IAM authentication to connect to the Redis server. Defaults to false if no value is given."
+  description = "Boolean to use AWS instance profile for Redis IAM authentication."
+  default     = false
+}
+
+variable "redis_passwordless_aws_region" {
+  type        = string
+  description = "AWS Region of the AWS ElastiCache resource for Redis passwordless authentication."
+  default     = null
+}
+
+variable "redis_passwordless_aws_host_name" {
+  type        = string
+  description = "The name of the Redis instance on AWS for passwordless authentication."
+  default     = null
 }
 
 variable "run_pipeline_image" {
