@@ -20,8 +20,8 @@ locals {
     TFE_REDIS_PASSWORDLESS_AZURE_USE_MSI         = var.redis_passwordless_azure_use_msi
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AZURE_USE_MSI = var.redis_passwordless_azure_use_msi
     TFE_REDIS_PASSWORDLESS_AZURE_CLIENT_ID       = var.redis_passwordless_azure_client_id
-    TFE_REDIS_PASSWORDLESS_AWS_USE_IAM           = var.redis_passwordless_aws_use_iam
-    TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_USE_IAM   = var.redis_passwordless_aws_use_iam
+    TFE_REDIS_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE           = var.redis_passwordless_aws_use_instance_profile
+    TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE   = var.redis_passwordless_aws_use_instance_profile
   }
   redis_configuration = local.active_active ? local.redis : {}
 }
