@@ -26,6 +26,8 @@ locals {
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_REGION               = var.redis_passwordless_aws_region
     TFE_REDIS_PASSWORDLESS_AWS_HOST_NAME                    = var.redis_passwordless_aws_host_name
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_HOST_NAME            = var.redis_passwordless_aws_host_name
+    TFE_REDIS_SIDEKIQ_USER                                  = var.redis_user
+    TFE_REDIS_SIDEKIQ_USE_TLS                               = var.redis_use_tls
   }
   redis_configuration = local.active_active ? local.redis : {}
 }
