@@ -387,6 +387,12 @@ variable "redis_passwordless_aws_host_name" {
   default     = null
 }
 
+variable "redis_passwordless_aws_iam_user" {
+  type        = string
+  description = "The IAM username for Redis IAM authentication."
+  default     = null
+}
+
 variable "run_pipeline_image" {
   type        = string
   description = "Container image used to execute Terraform runs. Leave blank to use the default image that comes with Terraform Enterprise. Defaults to \"\" if no value is given."
