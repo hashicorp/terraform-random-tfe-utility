@@ -369,56 +369,6 @@ variable "redis_passwordless_azure_client_id" {
   description = "Azure Managed Service Identity (MSI) Client ID to be used for redis authentication. If not set, System Assigned Managed Identity will be used."
 }
 
-variable "redis_passwordless_aws_use_iam" {
-  default     = false
-  type        = bool
-  description = "Whether or not to use AWS IAM authentication to connect to the Redis server. Defaults to false if no value is given."
-}
-
-variable "redis_passwordless_aws_region" {
-  default     = ""
-  type        = string
-  description = "AWS region for IAM Redis authentication. Required when redis_passwordless_aws_use_iam is true."
-}
-
-variable "redis_passwordless_aws_host_name" {
-  default     = ""
-  type        = string
-  description = "AWS ElastiCache Redis cluster name/host name for passwordless authentication. Used for IAM authentication."
-}
-
-# Sidekiq Redis connection variables (for separate Redis instance if needed)
-variable "redis_sidekiq_host" {
-  default     = ""
-  type        = string
-  description = "Redis host for Sidekiq background jobs. If empty, uses main redis_host."
-}
-
-variable "redis_sidekiq_user" {
-  default     = ""
-  type        = string
-  description = "Redis user for Sidekiq background jobs. If empty, uses main redis_user."
-}
-
-variable "redis_sidekiq_password" {
-  default     = ""
-  type        = string
-  description = "Redis password for Sidekiq background jobs. If empty, uses main redis_password."
-  sensitive   = true
-}
-
-variable "redis_sidekiq_use_tls" {
-  default     = null
-  type        = bool
-  description = "Whether to use TLS for Sidekiq Redis connection. If null, uses main redis_use_tls."
-}
-
-variable "redis_sidekiq_use_auth" {
-  default     = null
-  type        = bool
-  description = "Whether to use authentication for Sidekiq Redis connection. If null, uses main redis_use_auth."
-}
-
 variable "run_pipeline_image" {
   type        = string
   description = "Container image used to execute Terraform runs. Leave blank to use the default image that comes with Terraform Enterprise. Defaults to \"\" if no value is given."
