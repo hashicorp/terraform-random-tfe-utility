@@ -239,18 +239,6 @@ variable "pg_extra_params" {
   description = "(Optional) Parameter keywords of the form param1=value1&param2=value2 to support additional options that may be necessary for your specific PostgreSQL server. Allowed values are documented on the PostgreSQL site. An additional restriction on the sslmode parameter is that only the  require, verify-full, verify-ca, and disable values are allowed."
 }
 
-variable "database_aws_iam_auth_enabled" {
-  default     = null
-  type        = bool
-  description = "(Optional) Enable AWS IAM authentication for PostgreSQL connections. When enabled, TFE will use IAM tokens instead of password authentication to connect to PostgreSQL databases that have IAM authentication enabled."
-}
-
-variable "database_aws_iam_region" {
-  default     = null
-  type        = string
-  description = "(Optional) AWS region for IAM authentication token generation. Required when database_aws_iam_auth_enabled is true."
-}
-
 # ------------------------------------------------------
 # Redis
 # ------------------------------------------------------
