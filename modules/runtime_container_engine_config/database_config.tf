@@ -3,7 +3,7 @@
 
 locals {
   database = {
-    TFE_DATABASE_USER                         = var.database_user
+    TFE_DATABASE_USER = var.database_user
     # For IAM authentication, set empty password but ensure the variable exists
     TFE_DATABASE_PASSWORD                     = var.database_passwordless_aws_use_iam ? "" : var.database_password
     TFE_DATABASE_HOST                         = var.database_host
@@ -16,10 +16,10 @@ locals {
     TFE_DATABASE_PASSWORDLESS_AZURE_USE_MSI   = var.database_passwordless_azure_use_msi
     TFE_DATABASE_PASSWORDLESS_AZURE_CLIENT_ID = var.database_passwordless_azure_client_id
     # Enable AWS instance profile for IAM authentication
-    TFE_DATABASE_USE_INSTANCE_PROFILE         = var.database_passwordless_aws_use_iam
+    TFE_DATABASE_USE_INSTANCE_PROFILE = var.database_passwordless_aws_use_iam
     # Additional environment variables for TFE config validation bypass
     TFE_DATABASE_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = var.database_passwordless_aws_use_iam
-    TFE_DATABASE_PASSWORDLESS_AWS_REGION      = var.database_passwordless_aws_region
+    TFE_DATABASE_PASSWORDLESS_AWS_REGION               = var.database_passwordless_aws_region
   }
   # Filter out null values so they don't appear in the compose file at all
   database_configuration = local.disk ? {} : { for k, v in local.database : k => v if v != null }

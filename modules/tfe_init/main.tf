@@ -104,7 +104,7 @@ locals {
       Database = {
         Passwordless = {
           AWSUseInstanceProfile = var.database_passwordless_aws_use_iam
-          AWSRegion = var.database_passwordless_aws_region
+          AWSRegion             = var.database_passwordless_aws_region
         }
       }
 
