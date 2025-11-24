@@ -15,9 +15,7 @@ locals {
     TFE_DATABASE_CLIENT_KEY_FILE              = var.database_client_key_file
     TFE_DATABASE_PASSWORDLESS_AZURE_USE_MSI   = var.database_passwordless_azure_use_msi
     TFE_DATABASE_PASSWORDLESS_AZURE_CLIENT_ID = var.database_passwordless_azure_client_id
-    # Enable AWS instance profile for IAM authentication
-    TFE_DATABASE_USE_INSTANCE_PROFILE = var.database_passwordless_aws_use_iam
-    # Additional environment variables for TFE config validation bypass
+    # AWS IAM authentication for PostgreSQL passwordless
     TFE_DATABASE_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = var.database_passwordless_aws_use_iam
     TFE_DATABASE_PASSWORDLESS_AWS_REGION               = var.database_passwordless_aws_region
   }
