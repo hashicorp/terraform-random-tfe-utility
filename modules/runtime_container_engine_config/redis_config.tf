@@ -2,10 +2,13 @@
 # SPDX-License-Identifier: MPL-2.0
 
 locals {
+  # Extract repeated condition for better maintainability
+  use_redis_passwordless_aws = var.redis_passwordless_aws_use_instance_profile
+
   redis = {
     TFE_REDIS_HOST                                          = var.redis_use_tls != null ? var.redis_use_tls ? "${var.redis_host}:6380" : var.redis_host : null
-    TFE_REDIS_USER                                          = var.redis_passwordless_aws_use_instance_profile ? var.redis_passwordless_aws_iam_user : var.redis_user
-    TFE_REDIS_PASSWORD                                      = var.redis_passwordless_aws_use_instance_profile ? null : var.redis_password
+    TFE_REDIS_USER                                          = local.use_redis_passwordless_aws ? var.redis_passwordless_aws_iam_user : var.redis_user
+    TFE_REDIS_PASSWORD                                      = local.use_redis_passwordless_aws ? null : var.redis_password
     TFE_REDIS_USE_TLS                                       = var.redis_use_tls
     TFE_REDIS_USE_AUTH                                      = var.redis_use_auth
     TFE_REDIS_SENTINEL_ENABLED                              = var.redis_use_sentinel
@@ -20,13 +23,13 @@ locals {
     TFE_REDIS_PASSWORDLESS_AZURE_USE_MSI                    = var.redis_passwordless_azure_use_msi
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AZURE_USE_MSI            = var.redis_passwordless_azure_use_msi
     TFE_REDIS_PASSWORDLESS_AZURE_CLIENT_ID                  = var.redis_passwordless_azure_client_id
-    TFE_REDIS_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE         = var.redis_passwordless_aws_use_instance_profile
-    TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = var.redis_passwordless_aws_use_instance_profile
+    TFE_REDIS_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE         = local.use_redis_passwordless_aws
+    TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = local.use_redis_passwordless_aws
     TFE_REDIS_PASSWORDLESS_AWS_REGION                       = var.redis_passwordless_aws_region
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_REGION               = var.redis_passwordless_aws_region
     TFE_REDIS_PASSWORDLESS_AWS_HOST_NAME                    = var.redis_passwordless_aws_host_name
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_HOST_NAME            = var.redis_passwordless_aws_host_name
-    TFE_REDIS_SIDEKIQ_USER                                  = var.redis_passwordless_aws_use_instance_profile ? var.redis_passwordless_aws_iam_user : var.redis_user
+    TFE_REDIS_SIDEKIQ_USER                                  = local.use_redis_passwordless_aws ? var.redis_passwordless_aws_iam_user : var.redis_user
     TFE_REDIS_SIDEKIQ_USE_TLS                               = var.redis_use_tls
   }
   redis_configuration = local.active_active ? local.redis : {}
