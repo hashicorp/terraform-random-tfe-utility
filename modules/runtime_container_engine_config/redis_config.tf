@@ -30,7 +30,9 @@ locals {
     TFE_REDIS_PASSWORDLESS_AWS_HOST_NAME                    = var.redis_passwordless_aws_host_name
     TFE_REDIS_SIDEKIQ_PASSWORDLESS_AWS_HOST_NAME            = var.redis_passwordless_aws_host_name
     TFE_REDIS_SIDEKIQ_USER                                  = local.use_redis_passwordless_aws ? var.redis_passwordless_aws_iam_user : var.redis_user
-    TFE_REDIS_SIDEKIQ_USE_TLS                               = var.redis_use_tls
+    # TFE_REDIS_SIDEKIQ_USE_TLS is set to var.redis_use_tls to ensure Sidekiq uses TLS if required.
+    # This variable was added to fix missing Sidekiq TLS configuration; it is unrelated to AWS IAM authentication.
+    TFE_REDIS_SIDEKIQ_USE_TLS = var.redis_use_tls
   }
   redis_configuration = local.active_active ? local.redis : {}
 }
