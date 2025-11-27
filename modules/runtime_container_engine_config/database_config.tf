@@ -3,9 +3,8 @@
 
 locals {
   database = {
-    TFE_DATABASE_USER = var.database_user
-    # For IAM authentication, set empty password but ensure the variable exists
-    TFE_DATABASE_PASSWORD                     = var.database_passwordless_aws_use_iam ? "" : var.database_password
+    TFE_DATABASE_USER                         = var.database_user
+    TFE_DATABASE_PASSWORD                     = ""
     TFE_DATABASE_HOST                         = var.database_host
     TFE_DATABASE_NAME                         = var.database_name
     TFE_DATABASE_PARAMETERS                   = var.database_parameters
@@ -19,14 +18,16 @@ locals {
     TFE_DATABASE_PASSWORDLESS_AWS_USE_INSTANCE_PROFILE = var.database_passwordless_aws_use_iam
     TFE_DATABASE_PASSWORDLESS_AWS_REGION               = var.database_passwordless_aws_region
   }
-  # Filter out null values so they don't appear in the compose file at all
-  database_configuration = local.disk ? {} : { for k, v in local.database : k => v if v != null }
+  database_configuration = local.disk ? {} : local.database
+
   explorer_database = {
-    TFE_EXPLORER_DATABASE_HOST       = var.explorer_database_host
-    TFE_EXPLORER_DATABASE_NAME       = var.explorer_database_name
-    TFE_EXPLORER_DATABASE_USER       = var.explorer_database_user
-    TFE_EXPLORER_DATABASE_PASSWORD   = var.explorer_database_password
-    TFE_EXPLORER_DATABASE_PARAMETERS = var.explorer_database_parameters
+    TFE_EXPLORER_DATABASE_HOST                         = var.explorer_database_host
+    TFE_EXPLORER_DATABASE_NAME                         = var.explorer_database_name
+    TFE_EXPLORER_DATABASE_USER                         = var.explorer_database_user
+    TFE_EXPLORER_DATABASE_PASSWORD                     = var.explorer_database_password
+    TFE_EXPLORER_DATABASE_PARAMETERS                   = var.explorer_database_parameters
+    TFE_EXPLORER_DATABASE_PASSWORDLESS_AZURE_USE_MSI   = var.explorer_database_passwordless_azure_use_msi
+    TFE_EXPLORER_DATABASE_PASSWORDLESS_AZURE_CLIENT_ID = var.explorer_database_passwordless_azure_client_id
   }
   explorer_database_configuration = var.explorer_database_host == null ? {} : local.explorer_database
 }
