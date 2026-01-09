@@ -225,7 +225,10 @@ echo "[Terraform Enterprise] Installing Docker Engine from Repository for Bootst
 		https://download.docker.com/linux/ubuntu $(lsb_release --codename --short) stable" \
 		| sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 	apt-get --assume-yes update
-	apt-get --assume-yes install docker-ce docker-ce-cli containerd.io
+	# Pin Docker to 25.0.5 for Replicated compatibility (API version 1.44)
+	# Replicated 2.56.10 requires Docker API >= 1.44, Docker 29.x (API 1.52) causes issues
+	apt-get --assume-yes install docker-ce=5:25.0.5-1~ubuntu.22.04~jammy docker-ce-cli=5:25.0.5-1~ubuntu.22.04~jammy containerd.io
+	apt-mark hold docker-ce docker-ce-cli containerd.io
 	apt-get --assume-yes autoremove
 	%{ endif ~}
 
